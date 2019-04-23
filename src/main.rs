@@ -27,7 +27,7 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
     use std::fs;
 
     fn count(s: &str) -> HashMap<char, i32> {
@@ -53,8 +53,29 @@ pub mod day2 {
         }
         x2 * x3
     }
+
+    pub fn part2() -> String {
+        let s = fs::read_to_string("./src/2018/day2.txt").unwrap();
+
+        for i in 0..s.lines().next().unwrap().len() {
+            let mut m = HashSet::new();
+            for l in s.lines() {
+                let b = l
+                    .char_indices()
+                    .filter(|(j, _)| j != &i)
+                    .map(|(_, x)| x)
+                    .collect();
+                if m.contains(&b) {
+                    return b;
+                } else {
+                    m.insert(b);
+                }
+            }
+        }
+        "asdf".to_string()
+    }
 }
 
 fn main() {
-    // println!("{}", day1::part1());
+    println!("{}", day2::part2());
 }

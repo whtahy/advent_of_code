@@ -34,7 +34,7 @@ pub mod day1 {
             }
         }
 
-        0
+        panic!()
     }
 }
 
@@ -43,15 +43,15 @@ pub mod day2 {
 
     const INPUT: &str = include_str!("./2018/day2.txt");
 
-    fn count(s: &str) -> HashMap<char, i32> {
-        let mut m = HashMap::new();
-        for c in s.chars() {
-            m.insert(c, m.get(&c).unwrap_or(&0) + 1);
-        }
-        m
-    }
-
     pub fn part1() -> i32 {
+        fn count(s: &str) -> HashMap<char, i32> {
+            let mut m = HashMap::new();
+            for c in s.chars() {
+                m.insert(c, m.get(&c).unwrap_or(&0) + 1);
+            }
+            m
+        }
+
         let mut x2 = 0;
         let mut x3 = 0;
         for l in INPUT.lines() {
@@ -82,7 +82,7 @@ pub mod day2 {
                 }
             }
         }
-        "asdf".to_string()
+        panic!()
     }
 }
 
@@ -102,10 +102,8 @@ pub mod day3 {
                 .filter_map(Result::ok)
                 .collect::<Vec<i32>>();
 
-            let p_x = sx[0];
-            let p_y = sx[1];
-            let w = sx[2];
-            let h = sx[3];
+            let (p_x, p_y) = (sx[0], sx[1]);
+            let (w, h) = (sx[2], sx[3]);
 
             for x in p_x..(p_x + w) {
                 for y in p_y..(p_y + h) {
@@ -120,6 +118,17 @@ pub mod day3 {
     }
 
     pub fn part2() -> i32 {
+        fn disjoint(a: &[i32], b: &[i32]) -> bool {
+            let (x1, y1) = (a[0], a[1]);
+            let (w1, h1) = (a[2], a[3]);
+
+            let (x2, y2) = (b[0], b[1]);
+            let (w2, h2) = (b[2], b[3]);
+
+            !((x1 <= x2 && x2 <= (x1 + w1 - 1)) || (x2 <= x1 && x1 <= (x2 + w2 - 1)))
+                || !((y1 <= y2 && y2 <= (y1 + h1 - 1)) || (y2 <= y1 && y1 <= (y2 + h2 - 1)))
+        }
+
         let mut m = HashMap::new();
 
         for l in INPUT.lines() {
@@ -128,41 +137,16 @@ pub mod day3 {
                 .map(str::parse)
                 .filter_map(Result::ok)
                 .collect::<Vec<i32>>();
-
-            let id = sx[0];
-            let v = sx[1..].to_vec();
-            m.insert(id, v);
+            m.insert(sx[0], sx[1..].to_vec());
         }
 
         for id in m.keys() {
-            let mut d = true;
-            for i in m.keys() {
-                if id != i && overlap(&m[id], &m[i]) {
-                    d = false;
-                    break;
-                }
-            }
-            if d {
+            if m.keys().all(|i| id == i || disjoint(&m[id], &m[i])) {
                 return *id;
             }
         }
 
-        0
-    }
-
-    fn overlap(a: &[i32], b: &[i32]) -> bool {
-        let x1 = a[0];
-        let y1 = a[1];
-        let w1 = a[2];
-        let h1 = a[3];
-
-        let x2 = b[0];
-        let y2 = b[1];
-        let w2 = b[2];
-        let h2 = b[3];
-
-        ((x1 <= x2 && x2 <= (x1 + w1 - 1)) || (x2 <= x1 && x1 <= (x2 + w2 - 1)))
-            && ((y1 <= y2 && y2 <= (y1 + h1 - 1)) || (y2 <= y1 && y1 <= (y2 + h2 - 1)))
+        panic!()
     }
 }
 
@@ -172,5 +156,5 @@ fn main() {
     // println!("{}", day2::part1());
     // println!("{}", day2::part2());
     // println!("{}", day3::part1());
-    println!("{}", day3::part2());
+    // println!("{}", day3::part2());
 }

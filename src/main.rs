@@ -1,34 +1,47 @@
 pub mod day1 {
     use std::collections::HashSet;
-    use std::fs;
+
+    const INPUT: &str = include_str!("./2018/day1.txt");
 
     pub fn part1() -> i32 {
-        let s = fs::read_to_string("./src/2018/day1.txt").unwrap();
-        s.lines().map(|x| x.parse::<i32>().unwrap()).sum()
+        INPUT.lines().map(|x| x.parse::<i32>().unwrap()).sum()
     }
 
     pub fn part2() -> i32 {
-        let s = fs::read_to_string("./src/2018/day1.txt").unwrap();
         let mut fx = HashSet::new();
         let mut f = 0;
         fx.insert(f);
-        loop {
-            for l in s.lines() {
-                let x = l.parse::<i32>().unwrap();
-                f += x;
-                if fx.contains(&f) {
-                    return f;
-                } else {
-                    fx.insert(f);
+
+        for l in INPUT.lines() {
+            let x = l.parse::<i32>().unwrap();
+            f += x;
+            if fx.contains(&f) {
+                return f;
+            } else {
+                fx.insert(f);
+            }
+        }
+
+        fx.remove(&0);
+
+        let offset = f;
+        for i in 1.. {
+            for v in &fx {
+                let c = v + i * offset;
+                if fx.contains(&c) {
+                    return c;
                 }
             }
         }
+
+        0
     }
 }
 
 pub mod day2 {
     use std::collections::{HashMap, HashSet};
-    use std::fs;
+
+    const INPUT: &str = include_str!("./2018/day2.txt");
 
     fn count(s: &str) -> HashMap<char, i32> {
         let mut m = HashMap::new();
@@ -39,10 +52,9 @@ pub mod day2 {
     }
 
     pub fn part1() -> i32 {
-        let s = fs::read_to_string("./src/2018/day2.txt").unwrap();
         let mut x2 = 0;
         let mut x3 = 0;
-        for l in s.lines() {
+        for l in INPUT.lines() {
             let c = count(l);
             if c.values().any(|x| x == &2) {
                 x2 += 1;
@@ -55,11 +67,9 @@ pub mod day2 {
     }
 
     pub fn part2() -> String {
-        let s = fs::read_to_string("./src/2018/day2.txt").unwrap();
-
-        for i in 0..s.lines().next().unwrap().len() {
+        for i in 0..INPUT.lines().next().unwrap().len() {
             let mut m = HashSet::new();
-            for l in s.lines() {
+            for l in INPUT.lines() {
                 let b = l
                     .char_indices()
                     .filter(|(j, _)| j != &i)
@@ -76,6 +86,91 @@ pub mod day2 {
     }
 }
 
+pub mod day3 {
+    use std::collections::{HashMap, HashSet};
+
+    const INPUT: &str = include_str!("./2018/day3.txt");
+
+    pub fn part1() -> i32 {
+        let mut c = HashSet::new();
+        let mut d = HashSet::new();
+
+        for l in INPUT.lines() {
+            let sx = l
+                .split(&[' ', ',', ':', 'x'][..])
+                .map(str::parse)
+                .filter_map(Result::ok)
+                .collect::<Vec<i32>>();
+
+            let p_x = sx[0];
+            let p_y = sx[1];
+            let w = sx[2];
+            let h = sx[3];
+
+            for x in p_x..(p_x + w) {
+                for y in p_y..(p_y + h) {
+                    if !c.insert((x, y)) {
+                        d.insert((x, y));
+                    }
+                }
+            }
+        }
+
+        d.len() as i32
+    }
+
+    pub fn part2() -> i32 {
+        let mut m = HashMap::new();
+
+        for l in INPUT.lines() {
+            let sx = l
+                .split(&['#', ' ', ',', ':', 'x'][..])
+                .map(str::parse)
+                .filter_map(Result::ok)
+                .collect::<Vec<i32>>();
+
+            let id = sx[0];
+            let v = sx[1..].to_vec();
+            m.insert(id, v);
+        }
+
+        for id in m.keys() {
+            let mut d = true;
+            for i in m.keys() {
+                if id != i && overlap(&m[id], &m[i]) {
+                    d = false;
+                    break;
+                }
+            }
+            if d {
+                return *id;
+            }
+        }
+
+        0
+    }
+
+    fn overlap(a: &[i32], b: &[i32]) -> bool {
+        let x1 = a[0];
+        let y1 = a[1];
+        let w1 = a[2];
+        let h1 = a[3];
+
+        let x2 = b[0];
+        let y2 = b[1];
+        let w2 = b[2];
+        let h2 = b[3];
+
+        ((x1 <= x2 && x2 <= (x1 + w1 - 1)) || (x2 <= x1 && x1 <= (x2 + w2 - 1)))
+            && ((y1 <= y2 && y2 <= (y1 + h1 - 1)) || (y2 <= y1 && y1 <= (y2 + h2 - 1)))
+    }
+}
+
 fn main() {
-    println!("{}", day2::part2());
+    // println!("{}", day1::part1());
+    // println!("{}", day1::part2());
+    // println!("{}", day2::part1());
+    // println!("{}", day2::part2());
+    // println!("{}", day3::part1());
+    println!("{}", day3::part2());
 }

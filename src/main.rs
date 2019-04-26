@@ -98,8 +98,7 @@ pub mod day3 {
         for l in INPUT.lines() {
             let sx = l
                 .split(&[' ', ',', ':', 'x'][..])
-                .map(str::parse)
-                .filter_map(Result::ok)
+                .filter_map(|s| s.parse().ok())
                 .collect::<Vec<i32>>();
 
             let (p_x, p_y) = (sx[0], sx[1]);
@@ -151,10 +150,10 @@ pub mod day3 {
 }
 
 fn main() {
-    // println!("{}", day1::part1());
-    // println!("{}", day1::part2());
-    // println!("{}", day2::part1());
-    // println!("{}", day2::part2());
-    // println!("{}", day3::part1());
-    // println!("{}", day3::part2());
+    println!("{}", day1::part1());
+    println!("{}", day1::part2());
+    println!("{}", day2::part1());
+    println!("{}", day2::part2());
+    println!("{}", day3::part1());
+    println!("{}", day3::part2());
 }

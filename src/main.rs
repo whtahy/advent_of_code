@@ -153,45 +153,64 @@ pub mod day4 {
 
     const INPUT: &str = include_str!("./2018/day4.txt");
 
-    pub fn parse(s: &str) -> (&str, i32, i32) {
+    fn parse(s: &str) -> (&str, i32, &str) {
         let v = s.split(&[' ', ':', ']'][..]).collect::<Vec<_>>();
-        (v[4], v[2].parse().unwrap(), v[6].parse().unwrap())
+        (v[4], v[2].parse().unwrap(), v[5])
     }
 
     pub fn part1() -> i32 {
         let mut v = INPUT.lines().collect::<Vec<_>>();
         v.sort();
 
-        // for (i, x) in v.iter().enumerate() {
-        //     if i > 5 {
-        //         break;
-        //     } else {
-        //         println!("{}", x);
-        //     }
-        // }
-
-        let mut hm = HashMap::new();
-        let mut t0: i32 = 0;
-        let mut id = 0;
-        for ln in v {
-            let (m, t, k) = parse(ln);
-
-            // println!("m={} t={} id={}", m, t, id);
-            // println!("{:?}", hm);
-
-            if m == "Guard" {
-                id = k;
-                hm.insert(id, 0);
-            } else if m == "falls" {
-                t0 = t;
-            } else if m == "wakes" {
-                hm.insert(id, hm[&id] + t - t0);
+        let mut hm_t = HashMap::new();
+        let mut t0_i = 0;
+        let mut id_i = 0;
+        for ln in v.iter() {
+            let (s, t, i) = parse(ln);
+            if s == "Guard" {
+                id_i = i.split('#').collect::<Vec<_>>()[1].parse().unwrap();;
+                hm_t.insert(id_i, 0);
+            } else if s == "falls" {
+                t0_i = t;
+            } else if s == "wakes" {
+                hm_t.insert(id_i, hm_t[&id_i] + t - t0_i);
             } else {
                 panic!()
             }
         }
+        let id_max = *hm_t
+            .keys()
+            .max_by(|x, y| hm_t.get(x).cmp(&hm_t.get(y)))
+            .unwrap();
 
-        panic!()
+        let mut hm_m = HashMap::new();
+        for l in v {
+            let (s, t, i) = parse(l);
+            if s == "Guard" {
+                id_i = i.split('#').collect::<Vec<_>>()[1].parse().unwrap();
+            } else if s == "falls" && id_i == id_max {
+                t0_i = t;
+            } else if s == "wakes" && id_i == id_max {
+                for x in t0_i..t {
+                    hm_m.insert(x, hm_m.get(&x).unwrap_or(&0) + 1);
+                }
+            }
+        }
+
+        let m_max = hm_m
+            .keys()
+            .max_by(|x, y| hm_m.get(x).cmp(&hm_m.get(y)))
+            .unwrap();
+
+        println!(
+            "{}->{}={}",
+            id_max,
+            hm_t[&id_max],
+            hm_t.values().max().unwrap()
+        );
+
+        println!("id={}, min={}", id_max, m_max);
+        id_max * m_max
     }
 
     pub fn part2() {
@@ -207,5 +226,5 @@ fn main() {
     // println!("{}", day3::part1());
     // println!("{}", day3::part2());
 
-    // println!("{}", day4::part1());
+    println!("{}", day4::part1());
 }

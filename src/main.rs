@@ -162,55 +162,24 @@ pub mod day4 {
         let mut v = INPUT.lines().collect::<Vec<_>>();
         v.sort();
 
-        let mut hm_t = HashMap::new();
-        let mut t0_i = 0;
-        let mut id_i = 0;
-        for ln in v.iter() {
-            let (s, t, i) = parse(ln);
-            if s == "Guard" {
-                id_i = i.split('#').collect::<Vec<_>>()[1].parse().unwrap();;
-                hm_t.insert(id_i, 0);
-            } else if s == "falls" {
-                t0_i = t;
-            } else if s == "wakes" {
-                hm_t.insert(id_i, hm_t[&id_i] + t - t0_i);
-            } else {
-                panic!()
-            }
-        }
-        let id_max = *hm_t
-            .keys()
-            .max_by(|x, y| hm_t.get(x).cmp(&hm_t.get(y)))
-            .unwrap();
+        let mut m = HashMap::new();
+        let mut t0 = 0;
+        let mut id = "";
 
-        let mut hm_m = HashMap::new();
-        for l in v {
-            let (s, t, i) = parse(l);
-            if s == "Guard" {
-                id_i = i.split('#').collect::<Vec<_>>()[1].parse().unwrap();
-            } else if s == "falls" && id_i == id_max {
-                t0_i = t;
-            } else if s == "wakes" && id_i == id_max {
-                for x in t0_i..t {
-                    hm_m.insert(x, hm_m.get(&x).unwrap_or(&0) + 1);
-                }
+        for l_i in v.iter() {
+            let (s_i, t_i, id_i) = parse(l_i);
+            if s_i == "Guard" {
+                id = id_i;
+            } else if s_i == "falls" {
+                t0 = t_i;
+            } else if s_i == "wakes" {
+                m.insert(id, m.get(id).unwrap_or(&0) + t_i - t0);
             }
         }
 
-        let m_max = hm_m
-            .keys()
-            .max_by(|x, y| hm_m.get(x).cmp(&hm_m.get(y)))
-            .unwrap();
+        println!("{}", m.keys().max_by(|&x, &y| m[x].cmp(&m[y])).unwrap());
 
-        println!(
-            "{}->{}={}",
-            id_max,
-            hm_t[&id_max],
-            hm_t.values().max().unwrap()
-        );
-
-        println!("id={}, min={}", id_max, m_max);
-        id_max * m_max
+        panic!()
     }
 
     pub fn part2() {

@@ -4,4 +4,17 @@ version = "0.1.0"
 authors = ["Tae Hyon Whang <>"]
 edition = "2018"
 
-[dependencies]
+[lib]
+name = "advent_of_code"
+path = "src/lib.rs"
+
+[[bin]]
+name = "advent_of_code"
+path = "src/main.rs"
+
+[dev-dependencies]
+criterion = "0.2"
+
+[[bench]]
+name = "bench"
+harness = false

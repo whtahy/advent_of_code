@@ -166,24 +166,24 @@ pub mod day4 {
         let mut t0 = 0;
         let mut id = 0;
 
-        for l_i in v {
-            let (s_i, t_i, id_i) = parse_line(l_i);
-            if s_i == "Guard" {
-                id = id_i[1..].parse().unwrap()
-            } else if s_i == "falls" {
-                t0 = t_i;
-            } else if s_i == "wakes" {
-                m.entry(id).or_insert_with(HashMap::new);
-                for t in t0..t_i {
-                    m.get_mut(&id)
-                        .unwrap()
-                        .entry(t)
-                        .and_modify(|x| *x += 1)
-                        .or_insert(1);
+        v.iter()
+            .map(|x| parse_line(x))
+            .for_each(|(s_i, t_i, id_i)| {
+                if s_i == "Guard" {
+                    id = id_i[1..].parse().unwrap()
+                } else if s_i == "falls" {
+                    t0 = t_i;
+                } else if s_i == "wakes" {
+                    m.entry(id).or_insert_with(HashMap::new);
+                    for t in t0..t_i {
+                        m.get_mut(&id)
+                            .unwrap()
+                            .entry(t)
+                            .and_modify(|x| *x += 1)
+                            .or_insert(1);
+                    }
                 }
-            }
-        }
-
+            });
         m
     }
 

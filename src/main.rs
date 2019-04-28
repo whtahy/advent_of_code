@@ -47,7 +47,7 @@ pub mod day2 {
         fn count(s: &str) -> HashMap<char, i32> {
             let mut m = HashMap::new();
             for c in s.chars() {
-                m.insert(c, m.get(&c).unwrap_or(&0) + 1);
+                m.entry(c).and_modify(|x| *x += 1).or_insert(1);
             }
             m
         }
@@ -164,36 +164,82 @@ pub mod day4 {
 
         let mut m = HashMap::new();
         let mut t0 = 0;
-        let mut id = "";
+        let mut id = 0;
 
         for l_i in v.iter() {
             let (s_i, t_i, id_i) = parse(l_i);
             if s_i == "Guard" {
-                id = id_i;
+                id = id_i[1..].parse().unwrap()
             } else if s_i == "falls" {
                 t0 = t_i;
             } else if s_i == "wakes" {
-                m.insert(id, m.get(id).unwrap_or(&0) + t_i - t0);
+                let t = t_i - t0;
+                m.entry(id).and_modify(|x| *x += t).or_insert(t);
+            }
+        }
+        let g_max = m.keys().max_by_key(|x| m[x]).unwrap();
+
+        let mut m = HashMap::new();
+
+        for l_i in v {
+            let (s_i, t_i, id_i) = parse(l_i);
+            if s_i == "Guard" {
+                id = id_i[1..].parse().unwrap()
+            } else if s_i == "falls" && id == *g_max {
+                t0 = t_i;
+            } else if s_i == "wakes" && id == *g_max {
+                for t in t0..t_i {
+                    m.entry(t).and_modify(|x| *x += 1).or_insert(1);
+                }
+            }
+        }
+        let t_max = m.keys().max_by_key(|x| m[x]).unwrap();
+
+        g_max * t_max
+    }
+
+    pub fn part2() -> i32 {
+        let mut v = INPUT.lines().collect::<Vec<_>>();
+        v.sort();
+
+        let mut m = HashMap::new();
+        let mut t0 = 0;
+        let mut id = 0;
+
+        for l_i in v {
+            let (s_i, t_i, id_i) = parse(l_i);
+            if s_i == "Guard" {
+                id = id_i[1..].parse().unwrap()
+            } else if s_i == "falls" {
+                t0 = t_i;
+            } else if s_i == "wakes" {
+                m.entry(id).or_insert_with(HashMap::new);
+                for t in t0..t_i {
+                    m.get_mut(&id)
+                        .unwrap()
+                        .entry(t)
+                        .and_modify(|x| *x += 1)
+                        .or_insert(1);
+                }
             }
         }
 
-        println!("{}", m.keys().max_by(|&x, &y| m[x].cmp(&m[y])).unwrap());
-
-        panic!()
-    }
-
-    pub fn part2() {
-        panic!()
+        let g = *m.keys().max_by_key(|k| m[k].values().max()).unwrap();
+        let t = m[&g].keys().max_by_key(|k| m[&g][k]).unwrap();
+        g * t
     }
 }
 
 fn main() {
     // println!("{}", day1::part1());
     // println!("{}", day1::part2());
+
     // println!("{}", day2::part1());
     // println!("{}", day2::part2());
+
     // println!("{}", day3::part1());
     // println!("{}", day3::part2());
 
-    println!("{}", day4::part1());
+    // println!("{}", day4::part1());
+    // println!("{}", day4::part2());
 }

@@ -1,15 +1,19 @@
 use advent_of_code::*;
 
+fn print(f: impl std::fmt::Display) {
+    println!("{}", f);
+}
+
 fn main() {
-    // println!("Day 1 Part 1: {}", day1::part1());
-    // println!("Day 1 Part 2: {}", day1::part2());
+    // print(day1::part1());
+    // print(day1::part2());
 
-    // println!("Day 2 Part 1: {}", day2::part1());
-    // println!("Day 2 Part 2: {}", day2::part2());
+    // print(day2::part1());
+    // print(day2::part2());
 
-    // println!("Day 3 Part 1: {}", day3::part1());
-    // println!("Day 3 Part 2: {}", day3::part2());
+    // print(day3::part1());
+    // print(day3::part2());
 
-    println!("Day 4 Part 1: {}", day4::part1());
-    println!("Day 4 Part 2: {}", day4::part2());
+    // print(day4::part1());
+    // print(day4::part2());
 }

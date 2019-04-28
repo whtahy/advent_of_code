@@ -3,32 +3,40 @@ pub mod day1 {
 
     const INPUT: &str = include_str!("./2018/day1.txt");
 
+    /// ```
+    /// assert_eq!(advent_of_code::day1::part1(), 533);
+    /// ```
     pub fn part1() -> i32 {
         INPUT.lines().map(|x| x.parse::<i32>().unwrap()).sum()
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day1::part2(), 73_272);
+    /// ```
     pub fn part2() -> i32 {
-        let mut fx = HashSet::new();
+        let mut v = Vec::new();
+        let mut h = HashSet::new();
+
         let mut f = 0;
-        fx.insert(f);
+        v.push(f);
+        h.insert(f);
 
         for l in INPUT.lines() {
-            let x = l.parse::<i32>().unwrap();
+            let x: i32 = l.parse().unwrap();
             f += x;
-            if fx.contains(&f) {
+            if h.contains(&f) {
                 return f;
             } else {
-                fx.insert(f);
+                v.push(f);
+                h.insert(f);
             }
         }
 
-        fx.remove(&0);
-
         let offset = f;
         for i in 1.. {
-            for v in &fx {
-                let c = v + i * offset;
-                if fx.contains(&c) {
+            for x in v.iter().filter(|x| x != &&0) {
+                let c = x + i * offset;
+                if h.contains(&c) {
                     return c;
                 }
             }
@@ -43,6 +51,9 @@ pub mod day2 {
 
     const INPUT: &str = include_str!("./2018/day2.txt");
 
+    /// ```
+    /// assert_eq!(advent_of_code::day2::part1(), 7_134);
+    /// ```
     pub fn part1() -> i32 {
         fn count(s: &str) -> HashMap<char, i32> {
             let mut m = HashMap::new();
@@ -66,6 +77,9 @@ pub mod day2 {
         x2 * x3
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day2::part2(), "kbqwtcvzhmhpoelrnaxydifyb");
+    /// ```
     pub fn part2() -> String {
         for i in 0..INPUT.lines().next().unwrap().len() {
             let mut m = HashSet::new();
@@ -91,6 +105,9 @@ pub mod day3 {
 
     const INPUT: &str = include_str!("./2018/day3.txt");
 
+    /// ```
+    /// assert_eq!(advent_of_code::day3::part1(), 112_378);
+    /// ```
     pub fn part1() -> i32 {
         let mut c = HashSet::new();
         let mut d = HashSet::new();
@@ -116,6 +133,9 @@ pub mod day3 {
         d.len() as i32
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day3::part2(), 603);
+    /// ```
     pub fn part2() -> i32 {
         fn disjoint(a: &[i32], b: &[i32]) -> bool {
             let (x1, y1) = (a[0], a[1]);
@@ -166,27 +186,30 @@ pub mod day4 {
         let mut t0 = 0;
         let mut id = 0;
 
-        v.iter()
-            .map(|x| parse_line(x))
-            .for_each(|(s_i, t_i, id_i)| {
-                if s_i == "Guard" {
-                    id = id_i[1..].parse().unwrap()
-                } else if s_i == "falls" {
-                    t0 = t_i;
-                } else if s_i == "wakes" {
-                    m.entry(id).or_insert_with(HashMap::new);
-                    for t in t0..t_i {
-                        m.get_mut(&id)
-                            .unwrap()
-                            .entry(t)
-                            .and_modify(|x| *x += 1)
-                            .or_insert(1);
-                    }
+        for l_i in v {
+            let (s_i, t_i, id_i) = parse_line(l_i);
+            if s_i == "Guard" {
+                id = id_i[1..].parse().unwrap()
+            } else if s_i == "falls" {
+                t0 = t_i;
+            } else if s_i == "wakes" {
+                m.entry(id).or_insert_with(HashMap::new);
+                for t in t0..t_i {
+                    m.get_mut(&id)
+                        .unwrap()
+                        .entry(t)
+                        .and_modify(|x| *x += 1)
+                        .or_insert(1);
                 }
-            });
+            }
+        }
+
         m
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day4::part1(), 131_469);
+    /// ```
     pub fn part1() -> i32 {
         let m = parse_input();
         let g = m.keys().max_by_key(|k| m[k].values().sum::<i32>()).unwrap();
@@ -194,6 +217,9 @@ pub mod day4 {
         g * t
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day4::part2(), 96_951);
+    /// ```
     pub fn part2() -> i32 {
         let m = parse_input();
         let g = m.keys().max_by_key(|k| m[k].values().max()).unwrap();

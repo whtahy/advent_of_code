@@ -7,10 +7,12 @@ edition = "2018"
 [lib]
 name = "advent_of_code"
 path = "src/lib.rs"
+bench = false
 
 [[bin]]
 name = "advent_of_code"
 path = "src/main.rs"
+bench = false
 
 [dev-dependencies]
 criterion = "0.2"

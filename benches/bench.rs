@@ -24,15 +24,15 @@ use criterion::Criterion;
 // }
 // criterion_group!(b_day2p2, day2p2);
 
-fn day3p1(c: &mut Criterion) {
-    c.bench_function("day3p1", |b| b.iter(day3::part1));
-}
-criterion_group!(b_day3p1, day3p1);
+// fn day3p1(c: &mut Criterion) {
+//     c.bench_function("day3p1", |b| b.iter(day3::part1));
+// }
+// criterion_group!(b_day3p1, day3p1);
 
-fn day3p2(c: &mut Criterion) {
-    c.bench_function("day3p2", |b| b.iter(day3::part2));
-}
-criterion_group!(b_day3p2, day3p2);
+// fn day3p2(c: &mut Criterion) {
+//     c.bench_function("day3p2", |b| b.iter(day3::part2));
+// }
+// criterion_group!(b_day3p2, day3p2);
 
 // fn day4p1(c: &mut Criterion) {
 //     c.bench_function("day4p1", |b| b.iter(day4::part1));
@@ -44,4 +44,14 @@ criterion_group!(b_day3p2, day3p2);
 // }
 // criterion_group!(b_day4p2, day4p2);
 
-criterion_main!(b_day3p1, b_day3p2);
+fn day5p1(c: &mut Criterion) {
+    c.bench_function("day5p1", |b| b.iter(day5::part1));
+}
+criterion_group!(b_day5p1, day5p1);
+
+fn day5p2(c: &mut Criterion) {
+    c.bench_function("day5p2", |b| b.iter(day5::part2));
+}
+criterion_group!(b_day5p2, day5p2);
+
+criterion_main!(b_day5p1);

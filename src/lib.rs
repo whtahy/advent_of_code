@@ -227,3 +227,61 @@ pub mod day4 {
         g * t
     }
 }
+
+pub mod day5 {
+    use std::collections::BTreeSet;
+    use std::iter::FromIterator;
+
+    const INPUT: &str = include_str!("./2018/day5.txt");
+
+    pub fn part1() -> i32 {
+        let v = INPUT.chars().collect::<Vec<_>>();
+        let ix = 0..(v.len());
+
+        let mut h = BTreeSet::<usize>::from_iter(ix.clone());
+
+        let mut b = true;
+        for i in ix.cycle() {
+            if h.contains(&i) {
+                let mut j = i + 1;
+
+                loop {
+                    if j >= v.len() {
+                        break;
+                    } else if !h.contains(&j) {
+                        j += 1;
+                    } else {
+                        break;
+                    }
+                }
+
+                if j < v.len()
+                    && v[i] != v[j]
+                    && v[i].to_ascii_lowercase() == v[j].to_ascii_lowercase()
+                {
+                    h.remove(&i);
+                    h.remove(&j);
+                    b = false;
+                }
+            }
+
+            if &i == h.iter().next_back().unwrap() {
+                if b {
+                    break;
+                } else {
+                    b = true;
+                }
+            }
+        }
+
+        v.iter()
+            .enumerate()
+            .filter(|(i, _)| h.contains(i))
+            .map(|(_, x)| x)
+            .count() as i32
+    }
+
+    pub fn part2() {
+        panic!()
+    }
+}

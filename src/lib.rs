@@ -281,7 +281,61 @@ pub mod day5 {
             .count() as i32
     }
 
-    pub fn part2() {
-        panic!()
+    pub fn part2() -> i32 {
+        let mut vx = Vec::new();
+
+        for i in b'a'..=b'z' {
+            let v = INPUT
+                .chars()
+                .filter(|x| x.to_ascii_lowercase() != (i as char))
+                .collect::<Vec<_>>();
+            let ix = 0..(v.len());
+
+            let mut h = BTreeSet::<usize>::from_iter(ix.clone());
+
+            let mut b = true;
+            for i in ix.cycle() {
+                if h.contains(&i) {
+                    let mut j = i + 1;
+
+                    loop {
+                        if j >= v.len() {
+                            break;
+                        } else if !h.contains(&j) {
+                            j += 1;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if j < v.len()
+                        && v[i] != v[j]
+                        && v[i].to_ascii_lowercase() == v[j].to_ascii_lowercase()
+                    {
+                        h.remove(&i);
+                        h.remove(&j);
+                        b = false;
+                    }
+                }
+
+                if &i == h.iter().next_back().unwrap() {
+                    if b {
+                        break;
+                    } else {
+                        b = true;
+                    }
+                }
+            }
+
+            vx.push(
+                v.iter()
+                    .enumerate()
+                    .filter(|(i, _)| h.contains(i))
+                    .map(|(_, x)| x)
+                    .count() as i32,
+            );
+        }
+
+        vx.into_iter().min().unwrap()
     }
 }

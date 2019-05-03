@@ -1,6 +1,5 @@
 pub mod day1 {
     use std::collections::HashSet;
-
     const INPUT: &str = include_str!("./2018/day1.txt");
 
     /// ```
@@ -48,7 +47,6 @@ pub mod day1 {
 
 pub mod day2 {
     use std::collections::{HashMap, HashSet};
-
     const INPUT: &str = include_str!("./2018/day2.txt");
 
     /// ```
@@ -102,7 +100,6 @@ pub mod day2 {
 
 pub mod day3 {
     use std::collections::{HashMap, HashSet};
-
     const INPUT: &str = include_str!("./2018/day3.txt");
 
     /// ```
@@ -170,8 +167,27 @@ pub mod day3 {
 
 pub mod day4 {
     use std::collections::HashMap;
-
     const INPUT: &str = include_str!("./2018/day4.txt");
+
+    /// ```
+    /// assert_eq!(advent_of_code::day4::part1(), 131_469);
+    /// ```
+    pub fn part1() -> i32 {
+        let m = parse_input();
+        let g = m.keys().max_by_key(|k| m[k].values().sum::<i32>()).unwrap();
+        let t = m[&g].keys().max_by_key(|k| m[g][k]).unwrap();
+        g * t
+    }
+
+    /// ```
+    /// assert_eq!(advent_of_code::day4::part2(), 96_951);
+    /// ```
+    pub fn part2() -> i32 {
+        let m = parse_input();
+        let g = m.keys().max_by_key(|k| m[k].values().max()).unwrap();
+        let t = m[&g].keys().max_by_key(|k| m[&g][k]).unwrap();
+        g * t
+    }
 
     fn parse_input() -> HashMap<i32, HashMap<i32, i32>> {
         fn parse_line(s: &str) -> (&str, i32, &str) {
@@ -206,136 +222,62 @@ pub mod day4 {
 
         m
     }
-
-    /// ```
-    /// assert_eq!(advent_of_code::day4::part1(), 131_469);
-    /// ```
-    pub fn part1() -> i32 {
-        let m = parse_input();
-        let g = m.keys().max_by_key(|k| m[k].values().sum::<i32>()).unwrap();
-        let t = m[&g].keys().max_by_key(|k| m[g][k]).unwrap();
-        g * t
-    }
-
-    /// ```
-    /// assert_eq!(advent_of_code::day4::part2(), 96_951);
-    /// ```
-    pub fn part2() -> i32 {
-        let m = parse_input();
-        let g = m.keys().max_by_key(|k| m[k].values().max()).unwrap();
-        let t = m[&g].keys().max_by_key(|k| m[&g][k]).unwrap();
-        g * t
-    }
 }
 
 pub mod day5 {
-    use std::collections::BTreeSet;
-    use std::iter::FromIterator;
-
+    use std::collections::{BTreeSet, VecDeque};
     const INPUT: &str = include_str!("./2018/day5.txt");
 
+    /// ```
+    /// assert_eq!(advent_of_code::day5::part1(), 10_804);
+    /// ```
     pub fn part1() -> i32 {
-        let v = INPUT.chars().collect::<Vec<_>>();
-        let ix = 0..(v.len());
-
-        let mut h = BTreeSet::<usize>::from_iter(ix.clone());
-
-        let mut b = true;
-        for i in ix.cycle() {
-            if h.contains(&i) {
-                let mut j = i + 1;
-
-                loop {
-                    if j >= v.len() {
-                        break;
-                    } else if !h.contains(&j) {
-                        j += 1;
-                    } else {
-                        break;
-                    }
-                }
-
-                if j < v.len()
-                    && v[i] != v[j]
-                    && v[i].to_ascii_lowercase() == v[j].to_ascii_lowercase()
-                {
-                    h.remove(&i);
-                    h.remove(&j);
-                    b = false;
-                }
-            }
-
-            if &i == h.iter().next_back().unwrap() {
-                if b {
-                    break;
-                } else {
-                    b = true;
-                }
-            }
-        }
-
-        v.iter()
-            .enumerate()
-            .filter(|(i, _)| h.contains(i))
-            .map(|(_, x)| x)
-            .count() as i32
+        let left = VecDeque::new();
+        let right = INPUT.chars().collect::<VecDeque<_>>();
+        react(left, right).len() as i32
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day5::part2(), 6_650);
+    /// ```
     pub fn part2() -> i32 {
-        let mut vx = Vec::new();
-
+        let a = VecDeque::new();
+        let b = INPUT.chars().collect::<VecDeque<_>>();
+        let v = react(a, b);
+        let mut nx = BTreeSet::new();
         for i in b'a'..=b'z' {
-            let v = INPUT
-                .chars()
-                .filter(|x| x.to_ascii_lowercase() != (i as char))
-                .collect::<Vec<_>>();
-            let ix = 0..(v.len());
-
-            let mut h = BTreeSet::<usize>::from_iter(ix.clone());
-
-            let mut b = true;
-            for i in ix.cycle() {
-                if h.contains(&i) {
-                    let mut j = i + 1;
-
-                    loop {
-                        if j >= v.len() {
-                            break;
-                        } else if !h.contains(&j) {
-                            j += 1;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if j < v.len()
-                        && v[i] != v[j]
-                        && v[i].to_ascii_lowercase() == v[j].to_ascii_lowercase()
-                    {
-                        h.remove(&i);
-                        h.remove(&j);
-                        b = false;
-                    }
-                }
-
-                if &i == h.iter().next_back().unwrap() {
-                    if b {
-                        break;
-                    } else {
-                        b = true;
-                    }
-                }
-            }
-
-            vx.push(
-                v.iter()
-                    .enumerate()
-                    .filter(|(i, _)| h.contains(i))
-                    .map(|(_, x)| x)
-                    .count() as i32,
-            );
+            let left = VecDeque::new();
+            let right = v
+                .iter()
+                .filter(|x| x.to_ascii_lowercase() != i as char)
+                .cloned()
+                .collect::<VecDeque<char>>();
+            let n = react(left, right).len() as i32;
+            nx.insert(n);
         }
 
-        vx.into_iter().min().unwrap()
+        *nx.iter().min().unwrap()
+    }
+
+    fn react(mut left: VecDeque<char>, mut right: VecDeque<char>) -> VecDeque<char> {
+        left.push_front(' ');
+        right.push_back(' ');
+        loop {
+            if right.front().unwrap() == &' ' {
+                break;
+            }
+
+            let l = left.back().unwrap();
+            let r = right.pop_front().unwrap();
+
+            if l != &r && l.to_ascii_lowercase() == r.to_ascii_lowercase() {
+                left.pop_back();
+            } else {
+                left.push_back(r);
+            }
+        }
+
+        left.pop_front();
+        left
     }
 }

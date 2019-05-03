@@ -54,4 +54,4 @@ fn day5p2(c: &mut Criterion) {
 }
 criterion_group!(b_day5p2, day5p2);
 
-criterion_main!(b_day5p1);
+criterion_main!(b_day5p1, b_day5p2);

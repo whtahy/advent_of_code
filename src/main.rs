@@ -20,6 +20,9 @@ fn main() {
     // print(day5::part1());
     // print(day5::part2());
 
-    print(day6::part1());
-    print(day6::part2());
+    // print(day6::part1());
+    // print(day6::part2());
+
+    print(day7::part1());
+    print(day7::part2());
 }

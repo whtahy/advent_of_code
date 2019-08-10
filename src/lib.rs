@@ -286,6 +286,9 @@ pub mod day6 {
     use std::collections::{HashMap, HashSet};
     const INPUT: &str = include_str!("./2018/day6.txt");
 
+    /// ```
+    /// assert_eq!(advent_of_code::day6::part1(), 4_976);
+    /// ```
     pub fn part1() -> i32 {
         let targets = parse_input();
         let (x_min, x_max, y_min, y_max) = bounds(&targets);
@@ -326,8 +329,25 @@ pub mod day6 {
         *areas.values().max().unwrap()
     }
 
+    /// ```
+    /// assert_eq!(advent_of_code::day6::part2(), 46_462);
+    /// ```
     pub fn part2() -> i32 {
-        panic!()
+        let targets = parse_input();
+        let (x_min, x_max, y_min, y_max) = bounds(&targets);
+
+        let mut n = 0;
+
+        for x in x_min..=x_max {
+            for y in y_min..=y_max {
+                let p = (x, y);
+                if targets.iter().map(|t| manhattan(p, *t)).sum::<i32>() < 10_000 {
+                    n += 1;
+                }
+            }
+        }
+
+        n
     }
 
     fn manhattan(a: (i32, i32), b: (i32, i32)) -> i32 {
@@ -365,5 +385,15 @@ pub mod day6 {
             v.push((pt[0], pt[1]));
         }
         v
+    }
+}
+
+pub mod day7 {
+    pub fn part1() -> i32 {
+        panic!()
+    }
+
+    pub fn part2() -> i32 {
+        panic!()
     }
 }

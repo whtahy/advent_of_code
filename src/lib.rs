@@ -281,3 +281,89 @@ pub mod day5 {
         left
     }
 }
+
+pub mod day6 {
+    use std::collections::{HashMap, HashSet};
+    const INPUT: &str = include_str!("./2018/day6.txt");
+
+    pub fn part1() -> i32 {
+        let targets = parse_input();
+        let (x_min, x_max, y_min, y_max) = bounds(&targets);
+
+        let mut areas = HashMap::new();
+        let mut infinite = HashSet::new();
+
+        for x in x_min..=x_max {
+            for y in y_min..=y_max {
+                let p = (x, y);
+                let mut t_min = Vec::new();
+                let mut d_min = manhattan(p, targets[0]);
+
+                for t in &targets {
+                    let d = manhattan(p, *t);
+                    if d < d_min {
+                        d_min = d;
+                        t_min.clear();
+                        t_min.push(t);
+                    } else if d == d_min {
+                        t_min.push(t);
+                    }
+                }
+
+                if t_min.len() == 1 && !infinite.contains(t_min[0]) {
+                    *areas.entry(t_min[0]).or_insert(0) += 1;
+                }
+
+                if x == x_min || x == x_max || y == y_min || y == y_max {
+                    for p_i in t_min {
+                        infinite.insert(p_i);
+                        areas.remove(p_i);
+                    }
+                }
+            }
+        }
+
+        *areas.values().max().unwrap()
+    }
+
+    pub fn part2() -> i32 {
+        panic!()
+    }
+
+    fn manhattan(a: (i32, i32), b: (i32, i32)) -> i32 {
+        (a.0 - b.0).abs() + (a.1 - b.1).abs()
+    }
+
+    fn bounds(targets: &[(i32, i32)]) -> (i32, i32, i32, i32) {
+        let mut x_min = &targets[0].0;
+        let mut x_max = x_min;
+        let mut y_min = &targets[0].1;
+        let mut y_max = y_min;
+
+        for (x, y) in targets {
+            if x < x_min {
+                x_min = x;
+            }
+            if x > x_max {
+                x_max = x;
+            }
+            if y < y_min {
+                y_min = y;
+            }
+            if y > y_max {
+                y_max = y;
+            }
+        }
+
+        (*x_min, *x_max, *y_min, *y_max)
+    }
+
+    fn parse_input() -> Vec<(i32, i32)> {
+        let mut v = Vec::new();
+        for l in INPUT.lines() {
+            let pt: Vec<i32> = l.split(", ").map(|s| s.parse().unwrap()).collect();
+            v.push((pt[0], pt[1]));
+        }
+        v
+    }
+}

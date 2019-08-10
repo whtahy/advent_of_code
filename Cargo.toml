@@ -13,10 +13,3 @@ bench = false
 name = "advent_of_code"
 path = "src/main.rs"
 bench = false
-
-[dev-dependencies]
-criterion = "0.2"
-
-[[bench]]
-name = "bench"
-harness = false

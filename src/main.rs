@@ -24,5 +24,5 @@ fn main() {
     // print(day6::part2());
 
     print(aoc_2018::day7::part1());
-    // print(aoc_2018::day7::part2());
+    print(aoc_2018::day7::part2());
 }

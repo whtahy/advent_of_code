@@ -414,7 +414,7 @@ pub mod aoc_2018 {
     }
 
     pub mod day7 {
-        use std::collections::{BTreeSet, HashMap, HashSet};
+        use std::collections::{BTreeSet, HashMap};
         const INPUT: &str = include_str!("./2018/day7.txt");
 
         /// ```
@@ -423,7 +423,7 @@ pub mod aoc_2018 {
         pub fn part1() -> String {
             let (pop, mut prereqs) = parse_input();
 
-            let mut order = Vec::new();
+            let mut completed = Vec::new();
             let mut pool: BTreeSet<char> = pop
                 .into_iter()
                 .filter(|x| !prereqs.contains_key(x))
@@ -432,10 +432,10 @@ pub mod aoc_2018 {
             while !prereqs.is_empty() {
                 let mut buffer = Vec::new();
 
-                for (k, v) in &prereqs {
-                    if v.iter().all(|x| order.contains(x)) {
-                        pool.insert(*k);
-                        buffer.push(*k);
+                for (&k, v) in &prereqs {
+                    if v.iter().all(|x| completed.contains(x)) {
+                        pool.insert(k);
+                        buffer.push(k);
                     }
                 }
 
@@ -445,71 +445,77 @@ pub mod aoc_2018 {
 
                 let next = *pool.iter().next().unwrap();
                 pool.remove(&next);
-                order.push(next);
+                completed.push(next);
             }
 
-            order.into_iter().collect()
+            completed.into_iter().collect()
         }
 
-        pub fn part2() -> i32 {
-            // let (pop, mut prereqs) = parse_input();
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2018::day7::part2(), 1014);
+        /// ```
+        pub fn part2() -> u32 {
+            let (pop, mut prereqs) = parse_input();
 
-            // let mut order = BTreeSet::new();
-            // let mut pool: BTreeSet<String> = pop
-            //     .into_iter()
-            //     .filter(|x| !prereqs.contains_key(x))
-            //     .collect();
+            let mut completed = BTreeSet::new();
+            let mut pool: BTreeSet<char> = pop
+                .into_iter()
+                .filter(|x| !prereqs.contains_key(x))
+                .collect();
 
-            // let mut t = 0;
-            // let mut workers = vec![0; 5];
-            // while !prereqs.is_empty() || !pool.is_empty() {
-            //     let mut buffer = Vec::new();
+            let mut t = 0;
+            let mut workers = Vec::new();
+            let mut timers = Vec::new();
+            while !prereqs.is_empty() || !pool.is_empty() {
+                let mut buffer = Vec::new();
 
-            //     for (k, v) in &prereqs {
-            //         if v.is_subset(&order) {
-            //             pool.insert(k.to_string());
-            //             buffer.push(k.to_string());
-            //         }
-            //     }
-
-            //     for k in buffer {
-            //         prereqs.remove(&k);
-            //     }
-
-            //     // load workers
-            //     for i in idle(&workers) {
-            //         let next = pool.iter().next().unwrap().clone();
-            //         pool.remove(&next);
-            //         workers[i] = 60 + next.chars().next().unwrap() as u8 - b'A' + 1;
-            //     }
-
-            //     // step forward until worker is done
-            //     t += workers.iter().min().unwrap();
-
-            //     // push onto order
-            //     // order;
-            // }
-
-            // // create pool
-            // // load workers
-            // // step forward until worker is done
-            // // push onto order
-            // // end loop -> goto 1
-
-            panic!()
-        }
-
-        fn idle(workers: &Vec<u8>) -> Vec<usize> {
-            let mut idx = Vec::new();
-            for (i, x) in workers.iter().enumerate() {
-                if x == &0 {
-                    idx.push(i);
+                // update pool
+                for (&k, v) in &prereqs {
+                    if v.is_subset(&completed) {
+                        pool.insert(k);
+                        buffer.push(k);
+                    }
                 }
+
+                // update prereqs
+                for k in buffer {
+                    prereqs.remove(&k);
+                }
+
+                // load workers
+                while workers.len() < 5 && !pool.is_empty() {
+                    let next = *pool.iter().next().unwrap();
+                    pool.remove(&next);
+                    workers.push(next);
+                    timers.push(char_to_u32(next));
+                }
+
+                // step forward until worker is done
+                let t_next = *timers.iter().min().unwrap();
+                let i_next = timers.iter().position(|&x| x == t_next).unwrap();
+                let next = workers[i_next];
+                let delta_t = timers[i_next];
+
+                // update timers
+                for t in &mut timers {
+                    *t -= delta_t;
+                }
+
+                // update totals
+                t += delta_t;
+                completed.insert(next);
+
+                // cleanup
+                workers.remove(i_next);
+                timers.remove(i_next);
             }
-            idx
+
+            t
         }
 
-        // fn load(workers: Vec<i32>) -> Vec<i32> {}
+        fn char_to_u32(ch: char) -> u32 {
+            60 + ch as u32 - 'A' as u32 + 1
+        }
 
         fn parse_input() -> (BTreeSet<char>, HashMap<char, BTreeSet<char>>) {
             let mut h = BTreeSet::new();
@@ -522,7 +528,6 @@ pub mod aoc_2018 {
                 h.insert(y);
                 m.entry(y).or_insert_with(BTreeSet::new).insert(x);
             }
-
             (h, m)
         }
     }

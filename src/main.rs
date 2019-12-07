@@ -31,7 +31,7 @@ fn main() {
     // aoc_2019
 
     // print(aoc_2019::day1::part1());
-    print(aoc_2019::day1::part2());
+    // print(aoc_2019::day1::part2());
 
     // print(aoc_2019::day2::part1());
     // print(aoc_2019::day2::part2());

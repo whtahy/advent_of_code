@@ -532,4 +532,125 @@ pub mod aoc_2018 {
         }
     }
 
+    pub mod day8 {
+        // const INPUT: &str = include_str!("./2018/day8.txt");
+
+        pub fn part1() -> String {
+            panic!()
+        }
+
+        pub fn part2() -> String {
+            panic!()
+        }
+    }
+}
+
+pub mod aoc_2019 {
+    pub mod day1 {
+        const INPUT: &str = include_str!("./2019/day1.txt");
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day1::part1(), 3_376_997);
+        /// ```
+        pub fn part1() -> i32 {
+            INPUT.lines().map(|x| fuel(x.parse::<i32>().unwrap())).sum()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day1::part2(), 5_062_623);
+        /// ```
+        pub fn part2() -> i32 {
+            INPUT
+                .lines()
+                .map(|x| total_fuel(x.parse::<i32>().unwrap()))
+                .sum()
+        }
+
+        fn fuel(x: i32) -> i32 {
+            x / 3 - 2
+        }
+
+        fn total_fuel(mut x: i32) -> i32 {
+            let mut f = 0;
+
+            while fuel(x) > 0 {
+                x = fuel(x);
+                f += x;
+            }
+
+            f
+        }
+    }
+
+    pub mod day2 {
+        // const INPUT: &str = include_str!("./2019/day2.txt");
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), );
+        /// ```
+        pub fn part1() -> i32 {
+            panic!()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), );
+        /// ```
+        pub fn part2() -> i32 {
+            panic!()
+        }
+    }
+
+    pub mod day3 {
+        // const INPUT: &str = include_str!("./2019/day3.txt");
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), );
+        /// ```
+        pub fn part1() -> i32 {
+            panic!()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), );
+        /// ```
+        pub fn part2() -> i32 {
+            panic!()
+        }
+    }
+
+    pub mod day4 {
+        // const INPUT: &str = include_str!("./2019/day4.txt");
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), );
+        /// ```
+        pub fn part1() -> i32 {
+            panic!()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day4::part2(), );
+        /// ```
+        pub fn part2() -> i32 {
+            panic!()
+        }
+    }
+
+    pub mod day5 {
+        // const INPUT: &str = include_str!("./2019/day5.txt");
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day5::part1(), );
+        /// ```
+        pub fn part1() -> i32 {
+            panic!()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day5::part2(), );
+        /// ```
+        pub fn part2() -> i32 {
+            panic!()
+        }
+    }
 }

@@ -583,20 +583,55 @@ pub mod aoc_2019 {
     }
 
     pub mod day2 {
-        // const INPUT: &str = include_str!("./2019/day2.txt");
+        const INPUT: &str = include_str!("./2019/day2.txt");
 
         /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), );
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), 3_562_624);
         /// ```
         pub fn part1() -> i32 {
-            panic!()
+            run_program(12, 2)
         }
 
         /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), );
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), 8_298);
         /// ```
         pub fn part2() -> i32 {
+            for n in 0..=99 {
+                for v in 0..=99 {
+                    if run_program(n, v) == 19_690_720 {
+                        return 100 * n + v;
+                    }
+                }
+            }
+
             panic!()
+        }
+
+        fn run_program(noun: i32, verb: i32) -> i32 {
+            let mut v = INPUT
+                .split(',')
+                .map(|x| str::replace(x, "\r\n", "").parse::<i32>().unwrap())
+                .collect::<Vec<i32>>();
+
+            v[1] = noun;
+            v[2] = verb;
+
+            for i in (0..).step_by(4) {
+                // println!("{:?}", v);
+                let j = v[i + 3] as usize;
+                match v[i] {
+                    99 => break,
+                    1 => {
+                        v[j] = v[v[i + 1] as usize] + v[v[i + 2] as usize];
+                    }
+                    2 => {
+                        v[j] = v[v[i + 1] as usize] * v[v[i + 2] as usize];
+                    }
+                    _ => panic!(),
+                };
+            }
+
+            v[0]
         }
     }
 

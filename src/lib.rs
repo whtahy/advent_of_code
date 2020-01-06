@@ -308,6 +308,7 @@ pub mod aoc_2018 {
     }
 
     pub mod day6 {
+        use std::cmp::Ordering;
         use std::collections::{HashMap, HashSet};
         const INPUT: &str = include_str!("./2018/day6.txt");
 
@@ -329,12 +330,15 @@ pub mod aoc_2018 {
 
                     for t in &targets {
                         let d = manhattan(p, *t);
-                        if d < d_min {
-                            d_min = d;
-                            t_min.clear();
-                            t_min.push(t);
-                        } else if d == d_min {
-                            t_min.push(t);
+                        match d.cmp(&d_min) {
+                            Ordering::Less => {
+                                d_min = d;
+                                t_min.clear();
+                                t_min.push(t);
+                            }
+                            _ => {
+                                t_min.push(t);
+                            }
                         }
                     }
 
@@ -650,6 +654,10 @@ pub mod aoc_2019 {
         /// ```
         pub fn part2() -> i32 {
             panic!()
+        }
+
+        fn manhattan(a: (i32, i32), b: (i32, i32)) -> i32 {
+            (a.0 - b.0).abs() + (a.1 - b.1).abs()
         }
     }
 

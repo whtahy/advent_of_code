@@ -640,13 +640,47 @@ pub mod aoc_2019 {
     }
 
     pub mod day3 {
-        // const INPUT: &str = include_str!("./2019/day3.txt");
+        use std::collections::BTreeSet;
+
+        const INPUT: &str = include_str!("./2019/day3.txt");
+
+        type Line = (i32, i32, i32, i32);
+        type LineH = Line;
+        type LineV = Line;
 
         /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), );
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
         /// ```
         pub fn part1() -> i32 {
-            panic!()
+            let mut wires = INPUT.lines();
+            let (red_h, red_v) = parse_wire(wires.next().unwrap()); // red wire
+            let (black_h, black_v) = parse_wire(wires.next().unwrap()); // black wire
+
+            let mut dx = BTreeSet::new();
+
+            fn compare(
+                mut dx: BTreeSet<i32>,
+                wire_h: &BTreeSet<LineH>,
+                wire_v: &BTreeSet<LineV>,
+            ) -> BTreeSet<i32> {
+                for h in wire_h {
+                    for v in wire_v {
+                        if let Some((x, y)) = cross(*h, *v) {
+                            let d = manhattan(x, y);
+                            if d > 0 {
+                                dx.insert(d);
+                                break;
+                            }
+                        }
+                    }
+                }
+                dx
+            }
+
+            dx = compare(dx, &red_h, &black_v);
+            dx = compare(dx, &black_h, &red_v);
+
+            *dx.iter().next().unwrap()
         }
 
         /// ```
@@ -656,8 +690,59 @@ pub mod aoc_2019 {
             panic!()
         }
 
-        fn manhattan(a: (i32, i32), b: (i32, i32)) -> i32 {
-            (a.0 - b.0).abs() + (a.1 - b.1).abs()
+        fn manhattan(x: i32, y: i32) -> i32 {
+            x.abs() + y.abs()
+        }
+
+        fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
+            if (h.2..=h.3).contains(&v.1) && (v.2..=v.3).contains(&h.1) {
+                Some((v.1, h.1))
+            } else {
+                None
+            }
+        }
+
+        fn parse_wire(wire: &str) -> (BTreeSet<LineH>, BTreeSet<LineV>) {
+            let mut pt: (i32, i32) = (0, 0);
+            let mut h = BTreeSet::new();
+            let mut v = BTreeSet::new();
+
+            for vec in wire.split(',') {
+                let (dir, len) = parse_vec(vec);
+
+                let (x, y) = pt;
+                pt = travel(pt, dir, len);
+
+                let d0 = manhattan(x, y);
+                let d1 = manhattan(pt.0, pt.1);
+                let d_min = *[d0, d1].iter().min().unwrap();
+
+                match dir {
+                    "L" => h.insert((d_min, y, x - len, x)),
+                    "R" => h.insert((d_min, y, x, x + len)),
+                    "U" => v.insert((d_min, x, y, y + len)),
+                    "D" => v.insert((d_min, x, y - len, y)),
+                    _ => panic!(),
+                };
+            }
+
+            (h, v)
+        }
+
+        fn parse_vec(s: &str) -> (&str, i32) {
+            let (dir, len) = s.split_at(1);
+            (dir, len.parse::<_>().unwrap())
+        }
+
+        fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
+            let (x, y) = pt;
+            match dir {
+                "L" => (x - len, y),
+                "R" => (x + len, y),
+                "U" => (x, y + len),
+                "D" => (x, y - len),
+                _ => panic!(),
+            }
         }
     }
 

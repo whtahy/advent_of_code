@@ -336,9 +336,10 @@ pub mod aoc_2018 {
                                 t_min.clear();
                                 t_min.push(t);
                             }
-                            _ => {
+                            Ordering::Equal => {
                                 t_min.push(t);
                             }
+                            _ => continue,
                         }
                     }
 
@@ -661,24 +662,29 @@ pub mod aoc_2019 {
             fn compare(
                 mut dx: BTreeSet<i32>,
                 wire_h: &BTreeSet<LineH>,
-                wire_v: &BTreeSet<LineV>,
+                mut wire_v: BTreeSet<LineV>,
             ) -> BTreeSet<i32> {
                 for h in wire_h {
-                    for v in wire_v {
+                    let mut todo: Option<LineV> = None;
+                    for v in &wire_v {
                         if let Some((x, y)) = cross(*h, *v) {
                             let d = manhattan(x, y);
                             if d > 0 {
                                 dx.insert(d);
+                                todo = Some(*v);
                                 break;
                             }
                         }
+                    }
+                    if let Some(x) = todo {
+                        wire_v.remove(&x);
                     }
                 }
                 dx
             }
 
-            dx = compare(dx, &red_h, &black_v);
-            dx = compare(dx, &black_h, &red_v);
+            dx = compare(dx, &red_h, black_v);
+            dx = compare(dx, &black_h, red_v);
 
             *dx.iter().next().unwrap()
         }
@@ -713,15 +719,11 @@ pub mod aoc_2019 {
                 let (x, y) = pt;
                 pt = travel(pt, dir, len);
 
-                let d0 = manhattan(x, y);
-                let d1 = manhattan(pt.0, pt.1);
-                let d_min = *[d0, d1].iter().min().unwrap();
-
                 match dir {
-                    "L" => h.insert((d_min, y, x - len, x)),
-                    "R" => h.insert((d_min, y, x, x + len)),
-                    "U" => v.insert((d_min, x, y, y + len)),
-                    "D" => v.insert((d_min, x, y - len, y)),
+                    "L" => h.insert((y.abs(), y, x - len, x)),
+                    "R" => h.insert((y.abs(), y, x, x + len)),
+                    "U" => v.insert((x.abs(), x, y, y + len)),
+                    "D" => v.insert((x.abs(), x, y - len, y)),
                     _ => panic!(),
                 };
             }

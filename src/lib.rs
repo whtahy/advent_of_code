@@ -645,27 +645,21 @@ pub mod aoc_2019 {
         const INPUT: &str = include_str!("./2019/day3.txt");
 
         type Line = (i32, i32, i32);
-        type LineH = Line;
-        type LineV = Line;
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
         /// ```
         pub fn part1() -> i32 {
-            type WireH = BTreeSet<(i32, LineH)>;
-            type WireV = BTreeSet<(i32, LineV)>;
-
-            fn manhattan(x: i32, y: i32) -> i32 {
-                x.abs() + y.abs()
-            }
+            type WireH = BTreeSet<(i32, Line)>;
+            type WireV = BTreeSet<(i32, Line)>;
 
             fn parse_wire(wire: &str) -> (WireH, WireV) {
                 let mut pt: (i32, i32) = (0, 0);
                 let mut h = BTreeSet::new();
                 let mut v = BTreeSet::new();
 
-                for vec in wire.split(',') {
-                    let (dir, len) = parse_vec(vec);
+                for dir in wire.split(',') {
+                    let (dir, len) = parse_dir(dir);
 
                     let (x, y) = pt;
                     pt = travel(pt, dir, len);
@@ -683,8 +677,8 @@ pub mod aoc_2019 {
             }
 
             let mut wires = INPUT.lines();
-            let (red_h, red_v) = parse_wire(wires.next().unwrap()); // red wire
-            let (black_h, black_v) = parse_wire(wires.next().unwrap()); // black wire
+            let (red_h, red_v) = parse_wire(wires.next().unwrap());
+            let (black_h, black_v) = parse_wire(wires.next().unwrap());
 
             let mut dx = BTreeSet::new();
 
@@ -692,7 +686,7 @@ pub mod aoc_2019 {
                 for (_, h) in wire_h {
                     for (_, v) in wire_v {
                         if let Some((x, y)) = cross(*h, *v) {
-                            let d = manhattan(x, y);
+                            let d = x.abs() + y.abs();
                             if d > 0 {
                                 dx.insert(d);
                                 break;
@@ -713,14 +707,51 @@ pub mod aoc_2019 {
         /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), );
         /// ```
         pub fn part2() -> i32 {
-            // store every point of red wire
-            // travel along black wire and check for intersection -> store travel distance
-            // pick min travel distance
+            type Wire = Vec<(String, Line)>;
 
-            panic!()
+            fn parse_wire(wire: &str) -> Wire {
+                let mut pt: (i32, i32) = (0, 0);
+                let mut w = Vec::new();
+
+                for dir in wire.split(',') {
+                    let (dir, len) = parse_dir(dir);
+
+                    let (x, y) = pt;
+                    pt = travel(pt, dir, len);
+
+                    let l = match dir {
+                        "L" => ("H", (y, x - len, x)),
+                        "R" => ("H", (y, x, x + len)),
+                        "U" => ("V", (x, y, y + len)),
+                        "D" => ("V", (x, y - len, y)),
+                        _ => panic!(),
+                    };
+                    w.push((l.0.to_string(), l.1));
+                }
+
+                w
+            }
+
+            let mut wires = INPUT.lines();
+            let red = parse_wire(wires.next().unwrap());
+            let black = parse_wire(wires.next().unwrap());
+
+            let dx = BTreeSet::new();
+
+            let d_red = 0;
+            for (dir_r, r) in &red {
+                let d_black = 0;
+                for (dir_b, b) in &black {
+                    // if dir_r != dir_b
+                    // if let cross(r,b)
+                    // dx.push(d_red + d_black + d_cross)
+                }
+            }
+
+            *dx.iter().next().unwrap()
         }
 
-        fn parse_vec(s: &str) -> (&str, i32) {
+        fn parse_dir(s: &str) -> (&str, i32) {
             let (dir, len) = s.split_at(1);
             (dir, len.parse::<_>().unwrap())
         }
@@ -736,9 +767,9 @@ pub mod aoc_2019 {
             }
         }
 
-        fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
-            if (h.1..=h.2).contains(&v.0) && (v.1..=v.2).contains(&h.0) {
-                Some((v.0, h.0))
+        fn cross(a: Line, b: Line) -> Option<(i32, i32)> {
+            if (a.1..=a.2).contains(&b.0) && (b.1..=b.2).contains(&a.0) {
+                Some((b.0, a.0))
             } else {
                 None
             }

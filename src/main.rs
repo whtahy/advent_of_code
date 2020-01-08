@@ -1,5 +1,7 @@
+#[allow(unused_imports)]
 use advent_of_code::*;
 
+#[allow(dead_code)]
 fn print(f: impl std::fmt::Display) {
     println!("{}", f);
 }

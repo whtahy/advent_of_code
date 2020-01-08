@@ -644,30 +644,22 @@ pub mod aoc_2019 {
         use std::collections::BTreeSet;
         const INPUT: &str = include_str!("./2019/day3.txt");
 
+        type Line = (i32, i32, i32);
+        type LineH = Line;
+        type LineV = Line;
+
         /// ```
         /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
         /// ```
         pub fn part1() -> i32 {
-            type Line = (i32, i32, i32, i32);
-            type LineH = Line;
-            type LineV = Line;
+            type WireH = BTreeSet<(i32, LineH)>;
+            type WireV = BTreeSet<(i32, LineV)>;
 
             fn manhattan(x: i32, y: i32) -> i32 {
                 x.abs() + y.abs()
             }
 
-            fn parse_wire(wire: &str) -> (BTreeSet<LineH>, BTreeSet<LineV>) {
-                fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
-                    let (x, y) = pt;
-                    match dir {
-                        "L" => (x - len, y),
-                        "R" => (x + len, y),
-                        "U" => (x, y + len),
-                        "D" => (x, y - len),
-                        _ => panic!(),
-                    }
-                }
-
+            fn parse_wire(wire: &str) -> (WireH, WireV) {
                 let mut pt: (i32, i32) = (0, 0);
                 let mut h = BTreeSet::new();
                 let mut v = BTreeSet::new();
@@ -679,10 +671,10 @@ pub mod aoc_2019 {
                     pt = travel(pt, dir, len);
 
                     match dir {
-                        "L" => h.insert((y.abs(), y, x - len, x)),
-                        "R" => h.insert((y.abs(), y, x, x + len)),
-                        "U" => v.insert((x.abs(), x, y, y + len)),
-                        "D" => v.insert((x.abs(), x, y - len, y)),
+                        "L" => h.insert((y.abs(), (y, x - len, x))),
+                        "R" => h.insert((y.abs(), (y, x, x + len))),
+                        "U" => v.insert((x.abs(), (x, y, y + len))),
+                        "D" => v.insert((x.abs(), (x, y - len, y))),
                         _ => panic!(),
                     };
                 }
@@ -696,40 +688,23 @@ pub mod aoc_2019 {
 
             let mut dx = BTreeSet::new();
 
-            fn compare(
-                mut dx: BTreeSet<i32>,
-                wire_h: &BTreeSet<LineH>,
-                mut wire_v: BTreeSet<LineV>,
-            ) -> BTreeSet<i32> {
-                fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
-                    if (h.2..=h.3).contains(&v.1) && (v.2..=v.3).contains(&h.1) {
-                        Some((v.1, h.1))
-                    } else {
-                        None
-                    }
-                }
-
-                for h in wire_h {
-                    let mut todo: Option<LineV> = None;
-                    for v in &wire_v {
+            fn compare(mut dx: BTreeSet<i32>, wire_h: &WireH, wire_v: &WireV) -> BTreeSet<i32> {
+                for (_, h) in wire_h {
+                    for (_, v) in wire_v {
                         if let Some((x, y)) = cross(*h, *v) {
                             let d = manhattan(x, y);
                             if d > 0 {
                                 dx.insert(d);
-                                todo = Some(*v);
                                 break;
                             }
                         }
-                    }
-                    if let Some(x) = todo {
-                        wire_v.remove(&x);
                     }
                 }
                 dx
             }
 
-            dx = compare(dx, &red_h, black_v);
-            dx = compare(dx, &black_h, red_v);
+            dx = compare(dx, &red_h, &black_v);
+            dx = compare(dx, &black_h, &red_v);
 
             *dx.iter().next().unwrap()
         }
@@ -739,7 +714,8 @@ pub mod aoc_2019 {
         /// ```
         pub fn part2() -> i32 {
             // store every point of red wire
-            //
+            // travel along black wire and check for intersection -> store travel distance
+            // pick min travel distance
 
             panic!()
         }
@@ -747,6 +723,25 @@ pub mod aoc_2019 {
         fn parse_vec(s: &str) -> (&str, i32) {
             let (dir, len) = s.split_at(1);
             (dir, len.parse::<_>().unwrap())
+        }
+
+        fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
+            let (x, y) = pt;
+            match dir {
+                "L" => (x - len, y),
+                "R" => (x + len, y),
+                "U" => (x, y + len),
+                "D" => (x, y - len),
+                _ => panic!(),
+            }
+        }
+
+        fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
+            if (h.1..=h.2).contains(&v.0) && (v.1..=v.2).contains(&h.0) {
+                Some((v.0, h.0))
+            } else {
+                None
+            }
         }
     }
 

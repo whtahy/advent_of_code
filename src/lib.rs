@@ -642,17 +642,54 @@ pub mod aoc_2019 {
 
     pub mod day3 {
         use std::collections::BTreeSet;
-
         const INPUT: &str = include_str!("./2019/day3.txt");
-
-        type Line = (i32, i32, i32, i32);
-        type LineH = Line;
-        type LineV = Line;
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
         /// ```
         pub fn part1() -> i32 {
+            type Line = (i32, i32, i32, i32);
+            type LineH = Line;
+            type LineV = Line;
+
+            fn manhattan(x: i32, y: i32) -> i32 {
+                x.abs() + y.abs()
+            }
+
+            fn parse_wire(wire: &str) -> (BTreeSet<LineH>, BTreeSet<LineV>) {
+                fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
+                    let (x, y) = pt;
+                    match dir {
+                        "L" => (x - len, y),
+                        "R" => (x + len, y),
+                        "U" => (x, y + len),
+                        "D" => (x, y - len),
+                        _ => panic!(),
+                    }
+                }
+
+                let mut pt: (i32, i32) = (0, 0);
+                let mut h = BTreeSet::new();
+                let mut v = BTreeSet::new();
+
+                for vec in wire.split(',') {
+                    let (dir, len) = parse_vec(vec);
+
+                    let (x, y) = pt;
+                    pt = travel(pt, dir, len);
+
+                    match dir {
+                        "L" => h.insert((y.abs(), y, x - len, x)),
+                        "R" => h.insert((y.abs(), y, x, x + len)),
+                        "U" => v.insert((x.abs(), x, y, y + len)),
+                        "D" => v.insert((x.abs(), x, y - len, y)),
+                        _ => panic!(),
+                    };
+                }
+
+                (h, v)
+            }
+
             let mut wires = INPUT.lines();
             let (red_h, red_v) = parse_wire(wires.next().unwrap()); // red wire
             let (black_h, black_v) = parse_wire(wires.next().unwrap()); // black wire
@@ -664,6 +701,14 @@ pub mod aoc_2019 {
                 wire_h: &BTreeSet<LineH>,
                 mut wire_v: BTreeSet<LineV>,
             ) -> BTreeSet<i32> {
+                fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
+                    if (h.2..=h.3).contains(&v.1) && (v.2..=v.3).contains(&h.1) {
+                        Some((v.1, h.1))
+                    } else {
+                        None
+                    }
+                }
+
                 for h in wire_h {
                     let mut todo: Option<LineV> = None;
                     for v in &wire_v {
@@ -693,58 +738,15 @@ pub mod aoc_2019 {
         /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), );
         /// ```
         pub fn part2() -> i32 {
+            // store every point of red wire
+            //
+
             panic!()
-        }
-
-        fn manhattan(x: i32, y: i32) -> i32 {
-            x.abs() + y.abs()
-        }
-
-        fn cross(h: LineH, v: LineV) -> Option<(i32, i32)> {
-            if (h.2..=h.3).contains(&v.1) && (v.2..=v.3).contains(&h.1) {
-                Some((v.1, h.1))
-            } else {
-                None
-            }
-        }
-
-        fn parse_wire(wire: &str) -> (BTreeSet<LineH>, BTreeSet<LineV>) {
-            let mut pt: (i32, i32) = (0, 0);
-            let mut h = BTreeSet::new();
-            let mut v = BTreeSet::new();
-
-            for vec in wire.split(',') {
-                let (dir, len) = parse_vec(vec);
-
-                let (x, y) = pt;
-                pt = travel(pt, dir, len);
-
-                match dir {
-                    "L" => h.insert((y.abs(), y, x - len, x)),
-                    "R" => h.insert((y.abs(), y, x, x + len)),
-                    "U" => v.insert((x.abs(), x, y, y + len)),
-                    "D" => v.insert((x.abs(), x, y - len, y)),
-                    _ => panic!(),
-                };
-            }
-
-            (h, v)
         }
 
         fn parse_vec(s: &str) -> (&str, i32) {
             let (dir, len) = s.split_at(1);
             (dir, len.parse::<_>().unwrap())
-        }
-
-        fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
-            let (x, y) = pt;
-            match dir {
-                "L" => (x - len, y),
-                "R" => (x + len, y),
-                "U" => (x, y + len),
-                "D" => (x, y - len),
-                _ => panic!(),
-            }
         }
     }
 

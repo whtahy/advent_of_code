@@ -705,7 +705,7 @@ pub mod aoc_2019 {
         }
 
         /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), );
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), 43258);
         /// ```
         pub fn part2() -> i32 {
             type Wire = Vec<(String, Line)>;
@@ -787,20 +787,54 @@ pub mod aoc_2019 {
     }
 
     pub mod day4 {
-        // const INPUT: &str = include_str!("./2019/day4.txt");
+        const INPUT: &str = include_str!("./2019/day4.txt");
 
         /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), );
+        /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), 579);
         /// ```
         pub fn part1() -> i32 {
-            panic!()
+            let (min, max) = parse_input();
+
+            fn adjacent(x: i32) -> bool {
+                digits(x).windows(2).any(|s| s[0] == s[1])
+            };
+
+            (min..=max).filter(|&x| adjacent(x) && monotonic(x)).count() as i32
         }
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2019::day4::part2(), );
         /// ```
         pub fn part2() -> i32 {
-            panic!()
+            let (min, max) = parse_input();
+
+            fn adjacent(x: i32) -> bool {
+                let d = digits(x);
+                (d[0] == d[1] && d[1] != d[2])
+                    || (d[5] == d[4] && d[4] != d[3])
+                    || d.windows(4)
+                        .any(|s| s[0] != s[1] && s[1] == s[2] && s[2] != s[3])
+            };
+
+            (min..=max).filter(|&x| adjacent(x) && monotonic(x)).count() as i32
+        }
+
+        fn parse_input() -> (i32, i32) {
+            let mut iter = INPUT.lines().next().unwrap().split('-');
+            let min = iter.next().unwrap().parse::<i32>().unwrap();
+            let max = iter.next().unwrap().parse::<i32>().unwrap();
+            (min, max)
+        }
+
+        fn monotonic(x: i32) -> bool {
+            digits(x).windows(2).all(|s| s[0] <= s[1])
+        }
+
+        fn digits(x: i32) -> Vec<u32> {
+            x.to_string()
+                .chars()
+                .map(|x| x.to_digit(10).unwrap())
+                .collect::<_>()
         }
     }
 

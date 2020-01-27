@@ -39,7 +39,7 @@ fn main() {
     // print(aoc_2019::day2::part2());
 
     // print(aoc_2019::day3::part1());
-    // print(aoc_2019::day3::part2());
+    print(aoc_2019::day3::part2());
 
     // print(aoc_2019::day4::part1());
     // print(aoc_2019::day4::part2());

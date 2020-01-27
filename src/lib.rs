@@ -641,10 +641,11 @@ pub mod aoc_2019 {
     }
 
     pub mod day3 {
+        use std::cmp::{max, min};
         use std::collections::BTreeSet;
         const INPUT: &str = include_str!("./2019/day3.txt");
 
-        type Line = (i32, i32, i32);
+        type Line = (i32, i32, i32); // HLine: y, x1, x2; VLine: x, y1, y2
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
@@ -665,10 +666,10 @@ pub mod aoc_2019 {
                     pt = travel(pt, dir, len);
 
                     match dir {
-                        "L" => h.insert((y.abs(), (y, x - len, x))),
+                        "L" => h.insert((y.abs(), (y, x, x - len))),
                         "R" => h.insert((y.abs(), (y, x, x + len))),
                         "U" => v.insert((x.abs(), (x, y, y + len))),
-                        "D" => v.insert((x.abs(), (x, y - len, y))),
+                        "D" => v.insert((x.abs(), (x, y, y - len))),
                         _ => panic!(),
                     };
                 }
@@ -720,10 +721,10 @@ pub mod aoc_2019 {
                     pt = travel(pt, dir, len);
 
                     let l = match dir {
-                        "L" => ("H", (y, x - len, x)),
+                        "L" => ("H", (y, x, x - len)),
                         "R" => ("H", (y, x, x + len)),
                         "U" => ("V", (x, y, y + len)),
-                        "D" => ("V", (x, y - len, y)),
+                        "D" => ("V", (x, y, y - len)),
                         _ => panic!(),
                     };
                     w.push((l.0.to_string(), l.1));
@@ -736,16 +737,21 @@ pub mod aoc_2019 {
             let red = parse_wire(wires.next().unwrap());
             let black = parse_wire(wires.next().unwrap());
 
-            let dx = BTreeSet::new();
+            let mut dx = BTreeSet::new();
 
-            let d_red = 0;
+            let mut d_red = 0;
             for (dir_r, r) in &red {
-                let d_black = 0;
+                let mut d_black = 0;
                 for (dir_b, b) in &black {
-                    // if dir_r != dir_b
-                    // if let cross(r,b)
-                    // dx.push(d_red + d_black + d_cross)
+                    if dir_r != dir_b && cross(*r, *b).is_some() {
+                        let d = d_red + d_black + (b.0 - r.1).abs() + (r.0 - b.1).abs();
+                        if d > 0 {
+                            dx.insert(d);
+                        }
+                    }
+                    d_black += (b.1 - b.2).abs();
                 }
+                d_red += (r.1 - r.2).abs();
             }
 
             *dx.iter().next().unwrap()
@@ -768,7 +774,11 @@ pub mod aoc_2019 {
         }
 
         fn cross(a: Line, b: Line) -> Option<(i32, i32)> {
-            if (a.1..=a.2).contains(&b.0) && (b.1..=b.2).contains(&a.0) {
+            if min(a.1, a.2) < b.0
+                && b.0 < max(a.1, a.2)
+                && min(b.1, b.2) < a.0
+                && a.0 < max(b.1, b.2)
+            {
                 Some((b.0, a.0))
             } else {
                 None

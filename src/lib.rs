@@ -1207,6 +1207,9 @@ pub mod aoc_2020 {
             colors.len().to_string()
         }
 
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2020::day7::part2(), 39_645.to_string());
+        /// ```
         pub fn part2() -> String {
             let mut rules: HashMap<_, Vec<_>> = HashMap::new();
             for rule in INPUT.lines() {
@@ -1220,32 +1223,19 @@ pub mod aoc_2020 {
                     .collect();
                 rules.insert(k, v);
             }
-            let a = count_inner(&rules, "shiny gold");
-            let b = count_outer(&rules, "shiny gold");
-            println!("inner: {}, outer: {}", a, b);
-            "wip".to_string()
-        }
-
-        fn count_outer(rules: &HashMap<&str, Vec<(&str, &str)>>, color: &str) -> u32 {
-            let bags = rules.get(color).unwrap();
-            match bags[..] {
-                [("no", "other")] => 1,
-                _ => bags
-                    .iter()
-                    .map(|(n, c)| n.parse::<u32>().unwrap() * count_outer(rules, c))
-                    .sum(),
+            let mut history = Vec::new();
+            let mut stack = Vec::from(["shiny gold"]);
+            while !stack.is_empty() {
+                let color = stack.pop().unwrap();
+                history.push(color);
+                for bags in rules.get(color).unwrap() {
+                    match bags {
+                        ("no", "other") => continue,
+                        (n, c) => stack.extend([*c].repeat(n.parse().unwrap())),
+                    }
+                }
             }
-        }
-
-        fn count_inner(rules: &HashMap<&str, Vec<(&str, &str)>>, color: &str) -> u32 {
-            let bags = rules.get(color).unwrap();
-            match bags[..] {
-                [("no", "other")] => 1,
-                _ => bags
-                    .iter()
-                    .map(|(n, c)| n.parse::<u32>().unwrap() * count_inner(rules, c))
-                    .sum(),
-            }
+            (history.len() - 1).to_string()
         }
 
         fn parse(bags: &str) -> &str {

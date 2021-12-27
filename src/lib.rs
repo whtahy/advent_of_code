@@ -1,872 +1,327 @@
-pub mod aoc_2015 {
-    pub mod day1 {}
-    pub mod day2 {}
-    pub mod day3 {}
-    pub mod day4 {}
-    pub mod day5 {}
+type Day = [fn() -> String; 2];
+type Year = [Day; 25];
+
+const TABLE_OF_CONTENTS: [Year; 7] = [
+    aoc_2015::TABLE_OF_CONTENTS,
+    aoc_2016::TABLE_OF_CONTENTS,
+    aoc_2017::TABLE_OF_CONTENTS,
+    aoc_2018::TABLE_OF_CONTENTS,
+    aoc_2019::TABLE_OF_CONTENTS,
+    aoc_2020::TABLE_OF_CONTENTS,
+    aoc_2021::TABLE_OF_CONTENTS,
+];
+
+pub fn get(year: usize, day: usize, part: usize) -> String {
+    TABLE_OF_CONTENTS[year - 2015][day - 1][part - 1]()
 }
 
-pub mod aoc_2016 {
-    pub mod day1 {}
-    pub mod day2 {}
-    pub mod day3 {}
-    pub mod day4 {}
-    pub mod day5 {}
+macro_rules! table_of_contents {
+    () => {
+        pub const TABLE_OF_CONTENTS: crate::Year = [
+            [day1::part1, day1::part2],
+            [day2::part1, day2::part2],
+            [day3::part1, day3::part2],
+            [day4::part1, day4::part2],
+            [day5::part1, day5::part2],
+            [day6::part1, day6::part2],
+            [day7::part1, day7::part2],
+            [day8::part1, day8::part2],
+            [day9::part1, day9::part2],
+            [day10::part1, day10::part2],
+            [day11::part1, day11::part2],
+            [day12::part1, day12::part2],
+            [day13::part1, day13::part2],
+            [day14::part1, day14::part2],
+            [day15::part1, day15::part2],
+            [day16::part1, day16::part2],
+            [day17::part1, day17::part2],
+            [day18::part1, day18::part2],
+            [day19::part1, day19::part2],
+            [day20::part1, day20::part2],
+            [day21::part1, day21::part2],
+            [day22::part1, day22::part2],
+            [day23::part1, day23::part2],
+            [day24::part1, day24::part2],
+            [day25::part1, day25::part2],
+        ];
+    };
 }
 
-pub mod aoc_2017 {
-    pub mod day1 {}
-    pub mod day2 {}
-    pub mod day3 {}
-    pub mod day4 {}
-    pub mod day5 {}
-}
+pub mod aoc_2021 {
+    table_of_contents!();
 
-pub mod aoc_2018 {
+    macro_rules! input {
+        ($x:expr) => {
+            const INPUT: &str = include_str!(concat!("../input/2021/day", $x, ".txt"));
+        };
+    }
+
     pub mod day1 {
-        use std::collections::HashSet;
-        const INPUT: &str = include_str!("../input/2018/day1.txt");
+        input!(1);
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day1::part1(), 533);
-        /// ```
-        pub fn part1() -> i32 {
-            INPUT.lines().map(|x| x.parse::<i32>().unwrap()).sum()
+        pub fn part1() -> String {
+            // println!("hello world!");
+            INPUT.to_string()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day1::part2(), 73_272);
-        /// ```
-        pub fn part2() -> i32 {
-            let mut v = Vec::new();
-            let mut h = HashSet::new();
-
-            let mut f = 0;
-            v.push(f);
-            h.insert(f);
-
-            for l in INPUT.lines() {
-                let x: i32 = l.parse().unwrap();
-                f += x;
-                if h.contains(&f) {
-                    return f;
-                } else {
-                    v.push(f);
-                    h.insert(f);
-                }
-            }
-
-            let offset = f;
-            for i in 1.. {
-                for x in v.iter().filter(|x| x != &&0) {
-                    let c = x + i * offset;
-                    if h.contains(&c) {
-                        return c;
-                    }
-                }
-            }
-
-            panic!()
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day2 {
-        use std::collections::{HashMap, HashSet};
-        const INPUT: &str = include_str!("../input/2018/day2.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day2::part1(), 7_134);
-        /// ```
-        pub fn part1() -> i32 {
-            fn count(s: &str) -> HashMap<char, i32> {
-                let mut m = HashMap::new();
-                for c in s.chars() {
-                    m.entry(c).and_modify(|x| *x += 1).or_insert(1);
-                }
-                m
-            }
-
-            let mut x2 = 0;
-            let mut x3 = 0;
-            for l in INPUT.lines() {
-                let c = count(l);
-                if c.values().any(|x| x == &2) {
-                    x2 += 1;
-                }
-                if c.values().any(|x| x == &3) {
-                    x3 += 1;
-                }
-            }
-            x2 * x3
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// let ans = "kbqwtcvzhmhpoelrnaxydifyb";
-        /// assert_eq!(advent_of_code::aoc_2018::day2::part2(), ans);
-        /// ```
         pub fn part2() -> String {
-            for i in 0..INPUT.lines().next().unwrap().len() {
-                let mut m = HashSet::new();
-                for l in INPUT.lines() {
-                    let b = l
-                        .char_indices()
-                        .filter(|(j, _)| j != &i)
-                        .map(|(_, x)| x)
-                        .collect();
-                    if m.contains(&b) {
-                        return b;
-                    } else {
-                        m.insert(b);
-                    }
-                }
-            }
-            panic!()
+            todo!()
         }
     }
 
     pub mod day3 {
-        use std::collections::{HashMap, HashSet};
-        const INPUT: &str = include_str!("../input/2018/day3.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day3::part1(), 112_378);
-        /// ```
-        pub fn part1() -> i32 {
-            let mut c = HashSet::new();
-            let mut d = HashSet::new();
-
-            for l in INPUT.lines() {
-                let sx = l
-                    .split(&[' ', ',', ':', 'x'][..])
-                    .filter_map(|s| s.parse().ok())
-                    .collect::<Vec<i32>>();
-
-                let (p_x, p_y) = (sx[0], sx[1]);
-                let (w, h) = (sx[2], sx[3]);
-
-                for x in p_x..(p_x + w) {
-                    for y in p_y..(p_y + h) {
-                        if !c.insert((x, y)) {
-                            d.insert((x, y));
-                        }
-                    }
-                }
-            }
-
-            d.len() as i32
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day3::part2(), 603);
-        /// ```
-        pub fn part2() -> i32 {
-            fn disjoint(a: &[i32], b: &[i32]) -> bool {
-                let (x1, y1) = (a[0], a[1]);
-                let (w1, h1) = (a[2], a[3]);
-
-                let (x2, y2) = (b[0], b[1]);
-                let (w2, h2) = (b[2], b[3]);
-
-                !((x1 <= x2 && x2 <= (x1 + w1 - 1)) || (x2 <= x1 && x1 <= (x2 + w2 - 1)))
-                    || !((y1 <= y2 && y2 <= (y1 + h1 - 1)) || (y2 <= y1 && y1 <= (y2 + h2 - 1)))
-            }
-
-            let mut m = HashMap::new();
-
-            for l in INPUT.lines() {
-                let sx = l
-                    .split(&['#', ' ', ',', ':', 'x'][..])
-                    .filter_map(|s| s.parse().ok())
-                    .collect::<Vec<i32>>();
-                m.insert(sx[0], sx[1..].to_vec());
-            }
-
-            for id in m.keys() {
-                if m.keys().all(|i| id == i || disjoint(&m[id], &m[i])) {
-                    return *id;
-                }
-            }
-
-            panic!()
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day4 {
-        use std::collections::HashMap;
-        const INPUT: &str = include_str!("../input/2018/day4.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day4::part1(), 131_469);
-        /// ```
-        pub fn part1() -> i32 {
-            let m = parse_input();
-            let g = m.keys().max_by_key(|k| m[k].values().sum::<i32>()).unwrap();
-            let t = m[&g].keys().max_by_key(|k| m[g][k]).unwrap();
-            g * t
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day4::part2(), 96_951);
-        /// ```
-        pub fn part2() -> i32 {
-            let m = parse_input();
-            let g = m.keys().max_by_key(|k| m[k].values().max()).unwrap();
-            let t = m[&g].keys().max_by_key(|k| m[&g][k]).unwrap();
-            g * t
-        }
-
-        fn parse_input() -> HashMap<i32, HashMap<i32, i32>> {
-            fn parse_line(s: &str) -> (&str, i32, &str) {
-                let v = s.split(&[' ', ':', ']'][..]).collect::<Vec<_>>();
-                (v[4], v[2].parse().unwrap(), v[5])
-            }
-
-            let mut v = INPUT.lines().collect::<Vec<_>>();
-            v.sort();
-
-            let mut m = HashMap::new();
-            let mut t0 = 0;
-            let mut id = 0;
-
-            for l_i in v {
-                let (s_i, t_i, id_i) = parse_line(l_i);
-                if s_i == "Guard" {
-                    id = id_i[1..].parse().unwrap()
-                } else if s_i == "falls" {
-                    t0 = t_i;
-                } else if s_i == "wakes" {
-                    m.entry(id).or_insert_with(HashMap::new);
-                    for t in t0..t_i {
-                        m.get_mut(&id)
-                            .unwrap()
-                            .entry(t)
-                            .and_modify(|x| *x += 1)
-                            .or_insert(1);
-                    }
-                }
-            }
-
-            m
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day5 {
-        use std::collections::{BTreeSet, VecDeque};
-        const INPUT: &str = include_str!("../input/2018/day5.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day5::part1(), 10_804);
-        /// ```
-        pub fn part1() -> i32 {
-            let left = VecDeque::new();
-            let right = INPUT.chars().collect::<VecDeque<_>>();
-            react(left, right).len() as i32
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day5::part2(), 6_650);
-        /// ```
-        pub fn part2() -> i32 {
-            let a = VecDeque::new();
-            let b = INPUT.chars().collect::<VecDeque<_>>();
-            let v = react(a, b);
-            let mut nx = BTreeSet::new();
-            for i in b'a'..=b'z' {
-                let left = VecDeque::new();
-                let right = v
-                    .iter()
-                    .filter(|x| x.to_ascii_lowercase() != i as char)
-                    .cloned()
-                    .collect::<VecDeque<char>>();
-                let n = react(left, right).len() as i32;
-                nx.insert(n);
-            }
-
-            *nx.iter().min().unwrap()
-        }
-
-        fn react(mut left: VecDeque<char>, mut right: VecDeque<char>) -> VecDeque<char> {
-            left.push_front(' ');
-            right.push_back(' ');
-            loop {
-                if right.front().unwrap() == &' ' {
-                    break;
-                }
-
-                let l = left.back().unwrap();
-                let r = right.pop_front().unwrap();
-
-                if l != &r && l.to_ascii_lowercase() == r.to_ascii_lowercase() {
-                    left.pop_back();
-                } else {
-                    left.push_back(r);
-                }
-            }
-
-            left.pop_front();
-            left
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day6 {
-        use std::cmp::Ordering;
-        use std::collections::{HashMap, HashSet};
-        const INPUT: &str = include_str!("../input/2018/day6.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day6::part1(), 4_976);
-        /// ```
-        pub fn part1() -> i32 {
-            let targets = parse_input();
-            let (x_min, x_max, y_min, y_max) = bounds(&targets);
-
-            let mut areas = HashMap::new();
-            let mut infinite = HashSet::new();
-
-            for x in x_min..=x_max {
-                for y in y_min..=y_max {
-                    let p = (x, y);
-                    let mut t_min = Vec::new();
-                    let mut d_min = manhattan(p, targets[0]);
-
-                    for t in &targets {
-                        let d = manhattan(p, *t);
-                        match d.cmp(&d_min) {
-                            Ordering::Less => {
-                                d_min = d;
-                                t_min.clear();
-                                t_min.push(t);
-                            }
-                            Ordering::Equal => {
-                                t_min.push(t);
-                            }
-                            _ => continue,
-                        }
-                    }
-
-                    if t_min.len() == 1 && !infinite.contains(t_min[0]) {
-                        *areas.entry(t_min[0]).or_insert(0) += 1;
-                    }
-
-                    if x == x_min || x == x_max || y == y_min || y == y_max {
-                        for p_i in t_min {
-                            infinite.insert(p_i);
-                            areas.remove(p_i);
-                        }
-                    }
-                }
-            }
-
-            *areas.values().max().unwrap()
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day6::part2(), 46_462);
-        /// ```
-        pub fn part2() -> i32 {
-            let targets = parse_input();
-            let (x_min, x_max, y_min, y_max) = bounds(&targets);
-
-            let mut n = 0;
-
-            for x in x_min..=x_max {
-                for y in y_min..=y_max {
-                    let p = (x, y);
-                    if targets.iter().map(|t| manhattan(p, *t)).sum::<i32>() < 10_000 {
-                        n += 1;
-                    }
-                }
-            }
-
-            n
-        }
-
-        fn manhattan(a: (i32, i32), b: (i32, i32)) -> i32 {
-            (a.0 - b.0).abs() + (a.1 - b.1).abs()
-        }
-
-        fn bounds(targets: &[(i32, i32)]) -> (i32, i32, i32, i32) {
-            let mut x_min = &targets[0].0;
-            let mut x_max = x_min;
-            let mut y_min = &targets[0].1;
-            let mut y_max = y_min;
-
-            for (x, y) in targets {
-                if x < x_min {
-                    x_min = x;
-                }
-                if x > x_max {
-                    x_max = x;
-                }
-                if y < y_min {
-                    y_min = y;
-                }
-                if y > y_max {
-                    y_max = y;
-                }
-            }
-
-            (*x_min, *x_max, *y_min, *y_max)
-        }
-
-        fn parse_input() -> Vec<(i32, i32)> {
-            let mut v = Vec::new();
-            for l in INPUT.lines() {
-                let pt: Vec<i32> = l.split(", ").map(|s| s.parse().unwrap()).collect();
-                v.push((pt[0], pt[1]));
-            }
-            v
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day7 {
-        use std::collections::{BTreeSet, HashMap};
-        const INPUT: &str = include_str!("../input/2018/day7.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day7::part1(), "EUGJKYFQSCLTWXNIZMAPVORDBH");
-        /// ```
         pub fn part1() -> String {
-            let (pop, mut prereqs) = parse_input();
-
-            let mut completed = Vec::new();
-            let mut pool: BTreeSet<char> = pop
-                .into_iter()
-                .filter(|x| !prereqs.contains_key(x))
-                .collect();
-
-            while !prereqs.is_empty() {
-                let mut buffer = Vec::new();
-
-                for (&k, v) in &prereqs {
-                    if v.iter().all(|x| completed.contains(x)) {
-                        pool.insert(k);
-                        buffer.push(k);
-                    }
-                }
-
-                for k in buffer {
-                    prereqs.remove(&k);
-                }
-
-                let next = *pool.iter().next().unwrap();
-                pool.remove(&next);
-                completed.push(next);
-            }
-
-            completed.into_iter().collect()
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2018::day7::part2(), 1014);
-        /// ```
-        pub fn part2() -> u32 {
-            let (pop, mut prereqs) = parse_input();
-
-            let mut completed = BTreeSet::new();
-            let mut pool: BTreeSet<char> = pop
-                .into_iter()
-                .filter(|x| !prereqs.contains_key(x))
-                .collect();
-
-            let mut t = 0;
-            let mut workers = Vec::new();
-            let mut timers = Vec::new();
-            while !prereqs.is_empty() || !pool.is_empty() {
-                let mut buffer = Vec::new();
-
-                // update pool
-                for (&k, v) in &prereqs {
-                    if v.is_subset(&completed) {
-                        pool.insert(k);
-                        buffer.push(k);
-                    }
-                }
-
-                // update prereqs
-                for k in buffer {
-                    prereqs.remove(&k);
-                }
-
-                // load workers
-                while workers.len() < 5 && !pool.is_empty() {
-                    let next = *pool.iter().next().unwrap();
-                    pool.remove(&next);
-                    workers.push(next);
-                    timers.push(char_to_u32(next));
-                }
-
-                // step forward until worker is done
-                let t_next = *timers.iter().min().unwrap();
-                let i_next = timers.iter().position(|&x| x == t_next).unwrap();
-                let next = workers[i_next];
-                let delta_t = timers[i_next];
-
-                // update timers
-                for t in &mut timers {
-                    *t -= delta_t;
-                }
-
-                // update totals
-                t += delta_t;
-                completed.insert(next);
-
-                // cleanup
-                workers.remove(i_next);
-                timers.remove(i_next);
-            }
-
-            t
-        }
-
-        fn char_to_u32(ch: char) -> u32 {
-            60 + ch as u32 - 'A' as u32 + 1
-        }
-
-        fn parse_input() -> (BTreeSet<char>, HashMap<char, BTreeSet<char>>) {
-            let mut h = BTreeSet::new();
-            let mut m = HashMap::new();
-            for l in INPUT.lines() {
-                let tokens: Vec<&str> = l.split(' ').collect();
-                let x: char = tokens[1].parse().unwrap();
-                let y: char = tokens[7].parse().unwrap();
-                h.insert(x);
-                h.insert(y);
-                m.entry(y).or_insert_with(BTreeSet::new).insert(x);
-            }
-            (h, m)
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
     pub mod day8 {
-        // const INPUT: &str = include_str!("../input/2018/day8.txt");
-
         pub fn part1() -> String {
-            panic!()
+            todo!()
         }
 
         pub fn part2() -> String {
-            panic!()
-        }
-    }
-}
-
-pub mod aoc_2019 {
-    pub mod day1 {
-        const INPUT: &str = include_str!("../input/2019/day1.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day1::part1(), 3_376_997);
-        /// ```
-        pub fn part1() -> i32 {
-            INPUT.lines().map(|x| fuel(x.parse::<i32>().unwrap())).sum()
-        }
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day1::part2(), 5_062_623);
-        /// ```
-        pub fn part2() -> i32 {
-            INPUT
-                .lines()
-                .map(|x| total_fuel(x.parse::<i32>().unwrap()))
-                .sum()
-        }
-
-        fn fuel(x: i32) -> i32 {
-            x / 3 - 2
-        }
-
-        fn total_fuel(mut x: i32) -> i32 {
-            let mut f = 0;
-
-            while fuel(x) > 0 {
-                x = fuel(x);
-                f += x;
-            }
-
-            f
+            todo!()
         }
     }
 
-    pub mod day2 {
-        const INPUT: &str = include_str!("../input/2019/day2.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), 3_562_624);
-        /// ```
-        pub fn part1() -> i32 {
-            run_program(12, 2)
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), 8_298);
-        /// ```
-        pub fn part2() -> i32 {
-            for n in 0..=99 {
-                for v in 0..=99 {
-                    if run_program(n, v) == 19_690_720 {
-                        return 100 * n + v;
-                    }
-                }
-            }
-
-            panic!()
-        }
-
-        fn run_program(noun: i32, verb: i32) -> i32 {
-            let mut v = INPUT
-                .split(',')
-                .map(|x| str::replace(x, "\r\n", "").parse::<i32>().unwrap())
-                .collect::<Vec<i32>>();
-
-            v[1] = noun;
-            v[2] = verb;
-
-            for i in (0..).step_by(4) {
-                let j = v[i + 3] as usize;
-                match v[i] {
-                    99 => break,
-                    1 => {
-                        v[j] = v[v[i + 1] as usize] + v[v[i + 2] as usize];
-                    }
-                    2 => {
-                        v[j] = v[v[i + 1] as usize] * v[v[i + 2] as usize];
-                    }
-                    _ => panic!(),
-                };
-            }
-
-            v[0]
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
-    pub mod day3 {
-        use std::cmp::{max, min};
-        use std::collections::BTreeSet;
-        const INPUT: &str = include_str!("../input/2019/day3.txt");
-
-        type Line = (i32, i32, i32); // HLine: y, x1, x2; VLine: x, y1, y2
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209);
-        /// ```
-        pub fn part1() -> i32 {
-            type WireH = BTreeSet<(i32, Line)>;
-            type WireV = BTreeSet<(i32, Line)>;
-
-            fn parse_wire(wire: &str) -> (WireH, WireV) {
-                let mut pt: (i32, i32) = (0, 0);
-                let mut h = BTreeSet::new();
-                let mut v = BTreeSet::new();
-
-                for dir in wire.split(',') {
-                    let (dir, len) = parse_dir(dir);
-
-                    let (x, y) = pt;
-                    pt = travel(pt, dir, len);
-
-                    match dir {
-                        "L" => h.insert((y.abs(), (y, x, x - len))),
-                        "R" => h.insert((y.abs(), (y, x, x + len))),
-                        "U" => v.insert((x.abs(), (x, y, y + len))),
-                        "D" => v.insert((x.abs(), (x, y, y - len))),
-                        _ => panic!(),
-                    };
-                }
-
-                (h, v)
-            }
-
-            let mut wires = INPUT.lines();
-            let (red_h, red_v) = parse_wire(wires.next().unwrap());
-            let (black_h, black_v) = parse_wire(wires.next().unwrap());
-
-            let mut dx = BTreeSet::new();
-
-            fn compare(mut dx: BTreeSet<i32>, wire_h: &WireH, wire_v: &WireV) -> BTreeSet<i32> {
-                for (_, h) in wire_h {
-                    for (_, v) in wire_v {
-                        if let Some((x, y)) = cross(*h, *v) {
-                            let d = x.abs() + y.abs();
-                            if d > 0 {
-                                dx.insert(d);
-                                break;
-                            }
-                        }
-                    }
-                }
-                dx
-            }
-
-            dx = compare(dx, &red_h, &black_v);
-            dx = compare(dx, &black_h, &red_v);
-
-            *dx.iter().next().unwrap()
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), 43258);
-        /// ```
-        pub fn part2() -> i32 {
-            type Wire = Vec<(String, Line)>;
-
-            fn parse_wire(wire: &str) -> Wire {
-                let mut pt: (i32, i32) = (0, 0);
-                let mut w = Vec::new();
-
-                for dir in wire.split(',') {
-                    let (dir, len) = parse_dir(dir);
-
-                    let (x, y) = pt;
-                    pt = travel(pt, dir, len);
-
-                    let l = match dir {
-                        "L" => ("H", (y, x, x - len)),
-                        "R" => ("H", (y, x, x + len)),
-                        "U" => ("V", (x, y, y + len)),
-                        "D" => ("V", (x, y, y - len)),
-                        _ => panic!(),
-                    };
-                    w.push((l.0.to_string(), l.1));
-                }
-
-                w
-            }
-
-            let mut wires = INPUT.lines();
-            let red = parse_wire(wires.next().unwrap());
-            let black = parse_wire(wires.next().unwrap());
-
-            let mut dx = BTreeSet::new();
-
-            let mut d_red = 0;
-            for (dir_r, r) in &red {
-                let mut d_black = 0;
-                for (dir_b, b) in &black {
-                    if dir_r != dir_b && cross(*r, *b).is_some() {
-                        let d = d_red + d_black + (b.0 - r.1).abs() + (r.0 - b.1).abs();
-                        if d > 0 {
-                            dx.insert(d);
-                        }
-                    }
-                    d_black += (b.1 - b.2).abs();
-                }
-                d_red += (r.1 - r.2).abs();
-            }
-
-            *dx.iter().next().unwrap()
-        }
-
-        fn parse_dir(s: &str) -> (&str, i32) {
-            let (dir, len) = s.split_at(1);
-            (dir, len.parse::<_>().unwrap())
-        }
-
-        fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
-            let (x, y) = pt;
-            match dir {
-                "L" => (x - len, y),
-                "R" => (x + len, y),
-                "U" => (x, y + len),
-                "D" => (x, y - len),
-                _ => panic!(),
-            }
-        }
-
-        fn cross(a: Line, b: Line) -> Option<(i32, i32)> {
-            if min(a.1, a.2) < b.0
-                && b.0 < max(a.1, a.2)
-                && min(b.1, b.2) < a.0
-                && a.0 < max(b.1, b.2)
-            {
-                Some((b.0, a.0))
-            } else {
-                None
-            }
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
-    pub mod day4 {
-        const INPUT: &str = include_str!("../input/2019/day4.txt");
-
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), 579);
-        /// ```
-        pub fn part1() -> i32 {
-            let (min, max) = parse_input();
-
-            fn adjacent(x: i32) -> bool {
-                digits(x).windows(2).any(|s| s[0] == s[1])
-            };
-
-            (min..=max).filter(|&x| adjacent(x) && monotonic(x)).count() as i32
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
         }
 
-        /// ```
-        /// assert_eq!(advent_of_code::aoc_2019::day4::part2(), 358);
-        /// ```
-        pub fn part2() -> i32 {
-            let (min, max) = parse_input();
-
-            fn adjacent(x: i32) -> bool {
-                let d = digits(x);
-                (d[0] == d[1] && d[1] != d[2])
-                    || (d[5] == d[4] && d[4] != d[3])
-                    || d.windows(4)
-                        .any(|s| s[0] != s[1] && s[1] == s[2] && s[2] != s[3])
-            };
-
-            (min..=max).filter(|&x| adjacent(x) && monotonic(x)).count() as i32
-        }
-
-        fn parse_input() -> (i32, i32) {
-            let mut iter = INPUT.lines().next().unwrap().split('-');
-            let min = iter.next().unwrap().parse::<i32>().unwrap();
-            let max = iter.next().unwrap().parse::<i32>().unwrap();
-            (min, max)
-        }
-
-        fn monotonic(x: i32) -> bool {
-            digits(x).windows(2).all(|s| s[0] <= s[1])
-        }
-
-        fn digits(x: i32) -> Vec<u32> {
-            x.to_string()
-                .chars()
-                .map(|x| x.to_digit(10).unwrap())
-                .collect::<_>()
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
-    pub mod day5 {
-        // const INPUT: &str = include_str!("../input/2019/day5.txt");
-        pub fn part1() {}
-        pub fn part2() {}
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
     }
 }
 
 pub mod aoc_2020 {
-    const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 7] = [
-        [day1::part1, day1::part2],
-        [day2::part1, day2::part2],
-        [day3::part1, day3::part2],
-        [day4::part1, day4::part2],
-        [day5::part1, day5::part2],
-        [day6::part1, day6::part2],
-        [day7::part1, day7::part2],
-        // [day8::part1, day8::part2],
-        // [day9::part1, day9::part2],
-        // [day10::part1, day10::part2],
-    ];
+    table_of_contents!();
 
-    pub fn main(day: usize, part: usize) {
-        println!("{}", TABLE_OF_CONTENTS[day - 1][part - 1]());
+    macro_rules! input {
+        ($x:expr) => {
+            const INPUT: &str = include_str!(concat!("../input/2020/day", $x, ".txt"));
+        };
     }
 
     pub mod day1 {
+        input!(1);
         use std::collections::HashSet;
-
-        const INPUT: &str = include_str!("../input/2020/day1.txt");
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day1::part1(), 800_139.to_string());
@@ -907,7 +362,7 @@ pub mod aoc_2020 {
     }
 
     pub mod day2 {
-        const INPUT: &str = include_str!("../input/2020/day2.txt");
+        input!(2);
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day2::part1(), 655.to_string());
@@ -949,7 +404,7 @@ pub mod aoc_2020 {
     }
 
     pub mod day3 {
-        const INPUT: &str = include_str!("../input/2020/day3.txt");
+        input!(3);
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day3::part1(), 250.to_string());
@@ -976,7 +431,7 @@ pub mod aoc_2020 {
             .to_string()
         }
 
-        fn travel(trees: &Vec<Vec<char>>, right: usize, down: usize) -> u32 {
+        fn travel(trees: &[Vec<char>], right: usize, down: usize) -> u32 {
             let n_cols = trees[0].len();
             let mut c = 0;
             let mut ans = 0;
@@ -998,9 +453,8 @@ pub mod aoc_2020 {
     }
 
     pub mod day4 {
+        input!(4);
         use std::collections::HashSet;
-
-        const INPUT: &str = include_str!("../input/2020/day4.txt");
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day4::part1(), 213.to_string());
@@ -1080,9 +534,8 @@ pub mod aoc_2020 {
     }
 
     pub mod day5 {
+        input!(5);
         use std::collections::HashSet;
-
-        const INPUT: &str = include_str!("../input/2020/day5.txt");
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day5::part1(), 935.to_string());
@@ -1137,9 +590,8 @@ pub mod aoc_2020 {
     }
 
     pub mod day6 {
+        input!(6);
         use std::collections::HashSet;
-
-        const INPUT: &str = include_str!("../input/2020/day6.txt");
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day6::part1(), 6903.to_string());
@@ -1177,107 +629,1527 @@ pub mod aoc_2020 {
     }
 
     pub mod day7 {
+        input!(7);
         use std::collections::{HashMap, HashSet};
 
-        const INPUT: &str = include_str!("../input/2020/day7.txt");
+        type ColorRules<'a> = HashMap<&'a str, HashSet<&'a str>>;
+        // type BagRules<'a> = HashMap<&'a str, Vec<(&'a str, &'a str)>>;
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day7::part1(), 172.to_string());
         /// ```
         pub fn part1() -> String {
-            let mut rules: HashMap<_, HashSet<_>> = HashMap::new();
-            for rule in INPUT.lines() {
-                let mut kv = rule.splitn(2, " bags contain ");
-                let k = kv.next().unwrap();
-                let v = kv.next().unwrap().split(',').map(bag_color).collect();
-                rules.insert(k, v);
+            let rules: ColorRules = INPUT
+                .lines()
+                .map(|rule| {
+                    let mut kv = rule.split(" bags contain ");
+                    let k = kv.next().unwrap();
+                    let v = kv.next().unwrap().split(',').map(color).collect();
+                    (k, v)
+                })
+                .collect();
+            rules
+                .keys()
+                .filter(|k| recurse(&rules, k))
+                .count()
+                .to_string()
+        }
+
+        fn recurse(rules: &ColorRules, c: &str) -> bool {
+            if c == "other" || rules[c].contains("other") {
+                false
+            } else {
+                rules[c].contains("shiny gold") || rules[c].iter().any(|x| recurse(rules, x))
             }
-            let mut colors = HashSet::new();
-            let mut grow = true;
-            while grow {
-                grow = false;
-                for (k, v) in &rules {
-                    if v.contains("shiny gold") || !v.is_disjoint(&colors) {
-                        if colors.insert(k) {
-                            grow = true;
-                        }
-                    }
-                }
-            }
-            colors.len().to_string()
         }
 
         /// ```
         /// assert_eq!(advent_of_code::aoc_2020::day7::part2(), 39_645.to_string());
         /// ```
         pub fn part2() -> String {
-            let mut rules: HashMap<_, Vec<_>> = HashMap::new();
-            for rule in INPUT.lines() {
-                let mut kv = rule.splitn(2, " bags contain ");
-                let k = kv.next().unwrap();
-                let v = kv
-                    .next()
-                    .unwrap()
-                    .split(',')
-                    .map(|b| (bag_count(b), bag_color(b)))
-                    .collect();
-                rules.insert(k, v);
-            }
-            let mut history = Vec::new();
-            let mut stack = Vec::from(["shiny gold"]);
-            while !stack.is_empty() {
-                let color = stack.pop().unwrap();
-                history.push(color);
-                for bags in rules.get(color).unwrap() {
-                    match bags {
-                        ("no", "other") => continue,
-                        (n, c) => stack.extend([*c].repeat(n.parse().unwrap())),
-                    }
-                }
-            }
-            (history.len() - 1).to_string()
+            // let rules: BagRules = INPUT
+            //     .lines()
+            //     .map(|rule| {
+            //         let mut kv = rule.split(" bags contain ");
+            //         let k = kv.next().unwrap();
+            //         let v = kv
+            //             .next()
+            //             .unwrap()
+            //             .split(',')
+            //             .map(|b| (count(b), color(b)))
+            //             .collect();
+            //         (k, v)
+            //     })
+            //     .collect();
+            "wip".to_string()
         }
 
         fn parse(bags: &str) -> &str {
             bags.rsplitn(2, ' ').last().unwrap().trim()
         }
 
-        fn bag_color(bags: &str) -> &str {
+        fn color(bags: &str) -> &str {
             parse(bags).splitn(2, ' ').last().unwrap()
         }
 
-        fn bag_count(bags: &str) -> &str {
-            parse(bags).splitn(2, ' ').next().unwrap()
+        // fn count(bags: &str) -> &str {
+        //     parse(bags).splitn(2, ' ').next().unwrap()
+        // }
+    }
+
+    pub mod day8 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
         }
     }
 
-    // pub mod day8 {
-    //     pub fn part1() -> String {
-    //         panic!()
-    //     }
-    //
-    //     pub fn part2() -> String {
-    //         panic!()
-    //     }
-    // }
-    //
-    // pub mod day9 {
-    //     pub fn part1() -> String {
-    //         panic!()
-    //     }
-    //
-    //     pub fn part2() -> String {
-    //         panic!()
-    //     }
-    // }
-    //
-    // pub mod day10 {
-    //     pub fn part1() -> String {
-    //         panic!()
-    //     }
-    //
-    //     pub fn part2() -> String {
-    //         panic!()
-    //     }
-    // }
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+}
+
+pub mod aoc_2019 {
+    table_of_contents!();
+
+    macro_rules! input {
+        ($x:expr) => {
+            const INPUT: &str = include_str!(concat!("../input/2019/day", $x, ".txt"));
+        };
+    }
+
+    pub mod day1 {
+        input!(1);
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day1::part1(), 3_376_997.to_string());
+        /// ```
+        pub fn part1() -> String {
+            INPUT
+                .lines()
+                .fold(0, |sum, x| sum + fuel(x.parse().unwrap()))
+                .to_string()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day1::part2(), 5_062_623.to_string());
+        /// ```
+        pub fn part2() -> String {
+            INPUT
+                .lines()
+                .fold(0, |sum, x| sum + total_fuel(x.parse().unwrap()))
+                .to_string()
+        }
+
+        fn fuel(x: i32) -> i32 {
+            x / 3 - 2
+        }
+
+        fn total_fuel(mut x: i32) -> i32 {
+            let mut f = 0;
+            while fuel(x) > 0 {
+                x = fuel(x);
+                f += x;
+            }
+            f
+        }
+    }
+
+    pub mod day2 {
+        input!(2);
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), 3_562_624.to_string());
+        /// ```
+        pub fn part1() -> String {
+            run_program(12, 2).to_string()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), 8_298.to_string());
+        /// ```
+        pub fn part2() -> String {
+            for n in 0..=99 {
+                for v in 0..=99 {
+                    if run_program(n, v) == 19_690_720 {
+                        return (100 * n + v).to_string();
+                    }
+                }
+            }
+            panic!()
+        }
+
+        fn run_program(noun: usize, verb: usize) -> usize {
+            let mut v = INPUT
+                .split(',')
+                .map(|x| str::replace(x, "\r\n", "").parse().unwrap())
+                .collect::<Vec<_>>();
+
+            v[1] = noun;
+            v[2] = verb;
+
+            for i in (0..).step_by(4) {
+                let j = v[i + 3];
+                match v[i] {
+                    99 => break,
+                    1 => {
+                        v[j] = v[v[i + 1]] + v[v[i + 2]];
+                    }
+                    2 => {
+                        v[j] = v[v[i + 1]] * v[v[i + 2]];
+                    }
+                    _ => panic!(),
+                };
+            }
+
+            v[0]
+        }
+    }
+
+    pub mod day3 {
+        input!(3);
+        use std::cmp::{max, min};
+        use std::collections::BTreeSet;
+
+        // HLine: y, x1, x2
+        // VLine: x, y1, y2
+        type Line = (i32, i32, i32);
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209.to_string());
+        /// ```
+        pub fn part1() -> String {
+            type WireH = BTreeSet<(i32, Line)>;
+            type WireV = BTreeSet<(i32, Line)>;
+
+            fn parse_wire(wire: &str) -> (WireH, WireV) {
+                let mut pt: (i32, i32) = (0, 0);
+                let mut h = BTreeSet::new();
+                let mut v = BTreeSet::new();
+
+                for dir in wire.split(',') {
+                    let (dir, len) = parse_dir(dir);
+
+                    let (x, y) = pt;
+                    pt = travel(pt, dir, len);
+
+                    match dir {
+                        "L" => h.insert((y.abs(), (y, x, x - len))),
+                        "R" => h.insert((y.abs(), (y, x, x + len))),
+                        "U" => v.insert((x.abs(), (x, y, y + len))),
+                        "D" => v.insert((x.abs(), (x, y, y - len))),
+                        _ => panic!(),
+                    };
+                }
+
+                (h, v)
+            }
+
+            let mut wires = INPUT.lines();
+            let (red_h, red_v) = parse_wire(wires.next().unwrap());
+            let (black_h, black_v) = parse_wire(wires.next().unwrap());
+
+            let mut dx = BTreeSet::new();
+
+            fn compare(mut dx: BTreeSet<i32>, wire_h: &WireH, wire_v: &WireV) -> BTreeSet<i32> {
+                for (_, h) in wire_h {
+                    for (_, v) in wire_v {
+                        if let Some((x, y)) = cross(*h, *v) {
+                            let d = x.abs() + y.abs();
+                            if d > 0 {
+                                dx.insert(d);
+                                break;
+                            }
+                        }
+                    }
+                }
+                dx
+            }
+
+            dx = compare(dx, &red_h, &black_v);
+            dx = compare(dx, &black_h, &red_v);
+
+            dx.iter().next().unwrap().to_string()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), 43258.to_string());
+        /// ```
+        pub fn part2() -> String {
+            type Wire = Vec<(String, Line)>;
+
+            fn parse_wire(wire: &str) -> Wire {
+                let mut pt: (i32, i32) = (0, 0);
+                let mut w = Vec::new();
+
+                for dir in wire.split(',') {
+                    let (dir, len) = parse_dir(dir);
+
+                    let (x, y) = pt;
+                    pt = travel(pt, dir, len);
+
+                    let l = match dir {
+                        "L" => ("H", (y, x, x - len)),
+                        "R" => ("H", (y, x, x + len)),
+                        "U" => ("V", (x, y, y + len)),
+                        "D" => ("V", (x, y, y - len)),
+                        _ => panic!(),
+                    };
+                    w.push((l.0.to_string(), l.1));
+                }
+
+                w
+            }
+
+            let mut wires = INPUT.lines();
+            let red = parse_wire(wires.next().unwrap());
+            let black = parse_wire(wires.next().unwrap());
+
+            let mut dx = BTreeSet::new();
+
+            let mut d_red = 0;
+            for (dir_r, r) in &red {
+                let mut d_black = 0;
+                for (dir_b, b) in &black {
+                    if dir_r != dir_b && cross(*r, *b).is_some() {
+                        let d = d_red + d_black + (b.0 - r.1).abs() + (r.0 - b.1).abs();
+                        if d > 0 {
+                            dx.insert(d);
+                        }
+                    }
+                    d_black += (b.1 - b.2).abs();
+                }
+                d_red += (r.1 - r.2).abs();
+            }
+
+            dx.iter().next().unwrap().to_string()
+        }
+
+        fn parse_dir(s: &str) -> (&str, i32) {
+            let (dir, len) = s.split_at(1);
+            (dir, len.parse::<_>().unwrap())
+        }
+
+        fn travel(pt: (i32, i32), dir: &str, len: i32) -> (i32, i32) {
+            let (x, y) = pt;
+            match dir {
+                "L" => (x - len, y),
+                "R" => (x + len, y),
+                "U" => (x, y + len),
+                "D" => (x, y - len),
+                _ => panic!(),
+            }
+        }
+
+        fn cross(a: Line, b: Line) -> Option<(i32, i32)> {
+            if min(a.1, a.2) < b.0
+                && b.0 < max(a.1, a.2)
+                && min(b.1, b.2) < a.0
+                && a.0 < max(b.1, b.2)
+            {
+                Some((b.0, a.0))
+            } else {
+                None
+            }
+        }
+    }
+
+    pub mod day4 {
+        input!(4);
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), 579.to_string());
+        /// ```
+        pub fn part1() -> String {
+            let (min, max) = parse_input();
+
+            fn adjacent(x: i32) -> bool {
+                digits(x).windows(2).any(|s| s[0] == s[1])
+            }
+
+            (min..=max)
+                .filter(|&x| adjacent(x) && monotonic(x))
+                .count()
+                .to_string()
+        }
+
+        /// ```
+        /// assert_eq!(advent_of_code::aoc_2019::day4::part2(), 358.to_string());
+        /// ```
+        pub fn part2() -> String {
+            let (min, max) = parse_input();
+
+            fn adjacent(x: i32) -> bool {
+                let d = digits(x);
+                (d[0] == d[1] && d[1] != d[2])
+                    || (d[5] == d[4] && d[4] != d[3])
+                    || d.windows(4)
+                        .any(|s| s[0] != s[1] && s[1] == s[2] && s[2] != s[3])
+            }
+
+            (min..=max)
+                .filter(|&x| adjacent(x) && monotonic(x))
+                .count()
+                .to_string()
+        }
+
+        fn parse_input() -> (i32, i32) {
+            let mut iter = INPUT.lines().next().unwrap().split('-');
+            let min = iter.next().unwrap().parse::<i32>().unwrap();
+            let max = iter.next().unwrap().parse::<i32>().unwrap();
+            (min, max)
+        }
+
+        fn monotonic(x: i32) -> bool {
+            digits(x).windows(2).all(|s| s[0] <= s[1])
+        }
+
+        fn digits(x: i32) -> Vec<u32> {
+            x.to_string()
+                .chars()
+                .map(|x| x.to_digit(10).unwrap())
+                .collect::<_>()
+        }
+    }
+
+    pub mod day5 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day6 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day7 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day8 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+}
+
+pub mod aoc_2017 {
+    table_of_contents!();
+
+    pub mod day1 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day2 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day3 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day4 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day5 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day6 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day7 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day8 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+}
+
+pub mod aoc_2016 {
+    table_of_contents!();
+
+    pub mod day1 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day2 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day3 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day4 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day5 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day6 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day7 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day8 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+}
+
+pub mod aoc_2015 {
+    table_of_contents!();
+
+    pub mod day1 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day2 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day3 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day4 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day5 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day6 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day7 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day8 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day9 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day10 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day11 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day12 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day13 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day14 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day15 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day16 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day17 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day18 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day19 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day20 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day21 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day22 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day23 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day24 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
+
+    pub mod day25 {
+        pub fn part1() -> String {
+            todo!()
+        }
+
+        pub fn part2() -> String {
+            todo!()
+        }
+    }
 }

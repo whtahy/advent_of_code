@@ -1,7 +1,4 @@
-type Day = [fn() -> String; 2];
-type Year = [Day; 25];
-
-pub const TABLE_OF_CONTENTS: crate::Year = [
+pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
     [day1::part1, day1::part2],
     [day2::part1, day2::part2],
     [day3::part1, day3::part2],
@@ -31,7 +28,7 @@ pub const TABLE_OF_CONTENTS: crate::Year = [
 
 macro_rules! input {
     ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("../../input/2018/day", $x, ".txt"));
+        const INPUT: &str = include_str!(concat!("../../input/2021/day", $x, ".txt"));
     };
 }
 

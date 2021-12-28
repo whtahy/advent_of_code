@@ -1,11 +1,11 @@
 # block
-/target/
 *.*
+/target/
 
 # allow
-!*.md
-!*.rs
-!*.txt
 !.gitignore
+!*.md
+!*.txt
+!*.rs
 !cargo.lock
 !cargo.toml

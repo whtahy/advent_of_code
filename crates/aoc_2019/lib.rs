@@ -36,7 +36,7 @@ pub mod day1 {
     input!(1);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day1::part1(), 3_376_997.to_string());
+    /// assert_eq!(aoc_2019::day1::part1(), 3_376_997.to_string());
     /// ```
     pub fn part1() -> String {
         INPUT
@@ -46,7 +46,7 @@ pub mod day1 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day1::part2(), 5_062_623.to_string());
+    /// assert_eq!(aoc_2019::day1::part2(), 5_062_623.to_string());
     /// ```
     pub fn part2() -> String {
         INPUT
@@ -73,14 +73,14 @@ pub mod day2 {
     input!(2);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day2::part1(), 3_562_624.to_string());
+    /// assert_eq!(aoc_2019::day2::part1(), 3_562_624.to_string());
     /// ```
     pub fn part1() -> String {
         run_program(12, 2).to_string()
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day2::part2(), 8_298.to_string());
+    /// assert_eq!(aoc_2019::day2::part2(), 8_298.to_string());
     /// ```
     pub fn part2() -> String {
         for n in 0..=99 {
@@ -130,7 +130,7 @@ pub mod day3 {
     type Line = (i32, i32, i32);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day3::part1(), 209.to_string());
+    /// assert_eq!(aoc_2019::day3::part1(), 209.to_string());
     /// ```
     pub fn part1() -> String {
         type WireH = BTreeSet<(i32, Line)>;
@@ -187,7 +187,7 @@ pub mod day3 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day3::part2(), 43258.to_string());
+    /// assert_eq!(aoc_2019::day3::part2(), 43258.to_string());
     /// ```
     pub fn part2() -> String {
         type Wire = Vec<(String, Line)>;
@@ -269,7 +269,7 @@ pub mod day4 {
     input!(4);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day4::part1(), 579.to_string());
+    /// assert_eq!(aoc_2019::day4::part1(), 579.to_string());
     /// ```
     pub fn part1() -> String {
         let (min, max) = parse_input();
@@ -285,7 +285,7 @@ pub mod day4 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2019::day4::part2(), 358.to_string());
+    /// assert_eq!(aoc_2019::day4::part2(), 358.to_string());
     /// ```
     pub fn part2() -> String {
         let (min, max) = parse_input();

@@ -28,7 +28,7 @@ pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
 
 macro_rules! input {
     ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("../../input/2021/day", $x, ".txt"));
+        const INPUT: &str = include_str!(concat!("../../input/2018/day", $x, ".txt"));
     };
 }
 
@@ -37,17 +37,17 @@ pub mod day1 {
     use std::collections::HashSet;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day1::part1(), 533.to_string());
+    /// assert_eq!(aoc_2018::day1::part1(), 533.to_string());
     /// ```
     pub fn part1() -> String {
         INPUT
             .lines()
-            .fold(0, |sum, x| sum + x.parse::<u32>().unwrap())
+            .fold(0, |sum, x| sum + x.parse::<i32>().unwrap())
             .to_string()
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day1::part2(), 73_272.to_string());
+    /// assert_eq!(aoc_2018::day1::part2(), 73_272.to_string());
     /// ```
     pub fn part2() -> String {
         let mut v = Vec::new();
@@ -70,7 +70,7 @@ pub mod day1 {
 
         let offset = f;
         for i in 1.. {
-            for x in v.iter().filter(|x| x != &&0) {
+            for x in v.iter().filter(|&&x| x != 0) {
                 let c = x + i * offset;
                 if h.contains(&c) {
                     return c.to_string();
@@ -87,7 +87,7 @@ pub mod day2 {
     use std::collections::{HashMap, HashSet};
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day2::part1(), 7_134.to_string());
+    /// assert_eq!(aoc_2018::day2::part1(), 7_134.to_string());
     /// ```
     pub fn part1() -> String {
         fn count(s: &str) -> HashMap<char, i32> {
@@ -114,7 +114,7 @@ pub mod day2 {
 
     /// ```
     /// let ans = "kbqwtcvzhmhpoelrnaxydifyb";
-    /// assert_eq!(advent_of_code::aoc_2018::day2::part2(), ans);
+    /// assert_eq!(aoc_2018::day2::part2(), ans);
     /// ```
     pub fn part2() -> String {
         for i in 0..INPUT.lines().next().unwrap().len() {
@@ -141,7 +141,7 @@ pub mod day3 {
     use std::collections::{HashMap, HashSet};
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day3::part1(), 112_378.to_string());
+    /// assert_eq!(aoc_2018::day3::part1(), 112_378.to_string());
     /// ```
     pub fn part1() -> String {
         let mut c = HashSet::new();
@@ -169,7 +169,7 @@ pub mod day3 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day3::part2(), 603.to_string());
+    /// assert_eq!(aoc_2018::day3::part2(), 603.to_string());
     /// ```
     pub fn part2() -> String {
         fn disjoint(a: &[i32], b: &[i32]) -> bool {
@@ -208,7 +208,7 @@ pub mod day4 {
     use std::collections::HashMap;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day4::part1(), 131_469.to_string());
+    /// assert_eq!(aoc_2018::day4::part1(), 131_469.to_string());
     /// ```
     pub fn part1() -> String {
         let m = parse_input();
@@ -218,7 +218,7 @@ pub mod day4 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day4::part2(), 96_951.to_string());
+    /// assert_eq!(aoc_2018::day4::part2(), 96_951.to_string());
     /// ```
     pub fn part2() -> String {
         let m = parse_input();
@@ -267,7 +267,7 @@ pub mod day5 {
     use std::collections::{BTreeSet, VecDeque};
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day5::part1(), 10_804.to_string());
+    /// assert_eq!(aoc_2018::day5::part1(), 10_804.to_string());
     /// ```
     pub fn part1() -> String {
         let left = VecDeque::new();
@@ -276,7 +276,7 @@ pub mod day5 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day5::part2(), 6_650.to_string());
+    /// assert_eq!(aoc_2018::day5::part2(), 6_650.to_string());
     /// ```
     pub fn part2() -> String {
         let a = VecDeque::new();
@@ -326,7 +326,7 @@ pub mod day6 {
     use std::collections::{HashMap, HashSet};
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day6::part1(), 4_976.to_string());
+    /// assert_eq!(aoc_2018::day6::part1(), 4_976.to_string());
     /// ```
     pub fn part1() -> String {
         let targets = parse_input();
@@ -373,7 +373,7 @@ pub mod day6 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day6::part2(), 46_462.to_string());
+    /// assert_eq!(aoc_2018::day6::part2(), 46_462.to_string());
     /// ```
     pub fn part2() -> String {
         let targets = parse_input();
@@ -436,7 +436,7 @@ pub mod day7 {
     use std::collections::{BTreeSet, HashMap};
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day7::part1(), "EUGJKYFQSCLTWXNIZMAPVORDBH");
+    /// assert_eq!(aoc_2018::day7::part1(), "EUGJKYFQSCLTWXNIZMAPVORDBH");
     /// ```
     pub fn part1() -> String {
         let (pop, mut prereqs) = parse_input();
@@ -470,7 +470,7 @@ pub mod day7 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2018::day7::part2(), 1014.to_string());
+    /// assert_eq!(aoc_2018::day7::part2(), 1014.to_string());
     /// ```
     pub fn part2() -> String {
         let (pop, mut prereqs) = parse_input();

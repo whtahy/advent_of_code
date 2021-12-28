@@ -7,5 +7,5 @@
 !*.rs
 !*.txt
 !.gitignore
-cargo.lock
-cargo.toml
+!cargo.lock
+!cargo.toml

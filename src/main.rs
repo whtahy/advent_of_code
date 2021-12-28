@@ -1,4 +1,5 @@
-use std::env;
+// use std::env;
+use std::panic;
 
 type Day = [fn() -> String; 2];
 type Year = [Day; 25];
@@ -17,11 +18,19 @@ fn get(year: usize, day: usize, part: usize) -> String {
     TABLE_OF_CONTENTS[year - 2015][day - 1][part - 1]()
 }
 
-fn arg(i: usize) -> usize {
-    env::args().nth(i).unwrap().parse().unwrap()
-}
-
 fn main() {
-    let [year, day, part] = [arg(1), arg(2), arg(3)];
-    println!("{}", get(year, day, part));
+    panic::set_hook(Box::new(|_| {}));
+    for year in (2015..=2021).rev() {
+        for day in (1..=25).rev() {
+            for part in (1..=2).rev() {
+                match std::panic::catch_unwind(|| get(year, day, part)) {
+                    Ok(ans) => {
+                        println!("{}", ans);
+                        return;
+                    }
+                    Err(_) => continue,
+                }
+            }
+        }
+    }
 }

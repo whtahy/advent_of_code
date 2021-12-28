@@ -37,7 +37,7 @@ pub mod day1 {
     use std::collections::HashSet;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day1::part1(), 800_139.to_string());
+    /// assert_eq!(aoc_2020::day1::part1(), 800_139.to_string());
     /// ```
     pub fn part1() -> String {
         let mut history = HashSet::new();
@@ -54,7 +54,7 @@ pub mod day1 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day1::part2(), 59_885_340.to_string());
+    /// assert_eq!(aoc_2020::day1::part2(), 59_885_340.to_string());
     /// ```
     pub fn part2() -> String {
         let v = INPUT
@@ -78,7 +78,7 @@ pub mod day2 {
     input!(2);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day2::part1(), 655.to_string());
+    /// assert_eq!(aoc_2020::day2::part1(), 655.to_string());
     /// ```
     pub fn part1() -> String {
         INPUT
@@ -93,7 +93,7 @@ pub mod day2 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day2::part2(), 673.to_string());
+    /// assert_eq!(aoc_2020::day2::part2(), 673.to_string());
     /// ```
     pub fn part2() -> String {
         INPUT
@@ -120,7 +120,7 @@ pub mod day3 {
     input!(3);
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day3::part1(), 250.to_string());
+    /// assert_eq!(aoc_2020::day3::part1(), 250.to_string());
     /// ```
     pub fn part1() -> String {
         let trees = parse_input();
@@ -128,7 +128,7 @@ pub mod day3 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day3::part2(), 1_592_662_500.to_string());
+    /// assert_eq!(aoc_2020::day3::part2(), 1_592_662_500.to_string());
     /// ```
     pub fn part2() -> String {
         let trees = parse_input();
@@ -170,7 +170,7 @@ pub mod day4 {
     use std::collections::HashSet;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day4::part1(), 213.to_string());
+    /// assert_eq!(aoc_2020::day4::part1(), 213.to_string());
     /// ```
     pub fn part1() -> String {
         let required_fields: HashSet<_> = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
@@ -194,7 +194,7 @@ pub mod day4 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day4::part2(), 147.to_string());
+    /// assert_eq!(aoc_2020::day4::part2(), 147.to_string());
     /// ```
     pub fn part2() -> String {
         let required_fields: HashSet<_> = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
@@ -251,7 +251,7 @@ pub mod day5 {
     use std::collections::HashSet;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day5::part1(), 935.to_string());
+    /// assert_eq!(aoc_2020::day5::part1(), 935.to_string());
     /// ```
     pub fn part1() -> String {
         INPUT
@@ -264,7 +264,7 @@ pub mod day5 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day5::part2(), 743.to_string());
+    /// assert_eq!(aoc_2020::day5::part2(), 743.to_string());
     /// ```
     pub fn part2() -> String {
         let seat_ids: HashSet<_> = INPUT.lines().map(decode).map(seat_id).collect();
@@ -307,7 +307,7 @@ pub mod day6 {
     use std::collections::HashSet;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day6::part1(), 6903.to_string());
+    /// assert_eq!(aoc_2020::day6::part1(), 6903.to_string());
     /// ```
     pub fn part1() -> String {
         INPUT
@@ -324,7 +324,7 @@ pub mod day6 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day6::part2(), 3_493.to_string());
+    /// assert_eq!(aoc_2020::day6::part2(), 3_493.to_string());
     /// ```
     pub fn part2() -> String {
         INPUT
@@ -349,7 +349,7 @@ pub mod day7 {
     // type BagRules<'a> = HashMap<&'a str, Vec<(&'a str, &'a str)>>;
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day7::part1(), 172.to_string());
+    /// assert_eq!(aoc_2020::day7::part1(), 172.to_string());
     /// ```
     pub fn part1() -> String {
         let rules: ColorRules = INPUT
@@ -377,7 +377,7 @@ pub mod day7 {
     }
 
     /// ```
-    /// assert_eq!(advent_of_code::aoc_2020::day7::part2(), 39_645.to_string());
+    /// assert_eq!(aoc_2020::day7::part2(), 39_645.to_string());
     /// ```
     pub fn part2() -> String {
         // let rules: BagRules = INPUT

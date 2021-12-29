@@ -28,16 +28,29 @@ pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
 
 macro_rules! input {
     ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("../../input/2021/day", $x, ".txt"));
+        const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
     };
 }
 
 pub mod day1 {
     input!(1);
 
+    /// ```
+    /// assert_eq!(aoc_2021::day1::part1(), 1_521.to_string());
+    /// ```
     pub fn part1() -> String {
-        println!("hello world!");
-        INPUT.len().to_string()
+        let mut sum = 0;
+        let mut prev = u32::MAX;
+        INPUT
+            .lines()
+            .map(|x| x.parse::<u32>().unwrap())
+            .for_each(|x| {
+                if x > prev {
+                    sum += 1;
+                }
+                prev = x;
+            });
+        sum.to_string()
     }
 
     pub fn part2() -> String {

@@ -28,7 +28,7 @@ pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
 
 macro_rules! input {
     ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("../../input/2019/day", $x, ".txt"));
+        const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
     };
 }
 

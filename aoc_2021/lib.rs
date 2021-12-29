@@ -39,42 +39,28 @@ pub mod day1 {
     /// assert_eq!(aoc_2021::day1::part1(), 1_521.to_string());
     /// ```
     pub fn part1() -> String {
-        let mut sum = 0;
-        let mut prev = u32::MAX;
         INPUT
             .lines()
             .map(|x| x.parse::<u32>().unwrap())
-            .for_each(|x| {
-                if x > prev {
-                    sum += 1;
-                }
-                prev = x;
-            });
-        sum.to_string()
+            .collect::<Vec<_>>()
+            .windows(2)
+            .filter(|w| w[0] < w[1])
+            .count()
+            .to_string()
     }
 
     /// ```
     /// assert_eq!(aoc_2021::day1::part2(), 1_543.to_string());
     /// ```
     pub fn part2() -> String {
-        let mut sum = 0;
-        let mut prev = u32::MAX;
         INPUT
             .lines()
             .map(|x| x.parse::<u32>().unwrap())
             .collect::<Vec<_>>()
-            .windows(3)
-            .for_each(|w| match w {
-                [a, b, c] => {
-                    let x = a + b + c;
-                    if x > prev {
-                        sum += 1;
-                    }
-                    prev = x;
-                }
-                _ => panic!(),
-            });
-        sum.to_string()
+            .windows(4)
+            .filter(|w| w[0] < w[3])
+            .count()
+            .to_string()
     }
 }
 
@@ -85,30 +71,43 @@ pub mod day2 {
     /// assert_eq!(aoc_2021::day2::part1(), 1_882_980.to_string());
     /// ```
     pub fn part1() -> String {
-        let mut forward = 0;
-        let mut down = 0;
-        let mut up = 0;
-        for x in INPUT.lines() {
-            let (dir, val) = parse(x);
+        let mut horizontal = 0;
+        let mut depth = 0;
+        for (dir, x) in INPUT.lines().map(parse) {
             match dir {
-                "forward" => forward += val,
-                "down" => down += val,
-                "up" => up += val,
+                "forward" => horizontal += x,
+                "down" => depth += x,
+                "up" => depth -= x,
                 _ => panic!(),
             }
         }
-        (forward * (down - up)).to_string()
+        (horizontal * depth).to_string()
     }
 
+    /// ```
+    /// assert_eq!(aoc_2021::day2::part2(), 1_971_232_560.to_string());
+    /// ```
     pub fn part2() -> String {
-        todo!()
+        let mut horizontal = 0;
+        let mut depth = 0;
+        let mut aim = 0;
+        for (dir, x) in INPUT.lines().map(parse) {
+            match dir {
+                "forward" => {
+                    horizontal += x;
+                    depth += aim * x;
+                }
+                "down" => aim += x,
+                "up" => aim -= x,
+                _ => panic!(),
+            }
+        }
+        (horizontal * depth).to_string()
     }
 
     fn parse(line: &str) -> (&str, u32) {
-        let mut split = line.splitn(2, ' ');
-        let dir = split.next().unwrap();
-        let val = split.next().unwrap().parse().unwrap();
-        (dir, val)
+        let (dir, val) = line.split_once(' ').unwrap();
+        (dir, val.parse().unwrap())
     }
 }
 

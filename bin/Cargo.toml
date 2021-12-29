@@ -1,0 +1,17 @@
+[package]
+name = "advent_of_code"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "main.rs"
+name = "advent_of_code"
+
+[dependencies]
+aoc_2021 = { path = "../aoc_2021" }
+aoc_2020 = { path = "../aoc_2020" }
+aoc_2019 = { path = "../aoc_2019" }
+aoc_2018 = { path = "../aoc_2018" }
+aoc_2017 = { path = "../aoc_2017" }
+aoc_2016 = { path = "../aoc_2016" }
+aoc_2015 = { path = "../aoc_2015" }

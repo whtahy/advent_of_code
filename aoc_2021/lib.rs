@@ -53,8 +53,28 @@ pub mod day1 {
         sum.to_string()
     }
 
+    /// ```
+    /// assert_eq!(aoc_2021::day1::part2(), 1_543.to_string());
+    /// ```
     pub fn part2() -> String {
-        todo!()
+        let mut sum = 0;
+        let mut prev = u32::MAX;
+        INPUT
+            .lines()
+            .map(|x| x.parse::<u32>().unwrap())
+            .collect::<Vec<_>>()
+            .windows(3)
+            .for_each(|w| match w {
+                [a, b, c] => {
+                    let x = a + b + c;
+                    if x > prev {
+                        sum += 1;
+                    }
+                    prev = x;
+                }
+                _ => panic!(),
+            });
+        sum.to_string()
     }
 }
 

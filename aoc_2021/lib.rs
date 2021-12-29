@@ -79,12 +79,36 @@ pub mod day1 {
 }
 
 pub mod day2 {
+    input!(2);
+
+    /// ```
+    /// assert_eq!(aoc_2021::day2::part1(), 1_882_980.to_string());
+    /// ```
     pub fn part1() -> String {
-        todo!()
+        let mut forward = 0;
+        let mut down = 0;
+        let mut up = 0;
+        for x in INPUT.lines() {
+            let (dir, val) = parse(x);
+            match dir {
+                "forward" => forward += val,
+                "down" => down += val,
+                "up" => up += val,
+                _ => panic!(),
+            }
+        }
+        (forward * (down - up)).to_string()
     }
 
     pub fn part2() -> String {
         todo!()
+    }
+
+    fn parse(line: &str) -> (&str, u32) {
+        let mut split = line.splitn(2, ' ');
+        let dir = split.next().unwrap();
+        let val = split.next().unwrap().parse().unwrap();
+        (dir, val)
     }
 }
 

@@ -189,89 +189,64 @@ pub mod day3 {
 pub mod day4 {
     input!(4);
 
-    type Board<T> = Vec<Vec<T>>;
+    type Board = [[Option<u32>; 5]; 5];
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Default)]
     struct Bingo {
-        board: Board<u8>,
-        marks: Board<bool>,
+        board: Board,
+        sum: u32,
     }
 
     impl Bingo {
-        fn new(b: &str) -> Bingo {
-            Bingo {
-                board: parse(b),
-                marks: vec![vec![false; 5]; 5],
-            }
+        fn new(s: &str) -> Bingo {
+            s.split_whitespace().flat_map(str::parse).enumerate().fold(
+                Bingo {
+                    ..Default::default()
+                },
+                |mut game, (i, val)| {
+                    let (r, c) = Bingo::index(i);
+                    game.board[r][c] = Some(val);
+                    game.sum += val;
+                    game
+                },
+            )
         }
 
-        fn mark(&mut self, n: u8) -> Option<u32> {
-            for (i, row) in self.board.iter().enumerate() {
-                for (j, x) in row.iter().enumerate() {
-                    if x == &n {
-                        self.marks[i][j] = true;
-                        if self.victory() {
-                            return Some(n as u32 * self.score());
-                        } else {
-                            return None;
-                        }
-                    }
-                }
-            }
-            None
+        fn mark(&mut self, n: u32) {
+            if let Some(i) =
+                self.board.iter().flatten().position(|&x| x == Some(n))
+            {
+                let (r, c) = Bingo::index(i);
+                self.board[r][c] = None;
+                self.sum -= n;
+            };
         }
 
         fn victory(&self) -> bool {
-            for row in self.marks.iter() {
-                if row.iter().all(|&x| x) {
-                    return true;
-                }
-            }
-            for col in 0..=4 {
-                if self.marks.iter().all(|row| row[col]) {
-                    return true;
-                }
-            }
-            false
+            (0..5).any(|i| {
+                (0..5).all(|j| self.board[i][j].is_none()) // row
+                    || (0..5).all(|j| self.board[j][i].is_none()) // col
+            })
         }
 
-        fn score(&self) -> u32 {
-            let mut sum = 0;
-            for (i, row) in self.marks.iter().enumerate() {
-                for (j, x) in row.iter().enumerate() {
-                    if !x {
-                        sum += self.board[i][j] as u32;
-                    }
-                }
-            }
-            sum
+        fn index(i: usize) -> (usize, usize) {
+            (i / 5, i % 5)
         }
-    }
-
-    fn parse(board: &str) -> Board<u8> {
-        board
-            .lines()
-            .map(|line| line.split_whitespace().flat_map(str::parse).collect())
-            .collect()
     }
 
     /// ```
     /// assert_eq!(aoc_2021::day4::part1(), 54_275.to_string());
     /// ```
     pub fn part1() -> String {
-        let mut s = INPUT.split("\r\n\r\n");
-        let draws = s.next().unwrap().split(',').flat_map(str::parse);
-        let mut games: Vec<Bingo> = s.map(Bingo::new).collect();
-
+        let (draws, mut games) = parse();
         for draw in draws {
             for game in games.iter_mut() {
-                match game.mark(draw) {
-                    Some(score) => return score.to_string(),
-                    None => continue,
+                game.mark(draw);
+                if game.victory() {
+                    return (draw * game.sum).to_string();
                 }
             }
         }
-
         panic!()
     }
 
@@ -279,24 +254,24 @@ pub mod day4 {
     /// assert_eq!(aoc_2021::day4::part2(), 13_158.to_string());
     /// ```
     pub fn part2() -> String {
-        let mut s = INPUT.split("\r\n\r\n");
-        let draws = s.next().unwrap().split(',').flat_map(str::parse);
-        let mut games: Vec<Bingo> = s.map(Bingo::new).collect();
-
+        let (draws, mut games) = parse();
         for draw in draws {
-            if games.len() == 1 {
-                match games[0].mark(draw) {
-                    Some(score) => return score.to_string(),
-                    None => continue,
-                }
-            }
             for game in games.iter_mut() {
                 game.mark(draw);
             }
-            games = games.into_iter().filter(|g| !g.victory()).collect();
+            if games.len() == 1 && games[0].victory() {
+                return (draw * games[0].sum).to_string();
+            }
+            games.retain(|g| !g.victory());
         }
-
         panic!()
+    }
+
+    fn parse() -> (impl Iterator<Item = u32>, Vec<Bingo>) {
+        let mut s = INPUT.split("\r\n\r\n");
+        let draws = s.next().unwrap().split(',').flat_map(str::parse);
+        let games = s.map(Bingo::new).collect();
+        (draws, games)
     }
 }
 

@@ -187,12 +187,116 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    pub fn part1() -> String {
-        todo!()
+    input!(4);
+
+    type Board<T> = Vec<Vec<T>>;
+
+    #[derive(Debug, Clone)]
+    struct Bingo {
+        board: Board<u8>,
+        marks: Board<bool>,
     }
 
+    impl Bingo {
+        fn new(b: &str) -> Bingo {
+            Bingo {
+                board: parse(b),
+                marks: vec![vec![false; 5]; 5],
+            }
+        }
+
+        fn mark(&mut self, n: u8) -> Option<u32> {
+            for (i, row) in self.board.iter().enumerate() {
+                for (j, x) in row.iter().enumerate() {
+                    if x == &n {
+                        self.marks[i][j] = true;
+                        if self.victory() {
+                            return Some(n as u32 * self.score());
+                        } else {
+                            return None;
+                        }
+                    }
+                }
+            }
+            None
+        }
+
+        fn victory(&self) -> bool {
+            for row in self.marks.iter() {
+                if row.iter().all(|&x| x) {
+                    return true;
+                }
+            }
+            for col in 0..=4 {
+                if self.marks.iter().all(|row| row[col]) {
+                    return true;
+                }
+            }
+            false
+        }
+
+        fn score(&self) -> u32 {
+            let mut sum = 0;
+            for (i, row) in self.marks.iter().enumerate() {
+                for (j, x) in row.iter().enumerate() {
+                    if !x {
+                        sum += self.board[i][j] as u32;
+                    }
+                }
+            }
+            sum
+        }
+    }
+
+    fn parse(board: &str) -> Board<u8> {
+        board
+            .lines()
+            .map(|line| line.split_whitespace().flat_map(str::parse).collect())
+            .collect()
+    }
+
+    /// ```
+    /// assert_eq!(aoc_2021::day4::part1(), 54_275.to_string());
+    /// ```
+    pub fn part1() -> String {
+        let mut s = INPUT.split("\r\n\r\n");
+        let draws = s.next().unwrap().split(',').flat_map(str::parse);
+        let mut games: Vec<Bingo> = s.map(Bingo::new).collect();
+
+        for draw in draws {
+            for game in games.iter_mut() {
+                match game.mark(draw) {
+                    Some(score) => return score.to_string(),
+                    None => continue,
+                }
+            }
+        }
+
+        panic!()
+    }
+
+    /// ```
+    /// assert_eq!(aoc_2021::day4::part2(), 13_158.to_string());
+    /// ```
     pub fn part2() -> String {
-        todo!()
+        let mut s = INPUT.split("\r\n\r\n");
+        let draws = s.next().unwrap().split(',').flat_map(str::parse);
+        let mut games: Vec<Bingo> = s.map(Bingo::new).collect();
+
+        for draw in draws {
+            if games.len() == 1 {
+                match games[0].mark(draw) {
+                    Some(score) => return score.to_string(),
+                    None => continue,
+                }
+            }
+            for game in games.iter_mut() {
+                game.mark(draw);
+            }
+            games = games.into_iter().filter(|g| !g.victory()).collect();
+        }
+
+        panic!()
     }
 }
 

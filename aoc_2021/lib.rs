@@ -112,12 +112,77 @@ pub mod day2 {
 }
 
 pub mod day3 {
+    input!(3);
+
+    /// ```
+    /// assert_eq!(aoc_2021::day3::part1(), 1_307_354.to_string());
+    /// ```
     pub fn part1() -> String {
-        todo!()
+        let mut counts = [[0, 0]; 12];
+
+        for line in INPUT.lines() {
+            for (i, ch) in line.chars().enumerate() {
+                let x = ch.to_digit(10).unwrap() as usize;
+                counts[i][x] += 1;
+            }
+        }
+
+        let mut gamma = String::new();
+        let mut epsilon = String::new();
+        for x in counts {
+            if x[0] > x[1] {
+                gamma.push('0');
+                epsilon.push('1');
+            } else {
+                gamma.push('1');
+                epsilon.push('0');
+            }
+        }
+
+        binary_product(&gamma, &epsilon).to_string()
     }
 
+    /// ```
+    /// assert_eq!(aoc_2021::day3::part2(), 482_500.to_string());
+    /// ```
     pub fn part2() -> String {
-        todo!()
+        let (mut o2, mut co2) = parse(0, INPUT.lines().collect());
+        for i in 1.. {
+            o2 = parse(i, o2).0;
+            if o2.len() == 1 {
+                break;
+            }
+        }
+        for i in 1.. {
+            co2 = parse(i, co2).1;
+            if co2.len() == 1 {
+                break;
+            }
+        }
+        binary_product(o2[0], co2[0]).to_string()
+    }
+
+    fn parse(i: usize, numbers: Vec<&str>) -> (Vec<&str>, Vec<&str>) {
+        let mut o2 = Vec::new();
+        let mut co2 = Vec::new();
+        for s in numbers {
+            if s.chars().nth(i) == Some('1') {
+                o2.push(s);
+            } else {
+                co2.push(s);
+            }
+        }
+        if co2.len() > o2.len() {
+            std::mem::swap(&mut co2, &mut o2);
+        }
+        (o2, co2)
+    }
+
+    fn binary_product(a: &str, b: &str) -> u32 {
+        [a, b]
+            .iter()
+            .flat_map(|x| u32::from_str_radix(x, 2))
+            .product()
     }
 }
 

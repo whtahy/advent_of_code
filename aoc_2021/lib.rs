@@ -41,7 +41,7 @@ pub mod day1 {
     pub fn part1() -> String {
         INPUT
             .lines()
-            .map(|x| x.parse::<u32>().unwrap())
+            .flat_map(|x| x.parse::<u32>())
             .collect::<Vec<_>>()
             .windows(2)
             .filter(|w| w[0] < w[1])
@@ -55,7 +55,7 @@ pub mod day1 {
     pub fn part2() -> String {
         INPUT
             .lines()
-            .map(|x| x.parse::<u32>().unwrap())
+            .flat_map(|x| x.parse::<u32>())
             .collect::<Vec<_>>()
             .windows(4)
             .filter(|w| w[0] < w[3])

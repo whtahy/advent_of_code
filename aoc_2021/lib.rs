@@ -39,7 +39,7 @@ pub mod day2 {
                 "forward" => horizontal += x,
                 "down" => depth += x,
                 "up" => depth -= x,
-                _ => panic!(),
+                _ => unreachable!(),
             }
         }
         (horizontal * depth).to_string()
@@ -57,7 +57,7 @@ pub mod day2 {
                 }
                 "down" => aim += x,
                 "up" => aim -= x,
-                _ => panic!(),
+                _ => unreachable!(),
             }
         }
         (horizontal * depth).to_string()
@@ -198,7 +198,7 @@ pub mod day4 {
                 }
             }
         }
-        panic!()
+        unreachable!()
     }
 
     pub fn part2() -> String {
@@ -212,7 +212,7 @@ pub mod day4 {
             }
             games.retain(|g| !g.victory());
         }
-        panic!()
+        unreachable!()
     }
 
     fn parse() -> (impl Iterator<Item = u32>, Vec<Bingo>) {

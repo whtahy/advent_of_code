@@ -1,4 +1,15 @@
 #[macro_export]
+macro_rules! input {
+    () => {};
+    ($x:expr) => {
+        const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
+    };
+    ($x:expr, example) => {
+        const INPUT: &str = include_str!(concat!("./day", $x, "_example.txt"));
+    };
+}
+
+#[macro_export]
 macro_rules! table_of_contents {
     () => {
         pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
@@ -32,11 +43,22 @@ macro_rules! table_of_contents {
 }
 
 #[macro_export]
-macro_rules! input {
-    ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
+macro_rules! test {
+    () => {};
+    ($part1:expr) => {
+        #[test]
+        fn test_part1() {
+            assert_eq!(part1(), $part1.to_string())
+        }
     };
-    ($x:expr, example) => {
-        const INPUT: &str = include_str!(concat!("./day", $x, "_example.txt"));
+    ($part1:expr, $part2:expr) => {
+        #[test]
+        fn test_part1() {
+            assert_eq!(part1(), $part1.to_string())
+        }
+        #[test]
+        fn test_part2() {
+            assert_eq!(part2(), $part2.to_string())
+        }
     };
 }

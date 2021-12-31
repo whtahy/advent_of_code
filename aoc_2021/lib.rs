@@ -2,10 +2,8 @@ shared::table_of_contents!();
 
 pub mod day1 {
     shared::input!(1);
+    shared::test!(1_521, 1_543);
 
-    /// ```
-    /// assert_eq!(aoc_2021::day1::part1(), 1_521.to_string());
-    /// ```
     pub fn part1() -> String {
         INPUT
             .lines()
@@ -17,9 +15,6 @@ pub mod day1 {
             .to_string()
     }
 
-    /// ```
-    /// assert_eq!(aoc_2021::day1::part2(), 1_543.to_string());
-    /// ```
     pub fn part2() -> String {
         INPUT
             .lines()
@@ -34,10 +29,8 @@ pub mod day1 {
 
 pub mod day2 {
     shared::input!(2);
+    shared::test!(1_882_980, 1_971_232_560);
 
-    /// ```
-    /// assert_eq!(aoc_2021::day2::part1(), 1_882_980.to_string());
-    /// ```
     pub fn part1() -> String {
         let mut horizontal = 0;
         let mut depth = 0;
@@ -52,9 +45,6 @@ pub mod day2 {
         (horizontal * depth).to_string()
     }
 
-    /// ```
-    /// assert_eq!(aoc_2021::day2::part2(), 1_971_232_560.to_string());
-    /// ```
     pub fn part2() -> String {
         let mut horizontal = 0;
         let mut depth = 0;
@@ -81,10 +71,8 @@ pub mod day2 {
 
 pub mod day3 {
     shared::input!(3);
+    shared::test!(1_307_354, 482_500);
 
-    /// ```
-    /// assert_eq!(aoc_2021::day3::part1(), 1_307_354.to_string());
-    /// ```
     pub fn part1() -> String {
         let mut counts = [[0, 0]; 12];
 
@@ -110,9 +98,6 @@ pub mod day3 {
         binary_product(&gamma, &epsilon).to_string()
     }
 
-    /// ```
-    /// assert_eq!(aoc_2021::day3::part2(), 482_500.to_string());
-    /// ```
     pub fn part2() -> String {
         let (mut o2, mut co2) = parse(0, INPUT.lines().collect());
         for i in 1.. {
@@ -156,6 +141,7 @@ pub mod day3 {
 
 pub mod day4 {
     shared::input!(4);
+    shared::test!(54_275, 13_158);
 
     type Board = [[Option<u32>; 5]; 5];
 
@@ -202,9 +188,6 @@ pub mod day4 {
         }
     }
 
-    /// ```
-    /// assert_eq!(aoc_2021::day4::part1(), 54_275.to_string());
-    /// ```
     pub fn part1() -> String {
         let (draws, mut games) = parse();
         for draw in draws {
@@ -218,9 +201,6 @@ pub mod day4 {
         panic!()
     }
 
-    /// ```
-    /// assert_eq!(aoc_2021::day4::part2(), 13_158.to_string());
-    /// ```
     pub fn part2() -> String {
         let (draws, mut games) = parse();
         for draw in draws {
@@ -244,6 +224,9 @@ pub mod day4 {
 }
 
 pub mod day5 {
+    shared::input!(5, example);
+    // shared::test!(123, 123);
+
     pub fn part1() -> String {
         todo!()
     }

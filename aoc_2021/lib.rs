@@ -295,12 +295,38 @@ pub mod day5 {
 }
 
 pub mod day6 {
+    shared::input!(6);
+    shared::test!(380_612, 1_710_166_656_900 as u64);
+
+    type Counter = [u64; 9];
+
     pub fn part1() -> String {
-        todo!()
+        steps(80, parse()).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        steps(256, parse()).to_string()
+    }
+
+    fn parse() -> Counter {
+        INPUT
+            .split(',')
+            .map(str::trim)
+            .flat_map(str::parse::<usize>)
+            .fold([0; 9], |mut counter, x| {
+                counter[x] += 1;
+                counter
+            })
+    }
+
+    fn steps(n: usize, c: Counter) -> u64 {
+        (1..=n).fold(c, |mut acc, _| step(&mut acc)).iter().sum()
+    }
+
+    fn step(c: &mut Counter) -> Counter {
+        c.rotate_left(1);
+        c[6] += c[8];
+        *c
     }
 }
 

@@ -301,11 +301,11 @@ pub mod day6 {
     type Counter = [u64; 9];
 
     pub fn part1() -> String {
-        steps(80, parse()).to_string()
+        steps(80).to_string()
     }
 
     pub fn part2() -> String {
-        steps(256, parse()).to_string()
+        steps(256).to_string()
     }
 
     fn parse() -> Counter {
@@ -319,14 +319,15 @@ pub mod day6 {
             })
     }
 
-    fn steps(n: usize, c: Counter) -> u64 {
-        (1..=n).fold(c, |mut acc, _| step(&mut acc)).iter().sum()
-    }
-
-    fn step(c: &mut Counter) -> Counter {
-        c.rotate_left(1);
-        c[6] += c[8];
-        *c
+    fn steps(n: usize) -> u64 {
+        (1..=n)
+            .fold(parse(), |mut c, _| {
+                c.rotate_left(1);
+                c[6] += c[8];
+                c
+            })
+            .iter()
+            .sum()
     }
 }
 

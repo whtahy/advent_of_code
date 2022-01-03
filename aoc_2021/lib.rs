@@ -224,11 +224,11 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    use std::collections::HashMap;
-    use std::iter::repeat;
-
     shared::input!(5);
     shared::test!(5_576, 18_144);
+
+    use std::collections::HashMap;
+    use std::iter::repeat;
 
     pub fn part1() -> String {
         let mut counts = HashMap::new();
@@ -237,7 +237,7 @@ pub mod day5 {
             let (mut x1, mut y1) = parse(p1);
             let (mut x2, mut y2) = parse(p2);
 
-            if x1 != x2 && y1 != y2 {
+            if !(x1 == x2 || y1 == y2) {
                 continue;
             }
 

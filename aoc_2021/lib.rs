@@ -234,7 +234,7 @@ pub mod day5 {
     struct Vent {
         p1: Point,
         p2: Point,
-        delta: (i32, i32),
+        step: (i32, i32),
     }
 
     impl Vent {
@@ -242,8 +242,8 @@ pub mod day5 {
             let (p1, p2) = s.split_once(" -> ").unwrap();
             let p1 = Self::parse(p1);
             let p2 = Self::parse(p2);
-            let delta = ((p2.0 - p1.0).signum(), (p2.1 - p1.1).signum());
-            Vent { p1, p2, delta }
+            let step = ((p2.0 - p1.0).signum(), (p2.1 - p1.1).signum());
+            Vent { p1, p2, step }
         }
 
         fn parse(s: &str) -> Point {
@@ -258,7 +258,7 @@ pub mod day5 {
         fn next(&mut self) -> Option<Point> {
             let (x1, y1) = self.p1;
             let (x2, y2) = self.p2;
-            let (dx, dy) = self.delta;
+            let (dx, dy) = self.step;
             if x1 == x2 + dx && y1 == y2 + dy {
                 None
             } else {

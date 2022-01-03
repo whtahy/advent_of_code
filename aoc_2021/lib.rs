@@ -224,15 +224,111 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    shared::input!(5, example);
-    // shared::test!(123, 123);
+    use std::collections::HashSet;
+    use std::iter::repeat;
+
+    shared::input!(5);
+    shared::test!(5_576, 18_144);
+
+    #[derive(Debug, PartialEq, Eq, Hash)]
+    struct Point {
+        x: u32,
+        y: u32,
+    }
+
+    #[derive(Debug, PartialEq, Eq, Hash)]
+    struct Line {
+        p1: Point,
+        p2: Point,
+    }
+
+    impl Point {
+        fn new(s: &str) -> Point {
+            let (x, y) = s.split_once(',').unwrap();
+            Point {
+                x: x.parse().unwrap(),
+                y: y.parse().unwrap(),
+            }
+        }
+    }
+
+    impl Line {
+        fn new(s: &str) -> Line {
+            let (p1, p2) = s.split_once(" -> ").unwrap();
+            let mut p1 = Point::new(p1);
+            let mut p2 = Point::new(p2);
+            if p1.x > p2.x {
+                std::mem::swap(&mut p1, &mut p2);
+            }
+            Line { p1, p2 }
+        }
+
+        fn points(&self) -> Vec<Point> {
+            let (x1, y1) = (self.p1.x, self.p1.y);
+            let (x2, y2) = (self.p2.x, self.p2.y);
+            let mut v = Vec::new();
+
+            if x1 == x2 {
+                for (x, y) in repeat(x1).zip(y1.min(y2)..=y1.max(y2)) {
+                    v.push(Point { x, y });
+                }
+            } else if y1 == y2 {
+                for (x, y) in (x1..=x2).zip(repeat(y1)) {
+                    v.push(Point { x, y });
+                }
+            } else if y1 < y2 {
+                for (x, y) in (x1..=x2).zip(y1..=y2) {
+                    v.push(Point { x, y });
+                }
+            } else {
+                for (x, y) in (x1..=x2).zip((y2..=y1).rev()) {
+                    v.push(Point { x, y });
+                }
+            }
+            v
+        }
+
+        fn is_not_diag(&self) -> bool {
+            self.p1.x == self.p2.x || self.p1.y == self.p2.y
+        }
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let mut points = HashSet::new();
+        let mut duplicates = HashSet::new();
+        let mut count = 0;
+        for line in INPUT.lines().map(Line::new).filter(Line::is_not_diag) {
+            for p in line.points() {
+                if duplicates.contains(&p) {
+                    continue;
+                } else if points.contains(&p) {
+                    duplicates.insert(p);
+                    count += 1;
+                } else {
+                    points.insert(p);
+                }
+            }
+        }
+        count.to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut points = HashSet::new();
+        let mut duplicates = HashSet::new();
+        let mut count = 0;
+        for line in INPUT.lines().map(Line::new) {
+            for p in line.points() {
+                if duplicates.contains(&p) {
+                    continue;
+                } else if points.contains(&p) {
+                    duplicates.insert(p);
+                    count += 1;
+                } else {
+                    points.insert(p);
+                }
+            }
+        }
+        count.to_string()
     }
 }
 

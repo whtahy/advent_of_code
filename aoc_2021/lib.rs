@@ -270,22 +270,25 @@ pub mod day5 {
     }
 
     pub fn part1() -> String {
-        let mut counts = HashMap::new();
-        for (x, y) in INPUT
+        INPUT
             .lines()
             .map(Vent::new)
             .filter(|v| v.p1.0 == v.p2.0 || v.p1.1 == v.p2.1)
             .flatten()
-        {
-            *counts.entry((x, y)).or_insert(0) += 1;
-        }
-        counts.values().filter(|&&x| x >= 2).count().to_string()
+            .fold(HashMap::new(), |mut counts, p| {
+                *counts.entry(p).or_insert(0) += 1;
+                counts
+            })
+            .values()
+            .filter(|&&x| x >= 2)
+            .count()
+            .to_string()
     }
 
     pub fn part2() -> String {
         let mut counts = HashMap::new();
-        for (x, y) in INPUT.lines().map(Vent::new).flatten() {
-            *counts.entry((x, y)).or_insert(0) += 1;
+        for p in INPUT.lines().map(Vent::new).flatten() {
+            *counts.entry(p).or_insert(0) += 1;
         }
         counts.values().filter(|&&x| x >= 2).count().to_string()
     }

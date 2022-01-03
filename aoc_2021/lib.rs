@@ -224,111 +224,81 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    use std::collections::HashSet;
+    use std::collections::HashMap;
     use std::iter::repeat;
 
     shared::input!(5);
     shared::test!(5_576, 18_144);
 
-    #[derive(Debug, PartialEq, Eq, Hash)]
-    struct Point {
-        x: u32,
-        y: u32,
-    }
-
-    #[derive(Debug, PartialEq, Eq, Hash)]
-    struct Line {
-        p1: Point,
-        p2: Point,
-    }
-
-    impl Point {
-        fn new(s: &str) -> Point {
-            let (x, y) = s.split_once(',').unwrap();
-            Point {
-                x: x.parse().unwrap(),
-                y: y.parse().unwrap(),
-            }
-        }
-    }
-
-    impl Line {
-        fn new(s: &str) -> Line {
-            let (p1, p2) = s.split_once(" -> ").unwrap();
-            let mut p1 = Point::new(p1);
-            let mut p2 = Point::new(p2);
-            if p1.x > p2.x {
-                std::mem::swap(&mut p1, &mut p2);
-            }
-            Line { p1, p2 }
-        }
-
-        fn points(&self) -> Vec<Point> {
-            let (x1, y1) = (self.p1.x, self.p1.y);
-            let (x2, y2) = (self.p2.x, self.p2.y);
-            let mut v = Vec::new();
-
-            if x1 == x2 {
-                for (x, y) in repeat(x1).zip(y1.min(y2)..=y1.max(y2)) {
-                    v.push(Point { x, y });
-                }
-            } else if y1 == y2 {
-                for (x, y) in (x1..=x2).zip(repeat(y1)) {
-                    v.push(Point { x, y });
-                }
-            } else if y1 < y2 {
-                for (x, y) in (x1..=x2).zip(y1..=y2) {
-                    v.push(Point { x, y });
-                }
-            } else {
-                for (x, y) in (x1..=x2).zip((y2..=y1).rev()) {
-                    v.push(Point { x, y });
-                }
-            }
-            v
-        }
-
-        fn is_not_diag(&self) -> bool {
-            self.p1.x == self.p2.x || self.p1.y == self.p2.y
-        }
-    }
-
     pub fn part1() -> String {
-        let mut points = HashSet::new();
-        let mut duplicates = HashSet::new();
-        let mut count = 0;
-        for line in INPUT.lines().map(Line::new).filter(Line::is_not_diag) {
-            for p in line.points() {
-                if duplicates.contains(&p) {
-                    continue;
-                } else if points.contains(&p) {
-                    duplicates.insert(p);
-                    count += 1;
-                } else {
-                    points.insert(p);
-                }
+        let mut counts = HashMap::new();
+        for line in INPUT.lines() {
+            let (p1, p2) = line.split_once(" -> ").unwrap();
+            let (mut x1, mut y1) = parse(p1);
+            let (mut x2, mut y2) = parse(p2);
+
+            if x1 != x2 && y1 != y2 {
+                continue;
+            }
+
+            if x1 > x2 {
+                std::mem::swap(&mut x1, &mut x2);
+                std::mem::swap(&mut y1, &mut y2);
+            }
+
+            for (x, y) in iter(x1, y1, x2, y2) {
+                *counts.entry((x, y)).or_insert(0) += 1;
             }
         }
-        count.to_string()
+        counts.values().filter(|&&x| x >= 2).count().to_string()
     }
 
     pub fn part2() -> String {
-        let mut points = HashSet::new();
-        let mut duplicates = HashSet::new();
-        let mut count = 0;
-        for line in INPUT.lines().map(Line::new) {
-            for p in line.points() {
-                if duplicates.contains(&p) {
-                    continue;
-                } else if points.contains(&p) {
-                    duplicates.insert(p);
-                    count += 1;
-                } else {
-                    points.insert(p);
-                }
+        let mut counts = HashMap::new();
+        for line in INPUT.lines() {
+            let (p1, p2) = line.split_once(" -> ").unwrap();
+            let (mut x1, mut y1) = parse(p1);
+            let (mut x2, mut y2) = parse(p2);
+
+            if x1 > x2 {
+                std::mem::swap(&mut x1, &mut x2);
+                std::mem::swap(&mut y1, &mut y2);
+            }
+
+            for (x, y) in iter(x1, y1, x2, y2) {
+                *counts.entry((x, y)).or_insert(0) += 1;
             }
         }
-        count.to_string()
+        counts.values().filter(|&&x| x >= 2).count().to_string()
+    }
+
+    fn iter(
+        x1: u32,
+        y1: u32,
+        x2: u32,
+        y2: u32,
+    ) -> Box<dyn Iterator<Item = (u32, u32)>> {
+        // horizontal
+        if x1 == x2 {
+            Box::new(repeat(x1).zip(y1.min(y2)..=y1.max(y2)))
+        }
+        // vertical
+        else if y1 == y2 {
+            Box::new((x1..=x2).zip(repeat(y1)))
+        }
+        // SW -> NE
+        else if y1 < y2 {
+            Box::new((x1..=x2).zip(y1..=y2))
+        }
+        // NW -> SE
+        else {
+            Box::new((x1..=x2).zip((y2..=y1).rev()))
+        }
+    }
+
+    fn parse(s: &str) -> (u32, u32) {
+        let (x, y) = s.split_once(',').unwrap();
+        (x.parse().unwrap(), y.parse().unwrap())
     }
 }
 

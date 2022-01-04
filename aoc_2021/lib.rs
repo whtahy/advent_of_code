@@ -332,12 +332,44 @@ pub mod day6 {
 }
 
 pub mod day7 {
+    shared::input!(7);
+    shared::test!(344_297, 97_164_301); // examples: 37, 168
+
     pub fn part1() -> String {
-        todo!()
+        let mut input = parse();
+        input.sort_unstable();
+        let median = input[input.len() / 2];
+        input
+            .iter()
+            .map(|x| (x - median).abs())
+            .sum::<i32>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let input = parse();
+        let mean = input.iter().sum::<i32>() as f32 / input.len() as f32;
+        let a = triangle_sum(mean.floor() as i32, &input);
+        let b = triangle_sum(mean.ceil() as i32, &input);
+        a.min(b).to_string()
+    }
+
+    fn triangle_sum(pos: i32, input: &Vec<i32>) -> i32 {
+        input
+            .iter()
+            .map(|x| {
+                let n = (x - pos).abs();
+                n * (n + 1) / 2
+            })
+            .sum()
+    }
+
+    fn parse() -> Vec<i32> {
+        INPUT
+            .split(',')
+            .map(str::trim)
+            .flat_map(str::parse)
+            .collect()
     }
 }
 

@@ -374,8 +374,18 @@ pub mod day7 {
 }
 
 pub mod day8 {
+    shared::input!(8);
+    shared::test!(352); // examples: 26, 61_229
+
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .flat_map(|x| x.split_once(" | "))
+            .flat_map(|(_, x)| x.split_whitespace())
+            .map(str::trim)
+            .filter(|s| [2, 3, 4, 7].iter().any(|&x| x == s.len()))
+            .count()
+            .to_string()
     }
 
     pub fn part2() -> String {

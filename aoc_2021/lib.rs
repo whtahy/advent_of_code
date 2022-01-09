@@ -436,8 +436,53 @@ pub mod day8 {
 }
 
 pub mod day9 {
+    shared::input!(9);
+    shared::test!(575); // examples: 15, 1134
+
     pub fn part1() -> String {
-        todo!()
+        let mut grid: Vec<Vec<u32>> = Default::default();
+        for line in INPUT.lines() {
+            let mut row = Vec::new();
+            for ch in line.chars() {
+                row.push(ch.to_digit(10).unwrap());
+            }
+            grid.push(row);
+        }
+
+        let n_rows = grid.len() as i32;
+        let n_cols = grid[0].len() as i32;
+
+        let mut sum = 0;
+        for i in 0..n_rows {
+            for j in 0..n_cols {
+                let mut low = true;
+                for dx in -1..=1 {
+                    let x = j + dx;
+                    if x < 0 || x >= n_cols {
+                        continue;
+                    }
+                    for dy in -1..=1 {
+                        let y = i + dy;
+                        if y < 0 || y >= n_rows || (dx, dy) == (0, 0) {
+                            continue;
+                        }
+                        if grid[i as usize][j as usize]
+                            > grid[y as usize][x as usize]
+                        {
+                            low = false;
+                            continue;
+                        }
+                    }
+                    if !low {
+                        continue;
+                    }
+                }
+                if low {
+                    sum += 1 + grid[i as usize][j as usize];
+                }
+            }
+        }
+        sum.to_string()
     }
 
     pub fn part2() -> String {

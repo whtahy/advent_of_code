@@ -2,7 +2,7 @@ shared::table_of_contents!();
 
 pub mod day1 {
     shared::input!(1);
-    shared::test!(1_521, 1_543);
+    shared::test!(1_521, 1_543); // examples: 7, 5
 
     pub fn part1() -> String {
         INPUT
@@ -29,7 +29,7 @@ pub mod day1 {
 
 pub mod day2 {
     shared::input!(2);
-    shared::test!(1_882_980, 1_971_232_560);
+    shared::test!(1_882_980, 1_971_232_560); // examples: 150, 900
 
     pub fn part1() -> String {
         let mut horizontal = 0;
@@ -71,7 +71,7 @@ pub mod day2 {
 
 pub mod day3 {
     shared::input!(3);
-    shared::test!(1_307_354, 482_500);
+    shared::test!(1_307_354, 482_500); // examples: 198, 230
 
     pub fn part1() -> String {
         let mut counts = [[0, 0]; 12];
@@ -141,7 +141,7 @@ pub mod day3 {
 
 pub mod day4 {
     shared::input!(4);
-    shared::test!(54_275, 13_158);
+    shared::test!(54_275, 13_158); // examples: 4_512, 1_924
 
     type Board = [[Option<u32>; 5]; 5];
 
@@ -225,7 +225,7 @@ pub mod day4 {
 
 pub mod day5 {
     shared::input!(5);
-    shared::test!(5_576, 18_144);
+    shared::test!(5_576, 18_144); // examples: 5, 12
 
     use std::collections::HashMap;
 
@@ -297,6 +297,7 @@ pub mod day5 {
 pub mod day6 {
     shared::input!(6);
     shared::test!(380_612, 1_710_166_656_900_u64);
+    // examples: 5_934, 26_984_457_539_u64
 
     type Counter = [u64; 9];
 
@@ -437,7 +438,7 @@ pub mod day8 {
 
 pub mod day9 {
     shared::input!(9);
-    shared::test!(575); // examples: 15, 1134
+    shared::test!(575); // examples: 15, 1_134
 
     pub fn part1() -> String {
         let mut grid: Vec<Vec<u32>> = Default::default();

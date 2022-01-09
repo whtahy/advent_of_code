@@ -296,7 +296,7 @@ pub mod day5 {
 
 pub mod day6 {
     shared::input!(6);
-    shared::test!(380_612, 1_710_166_656_900 as u64);
+    shared::test!(380_612, 1_710_166_656_900_u64);
 
     type Counter = [u64; 9];
 

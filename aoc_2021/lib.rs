@@ -391,45 +391,47 @@ pub mod day8 {
     }
 
     pub fn part2() -> String {
-        INPUT
-            .lines()
-            .flat_map(|x| x.split_once(" | "))
-            .map(|(prefix, suffix)| {
-                let set = |w: &str| HashSet::<_>::from_iter(w.chars());
+        INPUT.lines().map(decode_line).sum::<u32>().to_string()
+    }
 
-                let mut decode = HashMap::new();
-                for word in prefix.split_whitespace() {
-                    match word.len() {
-                        2 => decode.insert(1, set(word)),
-                        4 => decode.insert(4, set(word)),
-                        _ => continue,
-                    };
-                }
+    fn decode_line(s: &str) -> u32 {
+        let (prefix, suffix) = s.split_once(" | ").unwrap();
+        let set = |w: &str| HashSet::<_>::from_iter(w.chars());
 
-                suffix
-                    .split_whitespace()
-                    .map(|word| {
-                        let f = |x| (&set(word) & &decode[&x]).len();
-                        match (word.len(), f(1), f(4)) {
-                            (2, _, _) => '1',
-                            (3, _, _) => '7',
-                            (4, _, _) => '4',
-                            (7, _, _) => '8',
-                            (5, _, 2) => '2',
-                            (5, 2, _) => '3',
-                            (5, _, _) => '5',
-                            (6, 1, _) => '6',
-                            (6, _, 4) => '9',
-                            (6, _, _) => '0',
-                            _ => unreachable!(),
-                        }
-                    })
-                    .collect::<String>()
-                    .parse::<u32>()
-                    .unwrap()
-            })
-            .sum::<u32>()
-            .to_string()
+        // prefix
+        let mut code = HashMap::new();
+        for word in prefix.split_whitespace() {
+            match word.len() {
+                2 => code.insert(1, set(word)),
+                4 => code.insert(4, set(word)),
+                _ => continue,
+            };
+        }
+
+        // suffix
+        let decode_word = |w: &str| {
+            let intersect = |x| (&set(w) & &code[&x]).len();
+            match (w.len(), intersect(1), intersect(4)) {
+                (2, _, _) => '1',
+                (3, _, _) => '7',
+                (4, _, _) => '4',
+                (7, _, _) => '8',
+                (5, _, 2) => '2',
+                (5, 2, _) => '3',
+                (5, _, _) => '5',
+                (6, 1, _) => '6',
+                (6, _, 4) => '9',
+                (6, _, _) => '0',
+                _ => unreachable!(),
+            }
+        };
+
+        suffix
+            .split_whitespace()
+            .map(decode_word)
+            .collect::<String>()
+            .parse()
+            .unwrap()
     }
 }
 

@@ -375,7 +375,9 @@ pub mod day7 {
 
 pub mod day8 {
     shared::input!(8);
-    shared::test!(352); // examples: 26, 61_229
+    shared::test!(352, 936_117); // examples: 26, 61_229
+
+    use std::collections::HashMap;
 
     pub fn part1() -> String {
         INPUT
@@ -389,7 +391,86 @@ pub mod day8 {
     }
 
     pub fn part2() -> String {
-        todo!()
+        let canon = HashMap::from([
+            ("abcefg", '0'),
+            ("cf", '1'),
+            ("acdeg", '2'),
+            ("acdfg", '3'),
+            ("bcdf", '4'),
+            ("abdfg", '5'),
+            ("abdefg", '6'),
+            ("acf", '7'),
+            ("abcdefg", '8'),
+            ("abcdfg", '9'),
+        ]);
+
+        INPUT
+            .lines()
+            .map(|line| decode_line(line, &canon))
+            .sum::<u32>()
+            .to_string()
+    }
+
+    fn decode_line(line: &str, canon: &HashMap<&str, char>) -> u32 {
+        let (prefix, suffix) = line.split_once(" | ").unwrap();
+        let decode = decode_letters(prefix);
+        suffix
+            .split_whitespace()
+            .map(|word| decode_word(word, &decode, canon))
+            .collect::<String>()
+            .parse()
+            .unwrap()
+    }
+
+    fn decode_word(
+        word: &str,
+        decode: &HashMap<char, char>,
+        canon: &HashMap<&str, char>,
+    ) -> char {
+        let mut v = word.chars().map(|ch| decode[&ch]).collect::<Vec<_>>();
+        v.sort_unstable();
+        *canon.get(&*String::from_iter(v)).unwrap()
+    }
+
+    fn decode_letters(prefix: &str) -> HashMap<char, char> {
+        let mut digits: [&str; 10] = Default::default();
+        let mut counts = HashMap::new();
+        let mut decode = HashMap::new();
+
+        // Step 1: decode digits 1, 4, 7, 8 using len()
+        for word in prefix.split_whitespace() {
+            for ch in word.chars() {
+                *counts.entry(ch).or_insert(0) += 1;
+            }
+            let i = match word.len() {
+                2 => 1,
+                3 => 7,
+                4 => 4,
+                7 => 8,
+                _ => continue,
+            };
+            digits[i] = word;
+        }
+
+        // Step 2: decode letters e, b, f using counts
+        let count = |x| *counts.iter().find(|(_, v)| **v == x).unwrap().0;
+        decode.insert(count(4), 'e');
+        decode.insert(count(6), 'b');
+        decode.insert(count(9), 'f');
+
+        // Step 3: decode remaining letters using deduction
+        let mut deduce = |x: usize, ch| {
+            decode.insert(
+                digits[x].chars().find(|c| !decode.contains_key(c)).unwrap(),
+                ch,
+            );
+        };
+        deduce(1, 'c');
+        deduce(4, 'd');
+        deduce(7, 'a');
+        deduce(8, 'g');
+
+        decode
     }
 }
 

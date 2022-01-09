@@ -25,7 +25,7 @@ fn main() {
             for part in (1..=2).rev() {
                 match std::panic::catch_unwind(|| get(year, day, part)) {
                     Ok(ans) => {
-                        println!("{}", ans);
+                        println!("{} Day{} Part{}: {}", year, day, part, ans);
                         return;
                     }
                     Err(_) => continue,

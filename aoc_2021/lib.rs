@@ -354,7 +354,7 @@ pub mod day7 {
         a.min(b).to_string()
     }
 
-    fn triangle_sum(pos: i32, input: &Vec<i32>) -> i32 {
+    fn triangle_sum(pos: i32, input: &[i32]) -> i32 {
         input
             .iter()
             .map(|x| {

@@ -440,6 +440,18 @@ pub mod day9 {
     shared::input!(9);
     shared::test!(575); // examples: 15, 1_134
 
+    const DELTA: [(isize, isize); 8] = [
+        (-1, -1),
+        (-1, 0),
+        (-1, 1),
+        (0, -1),
+        // (0, 0),
+        (0, 1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+    ];
+
     pub fn part1() -> String {
         let mut grid: Vec<Vec<u32>> = Default::default();
         for line in INPUT.lines() {
@@ -450,39 +462,33 @@ pub mod day9 {
             grid.push(row);
         }
 
-        let n_rows = grid.len() as i32;
-        let n_cols = grid[0].len() as i32;
+        let n_rows = grid.len();
+        let n_cols = grid[0].len();
+
+        let adjacent = |x: isize, y: isize| {
+            DELTA
+                .iter()
+                .map(move |(dx, dy)| (x + dx, y + dy))
+                .filter(|(x, y)| {
+                    0 <= *x
+                        && *x < n_cols as isize
+                        && 0 <= *y
+                        && *y < n_rows as isize
+                })
+                .map(|(x, y)| (x as usize, y as usize))
+        };
 
         let mut sum = 0;
-        for i in 0..n_rows {
-            for j in 0..n_cols {
-                let mut low = true;
-                for dx in -1..=1 {
-                    let x = j + dx;
-                    if x < 0 || x >= n_cols {
-                        continue;
-                    }
-                    for dy in -1..=1 {
-                        let y = i + dy;
-                        if y < 0 || y >= n_rows || (dx, dy) == (0, 0) {
-                            continue;
-                        }
-                        if grid[i as usize][j as usize]
-                            > grid[y as usize][x as usize]
-                        {
-                            low = false;
-                            continue;
-                        }
-                    }
-                    if !low {
-                        continue;
-                    }
-                }
-                if low {
-                    sum += 1 + grid[i as usize][j as usize];
+        for r in 0..n_rows {
+            for c in 0..n_cols {
+                if adjacent(c as isize, r as isize)
+                    .all(|(x, y)| grid[r][c] < grid[y][x])
+                {
+                    sum += grid[r][c] + 1;
                 }
             }
         }
+
         sum.to_string()
     }
 

@@ -287,7 +287,7 @@ pub mod day5 {
 
     pub fn part2() -> String {
         let mut counts = HashMap::new();
-        for p in INPUT.lines().map(Vent::new).flatten() {
+        for p in INPUT.lines().flat_map(Vent::new) {
             *counts.entry(p).or_insert(0) += 1;
         }
         counts.values().filter(|&&x| x >= 2).count().to_string()

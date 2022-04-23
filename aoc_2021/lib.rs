@@ -450,10 +450,10 @@ pub mod day9 {
         let adjacent = |r: usize, c: usize| {
             [(1, 0), (0, 1)]
                 .iter()
-                .flat_map(move |(dx, dy)| {
+                .flat_map(move |(dy, dx)| {
                     [
-                        (r.overflowing_add(*dx).0, c.overflowing_add(*dy).0),
-                        (r.overflowing_sub(*dx).0, c.overflowing_sub(*dy).0),
+                        (r.overflowing_add(*dy).0, c.overflowing_add(*dx).0),
+                        (r.overflowing_sub(*dy).0, c.overflowing_sub(*dx).0),
                     ]
                 })
                 .filter_map(|(r, c)| grid.get(r)?.get(c))

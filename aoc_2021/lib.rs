@@ -440,51 +440,30 @@ pub mod day9 {
     shared::input!(9);
     shared::test!(575); // examples: 15, 1_134
 
-    const DELTA: [(isize, isize); 8] = [
-        (-1, -1),
-        (-1, 0),
-        (-1, 1),
-        (0, -1),
-        // (0, 0),
-        (0, 1),
-        (1, -1),
-        (1, 0),
-        (1, 1),
-    ];
-
     pub fn part1() -> String {
-        let mut grid: Vec<Vec<u32>> = Default::default();
-        for line in INPUT.lines() {
-            let mut row = Vec::new();
-            for ch in line.chars() {
-                row.push(ch.to_digit(10).unwrap());
-            }
-            grid.push(row);
-        }
+        // row major
+        let grid: Vec<Vec<u32>> = INPUT
+            .lines()
+            .map(|ln| ln.chars().map(|ch| ch.to_digit(10).unwrap()).collect())
+            .collect();
 
-        let n_rows = grid.len();
-        let n_cols = grid[0].len();
-
-        let adjacent = |x: isize, y: isize| {
-            DELTA
+        let adjacent = |r: usize, c: usize| {
+            [(1, 0), (0, 1)]
                 .iter()
-                .map(move |(dx, dy)| (x + dx, y + dy))
-                .filter(|(x, y)| {
-                    0 <= *x
-                        && *x < n_cols as isize
-                        && 0 <= *y
-                        && *y < n_rows as isize
+                .flat_map(move |(dx, dy)| {
+                    [
+                        (r.overflowing_add(*dx).0, c.overflowing_add(*dy).0),
+                        (r.overflowing_sub(*dx).0, c.overflowing_sub(*dy).0),
+                    ]
                 })
-                .map(|(x, y)| (x as usize, y as usize))
+                .filter_map(|(r, c)| grid.get(r)?.get(c))
         };
 
         let mut sum = 0;
-        for r in 0..n_rows {
-            for c in 0..n_cols {
-                if adjacent(c as isize, r as isize)
-                    .all(|(x, y)| grid[r][c] < grid[y][x])
-                {
-                    sum += grid[r][c] + 1;
+        for (r, row) in grid.iter().enumerate() {
+            for (c, val) in row.iter().enumerate() {
+                if adjacent(r, c).all(|n| val < n) {
+                    sum += val + 1;
                 }
             }
         }

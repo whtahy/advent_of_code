@@ -441,28 +441,11 @@ pub mod day9 {
     shared::test!(575); // examples: 15, 1_134
 
     pub fn part1() -> String {
-        // row major
-        let grid: Vec<Vec<u32>> = INPUT
-            .lines()
-            .map(|ln| ln.chars().map(|ch| ch.to_digit(10).unwrap()).collect())
-            .collect();
-
-        let adjacent = |r: usize, c: usize| {
-            [(1, 0), (0, 1)]
-                .iter()
-                .flat_map(move |(dy, dx)| {
-                    [
-                        (r.overflowing_add(*dy).0, c.overflowing_add(*dx).0),
-                        (r.overflowing_sub(*dy).0, c.overflowing_sub(*dx).0),
-                    ]
-                })
-                .filter_map(|(r, c)| grid.get(r)?.get(c))
-        };
-
+        let grid = grid();
         let mut sum = 0;
         for (r, row) in grid.iter().enumerate() {
             for (c, val) in row.iter().enumerate() {
-                if adjacent(r, c).all(|n| val < n) {
+                if adjacent(&grid, r, c).all(|(rr, cc)| val < &grid[rr][cc]) {
                     sum += val + 1;
                 }
             }
@@ -473,6 +456,33 @@ pub mod day9 {
 
     pub fn part2() -> String {
         todo!()
+    }
+
+    fn grid() -> Vec<Vec<usize>> {
+        INPUT
+            .lines()
+            .map(|ln| {
+                ln.chars()
+                    .map(|ch| ch.to_digit(10).unwrap() as usize)
+                    .collect()
+            })
+            .collect()
+    }
+
+    fn adjacent(
+        grid: &[Vec<usize>],
+        row: usize,
+        col: usize,
+    ) -> impl Iterator<Item = (usize, usize)> + '_ {
+        [(1, 0), (0, 1)]
+            .into_iter()
+            .flat_map(move |(dy, dx)| {
+                [
+                    (row.wrapping_add(dy), col.wrapping_add(dx)),
+                    (row.wrapping_sub(dy), col.wrapping_sub(dx)),
+                ]
+            })
+            .filter(|(r, c)| grid.get(*r).and_then(|row| row.get(*c)).is_some())
     }
 }
 

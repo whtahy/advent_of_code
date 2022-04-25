@@ -438,7 +438,9 @@ pub mod day8 {
 
 pub mod day9 {
     shared::input!(9);
-    shared::test!(575); // examples: 15, 1_134
+    shared::test!(575, 1_019_700); // examples: 15, 1_134
+
+    use std::collections::{BTreeSet, HashSet};
 
     pub fn part1() -> String {
         let grid = grid();
@@ -455,7 +457,42 @@ pub mod day9 {
     }
 
     pub fn part2() -> String {
-        todo!()
+        let grid = grid();
+        let mut low_points = Vec::new();
+
+        for r in 0..grid.len() {
+            for c in 0..grid[r].len() {
+                if adjacent(&grid, r, c)
+                    .all(|(rr, cc)| grid[r][c] < grid[rr][cc])
+                {
+                    low_points.push((r, c));
+                }
+            }
+        }
+
+        let mut basin_sizes = BTreeSet::new();
+        let mut stack = Vec::new();
+        for (r, c) in low_points {
+            let mut history = HashSet::new();
+            stack.push((r, c));
+            while !stack.is_empty() {
+                let cell = stack.pop().unwrap();
+                for (rr, cc) in adjacent(&grid, cell.0, cell.1) {
+                    if grid[rr][cc] != 9 && !history.contains(&(rr, cc)) {
+                        stack.push((rr, cc));
+                    }
+                }
+                history.insert(cell);
+            }
+            basin_sizes.insert(history.len());
+        }
+
+        basin_sizes
+            .iter()
+            .rev()
+            .take(3)
+            .product::<usize>()
+            .to_string()
     }
 
     fn grid() -> Vec<Vec<usize>> {

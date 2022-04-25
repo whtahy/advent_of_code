@@ -444,40 +444,50 @@ pub mod day9 {
 
     pub fn part1() -> String {
         let grid = grid();
-        let mut sum = 0;
-        for (r, row) in grid.iter().enumerate() {
-            for (c, val) in row.iter().enumerate() {
-                if adjacent(&grid, r, c).all(|(rr, cc)| val < &grid[rr][cc]) {
-                    sum += val + 1;
-                }
-            }
-        }
+        let cartesian = grid.iter().enumerate().flat_map(|(r, row)| {
+            row.iter().enumerate().map(move |(c, val)| (r, c, val))
+        });
 
-        sum.to_string()
+        let adjacent = |r: usize, c: usize| {
+            [(1, 0), (0, 1)]
+                .into_iter()
+                .flat_map(move |(dy, dx)| [(r + dy, c + dx), (r - dy, c - dx)])
+                .filter_map(|(r, c)| grid.get(r)?.get(c))
+        };
+
+        cartesian
+            .filter(|&(r, c, val)| adjacent(r, c).all(|nbr| val < nbr))
+            .map(|(_, _, val)| val + 1)
+            .sum::<usize>()
+            .to_string()
     }
 
     pub fn part2() -> String {
         let grid = grid();
-        let mut low_points = Vec::new();
+        let cartesian = (0..grid.len())
+            .flat_map(|r| (0..grid[r].len()).map(move |c| (r, c)));
 
-        for r in 0..grid.len() {
-            for c in 0..grid[r].len() {
-                if adjacent(&grid, r, c)
-                    .all(|(rr, cc)| grid[r][c] < grid[rr][cc])
-                {
-                    low_points.push((r, c));
-                }
-            }
-        }
+        let adjacent = |r: usize, c: usize| {
+            [(1, 0), (0, 1)]
+                .into_iter()
+                .flat_map(move |(dy, dx)| [(r + dy, c + dx), (r - dy, c - dx)])
+                .filter(|(r, c)| {
+                    grid.get(*r).and_then(|row| row.get(*c)).is_some()
+                })
+        };
+
+        let low_points = cartesian.filter(|&(r, c)| {
+            adjacent(r, c).all(|(rr, cc)| grid[r][c] < grid[rr][cc])
+        });
 
         let mut basin_sizes = BTreeSet::new();
         let mut stack = Vec::new();
         for (r, c) in low_points {
-            let mut history = HashSet::new();
             stack.push((r, c));
+            let mut history = HashSet::new();
             while !stack.is_empty() {
                 let cell = stack.pop().unwrap();
-                for (rr, cc) in adjacent(&grid, cell.0, cell.1) {
+                for (rr, cc) in adjacent(cell.0, cell.1) {
                     if grid[rr][cc] != 9 && !history.contains(&(rr, cc)) {
                         stack.push((rr, cc));
                     }
@@ -504,22 +514,6 @@ pub mod day9 {
                     .collect()
             })
             .collect()
-    }
-
-    fn adjacent(
-        grid: &[Vec<usize>],
-        row: usize,
-        col: usize,
-    ) -> impl Iterator<Item = (usize, usize)> + '_ {
-        [(1, 0), (0, 1)]
-            .into_iter()
-            .flat_map(move |(dy, dx)| {
-                [
-                    (row.wrapping_add(dy), col.wrapping_add(dx)),
-                    (row.wrapping_sub(dy), col.wrapping_sub(dx)),
-                ]
-            })
-            .filter(|(r, c)| grid.get(*r).and_then(|row| row.get(*c)).is_some())
     }
 }
 

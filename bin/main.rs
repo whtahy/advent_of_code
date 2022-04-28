@@ -14,6 +14,16 @@ const TABLE_OF_CONTENTS: [Year; 7] = [
     aoc_2021::TABLE_OF_CONTENTS,
 ];
 
+fn main() {
+    let args: Vec<usize> = env::args().filter_map(|s| s.parse().ok()).collect();
+    if let [year, day, part] = args[..] {
+        let ans = get(year, day, part);
+        println!("{year} Day{day} Part{part}: {ans}");
+    } else {
+        get_most_recent()
+    }
+}
+
 fn get(year: usize, day: usize, part: usize) -> String {
     TABLE_OF_CONTENTS[year - 2015][day - 1][part - 1]()
 }
@@ -23,28 +33,12 @@ fn get_most_recent() {
     for year in (2015..=2021).rev() {
         for day in (1..=25).rev() {
             for part in (1..=2).rev() {
-                match std::panic::catch_unwind(|| get(year, day, part)) {
-                    Ok(ans) => {
-                        println!("{year} Day{day} Part{part}: {ans}");
-                        return;
-                    }
-                    Err(_) => continue,
+                if let Ok(ans) =
+                    std::panic::catch_unwind(|| get(year, day, part))
+                {
+                    return println!("{year} Day{day} Part{part}: {ans}");
                 }
             }
         }
-    }
-}
-
-fn main() {
-    let args: Vec<usize> = env::args().filter_map(|s| s.parse().ok()).collect();
-
-    if args.len() == 3 {
-        let year = args[0];
-        let day = args[1];
-        let part = args[2];
-        let ans = get(year, day, part);
-        println!("{year} Day{day} Part{part}: {ans}");
-    } else {
-        get_most_recent()
     }
 }

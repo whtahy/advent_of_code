@@ -553,13 +553,32 @@ pub mod day10 {
                 Corrupt(_) => None,
                 Incomplete(v) => Some(v),
             })
-            .map(autocomplete)
+            .map(|v| {
+                v.iter().rev().fold(0, |score, ch| {
+                    score * 5
+                        + match ch {
+                            '(' => 1,
+                            '[' => 2,
+                            '{' => 3,
+                            '<' => 4,
+                            _ => unreachable!(),
+                        }
+                })
+            })
             .collect::<Vec<_>>();
         scores.sort_unstable();
         scores[scores.len() / 2].to_string()
     }
 
     fn check_syntax(line: &str) -> SyntaxError {
+        let open = |ch: char| match ch {
+            ')' => '(',
+            ']' => '[',
+            '}' => '{',
+            '>' => '<',
+            _ => unreachable!(),
+        };
+
         let mut stack = Vec::new();
         for ch in line.chars() {
             match ch {
@@ -574,31 +593,6 @@ pub mod day10 {
         }
 
         Incomplete(stack)
-    }
-
-    fn open(ch: char) -> char {
-        match ch {
-            ')' => '(',
-            ']' => '[',
-            '}' => '{',
-            '>' => '<',
-            _ => unreachable!(),
-        }
-    }
-
-    fn autocomplete(v: Vec<char>) -> usize {
-        let mut score = 0;
-        for ch in v.iter().rev() {
-            score *= 5;
-            score += match ch {
-                '(' => 1,
-                '[' => 2,
-                '{' => 3,
-                '<' => 4,
-                _ => unreachable!(),
-            }
-        }
-        score
     }
 }
 

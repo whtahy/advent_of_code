@@ -518,12 +518,87 @@ pub mod day9 {
 }
 
 pub mod day10 {
+    shared::input!(10);
+    shared::test!(367_227, 3_583_341_858u32); // examples: 26_397, 288_957
+
+    use SyntaxError::*;
+
+    enum SyntaxError {
+        Corrupt(char),
+        Incomplete(Vec<char>),
+    }
+
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .filter_map(|line| match check_syntax(line) {
+                Corrupt(ch) => Some(ch),
+                Incomplete(_) => None,
+            })
+            .map(|ch| match ch {
+                ')' => 3,
+                ']' => 57,
+                '}' => 1_197,
+                '>' => 25_137,
+                _ => unreachable!(),
+            })
+            .sum::<usize>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut scores = INPUT
+            .lines()
+            .filter_map(|line| match check_syntax(line) {
+                Corrupt(_) => None,
+                Incomplete(v) => Some(v),
+            })
+            .map(autocomplete)
+            .collect::<Vec<_>>();
+        scores.sort_unstable();
+        scores[scores.len() / 2].to_string()
+    }
+
+    fn check_syntax(line: &str) -> SyntaxError {
+        let mut stack = Vec::new();
+        for ch in line.chars() {
+            match ch {
+                '(' | '[' | '{' | '<' => stack.push(ch),
+                ')' | ']' | '}' | '>' => {
+                    if stack.pop() != Some(open(ch)) {
+                        return Corrupt(ch);
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        Incomplete(stack)
+    }
+
+    fn open(ch: char) -> char {
+        match ch {
+            ')' => '(',
+            ']' => '[',
+            '}' => '{',
+            '>' => '<',
+            _ => unreachable!(),
+        }
+    }
+
+    fn autocomplete(v: Vec<char>) -> usize {
+        let mut score = 0;
+        for ch in v.iter().rev() {
+            score *= 5;
+            score += match ch {
+                '(' => 1,
+                '[' => 2,
+                '{' => 3,
+                '<' => 4,
+                _ => unreachable!(),
+            }
+        }
+        score
     }
 }
 

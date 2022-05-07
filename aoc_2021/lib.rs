@@ -471,8 +471,8 @@ pub mod day9 {
             [(1, 0), (0, 1)]
                 .into_iter()
                 .flat_map(move |(dy, dx)| [(r + dy, c + dx), (r - dy, c - dx)])
-                .filter(|(r, c)| {
-                    grid.get(*r).and_then(|row| row.get(*c)).is_some()
+                .filter(|&(r, c)| {
+                    grid.get(r).and_then(|row| row.get(c)).is_some()
                 })
         };
 
@@ -519,7 +519,7 @@ pub mod day9 {
 
 pub mod day10 {
     shared::input!(10);
-    shared::test!(367_227, 3_583_341_858u32); // examples: 26_397, 288_957
+    shared::test!(367_227, 3_583_341_858_u32); // examples: 26_397, 288_957
 
     use SyntaxError::*;
 
@@ -598,7 +598,7 @@ pub mod day10 {
 
 pub mod day11 {
     shared::input!(11);
-    shared::test!(1_669); // examples: 1_656, 195
+    shared::test!(1_669, 351); // examples: 1_656, 195
 
     pub fn part1() -> String {
         let mut grid = grid();

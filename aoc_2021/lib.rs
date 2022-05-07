@@ -597,12 +597,101 @@ pub mod day10 {
 }
 
 pub mod day11 {
+    shared::input!(11);
+    shared::test!(1_669); // examples: 1_656, 195
+
     pub fn part1() -> String {
-        todo!()
+        let mut grid = grid();
+        let cartesian = (0..10).flat_map(|r| (0..10).map(move |c| (r, c)));
+
+        let mut n_flashes = 0;
+        for _ in 1..=100 {
+            // step 1
+            for (r, c) in cartesian.clone() {
+                grid[r][c] += 1;
+            }
+
+            // step 2
+            let mut todo: Vec<_> = cartesian.clone().collect();
+            while !todo.is_empty() {
+                let (r, c) = todo.pop().unwrap();
+                if grid[r][c] > 9 {
+                    n_flashes += 1;
+                    grid[r][c] = 0;
+                    for (rr, cc) in adjacent(r, c) {
+                        if grid[rr][cc] > 0 {
+                            grid[rr][cc] += 1;
+                            todo.push((rr, cc));
+                        }
+                    }
+                }
+            }
+        }
+
+        n_flashes.to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut grid = grid();
+        let cartesian = (0..10).flat_map(|r| (0..10).map(move |c| (r, c)));
+
+        for i in 1.. {
+            let mut n_flashes = 0;
+
+            // step 1
+            for (r, c) in cartesian.clone() {
+                grid[r][c] += 1;
+            }
+
+            // step 2
+            let mut todo: Vec<_> = cartesian.clone().collect();
+            while !todo.is_empty() {
+                let (r, c) = todo.pop().unwrap();
+                if grid[r][c] > 9 {
+                    n_flashes += 1;
+                    grid[r][c] = 0;
+                    for (rr, cc) in adjacent(r, c) {
+                        if grid[rr][cc] > 0 {
+                            grid[rr][cc] += 1;
+                            todo.push((rr, cc));
+                        }
+                    }
+                }
+            }
+
+            // return
+            if n_flashes == 100 {
+                return i.to_string();
+            }
+        }
+
+        unreachable!()
+    }
+
+    fn adjacent(r: usize, c: usize) -> impl Iterator<Item = (usize, usize)> {
+        [
+            (r - 1, c - 1),
+            (r - 1, c),
+            (r - 1, c + 1),
+            (r, c - 1),
+            (r, c + 1),
+            (r + 1, c - 1),
+            (r + 1, c),
+            (r + 1, c + 1),
+        ]
+        .into_iter()
+        .filter(|&(r, c)| r <= 9 && c <= 9)
+    }
+
+    fn grid() -> Vec<Vec<usize>> {
+        INPUT
+            .lines()
+            .map(|ln| {
+                ln.chars()
+                    .map(|ch| ch.to_digit(10).unwrap() as usize)
+                    .collect()
+            })
+            .collect()
     }
 }
 

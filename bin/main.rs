@@ -16,7 +16,12 @@ const TABLE_OF_CONTENTS: [Year; 7] = [
 
 fn main() {
     let args: Vec<usize> = env::args().filter_map(|s| s.parse().ok()).collect();
-    if let [year, day, part] = args[..] {
+    if let [year, day] = args[..] {
+        let ans1 = get(year, day, 1);
+        let ans2 = get(year, day, 2);
+        println!("{year} Day{day} Part1: {ans1}");
+        println!("{year} Day{day} Part2: {ans2}");
+    } else if let [year, day, part] = args[..] {
         let ans = get(year, day, part);
         println!("{year} Day{day} Part{part}: {ans}");
     } else {

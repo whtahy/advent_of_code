@@ -4,8 +4,9 @@ macro_rules! input {
     ($x:expr) => {
         const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
     };
-    ($x:expr, example) => {
-        const INPUT: &str = include_str!(concat!("./day", $x, "_example.txt"));
+    ($x:expr, $y: expr) => {
+        const INPUT: &str =
+            include_str!(concat!("./day", $x, "_", stringify!($y), ".txt"));
     };
 }
 

@@ -696,12 +696,106 @@ pub mod day11 {
 }
 
 pub mod day12 {
+    shared::input!(12);
+    shared::test!(4_573, 117_509); // examples: 10, 19, 226; 36, 103, 3_509
+
+    use std::collections::{HashMap, HashSet};
+
+    fn parse() -> HashMap<String, Vec<String>> {
+        let mut cavern = HashMap::new();
+        for line in INPUT.lines() {
+            let (a, b) = line.split_once('-').unwrap();
+            if a != "end" && b != "start" {
+                cavern
+                    .entry(a.to_string())
+                    .or_insert(Vec::new())
+                    .push(b.to_string());
+            }
+            if a != "start" && b != "end" {
+                cavern
+                    .entry(b.to_string())
+                    .or_insert(Vec::new())
+                    .push(a.to_string());
+            }
+        }
+        cavern
+    }
+
+    struct Path {
+        current: String,
+        past: HashSet<String>,
+        backtrack: bool,
+    }
+
     pub fn part1() -> String {
-        todo!()
+        let cavern = parse();
+        let start = Path {
+            current: "start".to_string(),
+            past: HashSet::new(),
+            backtrack: true,
+        };
+        let mut n_paths = 0;
+        let mut stack = vec![start];
+        while !stack.is_empty() {
+            let path = stack.pop().unwrap();
+            for cave in &cavern[&path.current] {
+                if cave == "end" {
+                    n_paths += 1;
+                    continue;
+                } else if path.past.contains(cave)
+                    && cave.chars().all(char::is_lowercase)
+                {
+                    continue;
+                }
+                let mut new_past = path.past.clone();
+                new_past.insert(path.current.clone());
+                stack.push(Path {
+                    current: cave.to_string(),
+                    past: new_past,
+                    backtrack: true,
+                })
+            }
+        }
+        n_paths.to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let cavern = parse();
+        let start = Path {
+            current: "start".to_string(),
+            past: HashSet::new(),
+            backtrack: false,
+        };
+
+        let mut n_paths = 0;
+        let mut stack = vec![start];
+        while !stack.is_empty() {
+            let path = stack.pop().unwrap();
+            for cave in &cavern[&path.current] {
+                let mut backtrack = path.backtrack;
+                if cave == "end" {
+                    n_paths += 1;
+                    continue;
+                } else if path.past.contains(cave)
+                    && cave.chars().all(char::is_lowercase)
+                {
+                    if path.backtrack {
+                        continue;
+                    } else {
+                        backtrack = true;
+                    }
+                }
+                let mut past = path.past.clone();
+                past.insert(path.current.clone());
+                stack.push(Path {
+                    current: cave.to_string(),
+                    past,
+                    backtrack,
+                })
+            }
+        }
+
+        n_paths.to_string()
     }
 }
 

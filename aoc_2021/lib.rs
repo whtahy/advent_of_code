@@ -742,9 +742,7 @@ pub mod day12 {
                 if cave == "end" {
                     n_paths += 1;
                     continue;
-                } else if path.past.contains(cave)
-                    && cave.chars().all(char::is_lowercase)
-                {
+                } else if path.past.contains(cave) {
                     continue;
                 }
                 let mut past = path.past.clone();
@@ -778,9 +776,7 @@ pub mod day12 {
                 if cave == "end" {
                     n_paths += 1;
                     continue;
-                } else if path.past.contains(cave)
-                    && cave.chars().all(char::is_lowercase)
-                {
+                } else if path.past.contains(cave) {
                     if path.backtrack {
                         continue;
                     } else {

@@ -747,11 +747,13 @@ pub mod day12 {
                 {
                     continue;
                 }
-                let mut new_past = path.past.clone();
-                new_past.insert(path.current.clone());
+                let mut past = path.past.clone();
+                if path.current.chars().all(char::is_lowercase) {
+                    past.insert(path.current.clone());
+                }
                 stack.push(Path {
                     current: cave.to_string(),
-                    past: new_past,
+                    past,
                     backtrack: true,
                 })
             }
@@ -786,7 +788,9 @@ pub mod day12 {
                     }
                 }
                 let mut past = path.past.clone();
-                past.insert(path.current.clone());
+                if path.current.chars().all(char::is_lowercase) {
+                    past.insert(path.current.clone());
+                }
                 stack.push(Path {
                     current: cave.to_string(),
                     past,

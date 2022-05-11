@@ -696,102 +696,105 @@ pub mod day11 {
 }
 
 pub mod day12 {
-    shared::input!(12);
+    shared::input!(12, example1);
     shared::test!(4_573, 117_509); // examples: 10, 19, 226; 36, 103, 3_509
 
-    use std::collections::{HashMap, HashSet};
+    use std::collections::HashMap;
 
-    fn parse() -> HashMap<String, Vec<String>> {
-        let mut cavern = HashMap::new();
-        for line in INPUT.lines() {
-            let (a, b) = line.split_once('-').unwrap();
-            if a != "end" && b != "start" {
-                cavern
-                    .entry(a.to_string())
-                    .or_insert(Vec::new())
-                    .push(b.to_string());
-            }
-            if a != "start" && b != "end" {
-                cavern
-                    .entry(b.to_string())
-                    .or_insert(Vec::new())
-                    .push(a.to_string());
-            }
-        }
-        cavern
+    fn parse() -> (Vec<Vec<usize>>, Vec<bool>) {
+        let mut cavern = vec![vec![], vec![]];
+        let mut small_caves = vec![false, false];
+
+        let mut caves = HashMap::from([("start", 0), ("end", 1)]);
+        let mut counter = caves.len();
+        INPUT
+            .lines()
+            .map(|line| line.split_once('-').unwrap())
+            .flat_map(|(a, b)| [(a, b), (b, a)])
+            .filter(|&(a, b)| a != "end" && b != "start")
+            .for_each(|(a, b)| {
+                let mut update = |s| {
+                    if !caves.contains_key(s) {
+                        caves.insert(s, counter);
+                        cavern.push(Vec::new());
+                        small_caves.push(s.chars().all(|ch| ch.is_lowercase()));
+                        counter += 1;
+                    }
+                };
+                update(a);
+                update(b);
+                cavern[caves[a]].push(caves[b]);
+            });
+
+        (cavern, small_caves)
     }
 
     struct Path {
-        current: String,
-        past: HashSet<String>,
-        backtrack: bool,
+        current: usize,
+        past: Vec<bool>,
     }
 
     pub fn part1() -> String {
-        let cavern = parse();
-        let start = Path {
-            current: "start".to_string(),
-            past: HashSet::new(),
-            backtrack: true,
-        };
+        let (cavern, small_caves) = parse();
         let mut n_paths = 0;
-        let mut stack = vec![start];
+        let mut stack = vec![Path {
+            current: 0,
+            past: vec![false; cavern.len()],
+        }];
         while !stack.is_empty() {
             let path = stack.pop().unwrap();
-            for cave in &cavern[&path.current] {
-                if cave == "end" {
+            for &cave in &cavern[path.current] {
+                if cave == 1 {
                     n_paths += 1;
                     continue;
-                } else if path.past.contains(cave) {
+                } else if path.past[cave] {
                     continue;
                 }
                 let mut past = path.past.clone();
-                if path.current.chars().all(char::is_lowercase) {
-                    past.insert(path.current.clone());
-                }
+                past[path.current] = small_caves[path.current];
                 stack.push(Path {
-                    current: cave.to_string(),
+                    current: cave,
                     past,
-                    backtrack: true,
                 })
             }
         }
+
         n_paths.to_string()
     }
 
     pub fn part2() -> String {
-        let cavern = parse();
-        let start = Path {
-            current: "start".to_string(),
-            past: HashSet::new(),
-            backtrack: false,
-        };
-
+        let (cavern, small_caves) = parse();
         let mut n_paths = 0;
-        let mut stack = vec![start];
+        let mut stack = vec![(
+            Path {
+                current: 0,
+                past: vec![false; cavern.len()],
+            },
+            false, // backtrack
+        )];
         while !stack.is_empty() {
-            let path = stack.pop().unwrap();
-            for cave in &cavern[&path.current] {
-                let mut backtrack = path.backtrack;
-                if cave == "end" {
+            let (path, backtrack) = stack.pop().unwrap();
+            for &cave in &cavern[path.current] {
+                let mut backtrack = backtrack;
+                if cave == 1 {
                     n_paths += 1;
                     continue;
-                } else if path.past.contains(cave) {
-                    if path.backtrack {
+                } else if path.past[cave] {
+                    if backtrack {
                         continue;
                     } else {
                         backtrack = true;
                     }
                 }
                 let mut past = path.past.clone();
-                if path.current.chars().all(char::is_lowercase) {
-                    past.insert(path.current.clone());
-                }
-                stack.push(Path {
-                    current: cave.to_string(),
-                    past,
+                past[path.current] = small_caves[path.current];
+                stack.push((
+                    Path {
+                        current: cave,
+                        past,
+                    },
                     backtrack,
-                })
+                ))
             }
         }
 

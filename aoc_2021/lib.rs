@@ -803,12 +803,110 @@ pub mod day12 {
 }
 
 pub mod day13 {
+    shared::input!(13);
+    shared::test!(621, 95); // examples: 17, 16 -> HKUJGAJZ
+
+    use std::collections::{HashMap, HashSet, VecDeque};
+    use Dir::*;
+
+    #[derive(Debug)]
+    enum Dir {
+        Up,
+        Left,
+    }
+
+    type T = HashMap<usize, HashSet<usize>>;
+
+    fn parse() -> (T, T, VecDeque<(Dir, usize)>) {
+        let mut xy = HashMap::new();
+        let mut yx = HashMap::new();
+        let mut folds = VecDeque::new();
+        for line in INPUT.lines() {
+            if let Some((a, b)) = line.split_once(',') {
+                let x = a.parse().unwrap();
+                let y = b.parse().unwrap();
+                xy.entry(x).or_insert_with(HashSet::new).insert(y);
+                yx.entry(y).or_insert_with(HashSet::new).insert(x);
+            } else if let Some((a, b)) = line.split_once('=') {
+                let fold = b.parse().unwrap();
+                match a {
+                    "fold along y" => folds.push_back((Up, fold)),
+                    "fold along x" => folds.push_back((Left, fold)),
+                    _ => unreachable!(),
+                }
+            }
+        }
+        (xy, yx, folds)
+    }
+
     pub fn part1() -> String {
-        todo!()
+        let (mut xy, mut yx, mut folds) = parse();
+        let (dir, fold) = folds.pop_front().unwrap();
+        let (major, minor) = match dir {
+            Up => (&mut yx, &mut xy),
+            Left => (&mut xy, &mut yx),
+        };
+        for y in fold..=(fold * 2) {
+            if !major.contains_key(&y) {
+                continue;
+            }
+            let new_y = 2 * fold - y;
+            let mut xs = major.remove(&y).unwrap();
+            for x in xs.drain() {
+                major.entry(new_y).or_insert_with(HashSet::new).insert(x);
+                minor.get_mut(&x).unwrap().remove(&y);
+                minor.entry(x).or_insert_with(HashSet::new).insert(new_y);
+            }
+        }
+
+        yx.iter().fold(0, |sum, (_, v)| sum + v.len()).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (mut xy, mut yx, folds) = parse();
+        for (dir, fold) in folds {
+            let (major, minor) = match dir {
+                Up => (&mut yx, &mut xy),
+                Left => (&mut xy, &mut yx),
+            };
+            for y in fold..=(fold * 2) {
+                if !major.contains_key(&y) {
+                    continue;
+                }
+                let new_y = 2 * fold - y;
+                let mut xs = major.remove(&y).unwrap();
+                for x in xs.drain() {
+                    major.entry(new_y).or_insert_with(HashSet::new).insert(x);
+                    minor.get_mut(&x).unwrap().remove(&y);
+                    minor.entry(x).or_insert_with(HashSet::new).insert(new_y);
+                }
+            }
+        }
+
+        let n_rows = *yx.keys().max().unwrap();
+        let n_cols = *xy.keys().max().unwrap();
+
+        let mut grid = vec![vec![false; n_cols + 1]; n_rows + 1];
+        for (&y, xs) in &yx {
+            for &x in xs {
+                grid[y][x] = true;
+            }
+        }
+
+        for row in grid {
+            for col in row {
+                if col {
+                    print!("#");
+                } else {
+                    print!(".");
+                }
+            }
+            println!();
+        }
+
+        let a = yx.iter().fold(0, |sum, (_, v)| sum + v.len());
+        let b = xy.iter().fold(0, |sum, (_, v)| sum + v.len());
+        ((a + b) / 2).to_string()
     }
 }
 

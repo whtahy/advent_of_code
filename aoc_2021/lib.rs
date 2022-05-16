@@ -806,96 +806,50 @@ pub mod day13 {
     shared::input!(13);
     shared::test!(621, 95); // examples: 17, 16 -> HKUJGAJZ
 
-    use std::collections::{HashMap, HashSet, VecDeque};
-    use Dir::*;
+    use std::collections::{HashSet, VecDeque};
 
-    #[derive(Debug)]
-    enum Dir {
-        Up,
-        Left,
-    }
+    type Dots = HashSet<(usize, usize)>;
+    type Folds = VecDeque<(String, usize)>;
 
-    type T = HashMap<usize, HashSet<usize>>;
-
-    fn parse() -> (T, T, VecDeque<(Dir, usize)>) {
-        let mut xy = HashMap::new();
-        let mut yx = HashMap::new();
+    fn parse() -> (Dots, Folds) {
+        let mut dots = HashSet::new();
         let mut folds = VecDeque::new();
         for line in INPUT.lines() {
             if let Some((a, b)) = line.split_once(',') {
-                let x = a.parse().unwrap();
-                let y = b.parse().unwrap();
-                xy.entry(x).or_insert_with(HashSet::new).insert(y);
-                yx.entry(y).or_insert_with(HashSet::new).insert(x);
+                dots.insert((a.parse().unwrap(), b.parse().unwrap()));
             } else if let Some((a, b)) = line.split_once('=') {
-                let fold = b.parse().unwrap();
-                match a {
-                    "fold along y" => folds.push_back((Up, fold)),
-                    "fold along x" => folds.push_back((Left, fold)),
+                let dir = match a {
+                    "fold along y" => "y",
+                    "fold along x" => "x",
                     _ => unreachable!(),
-                }
+                };
+                folds.push_back((dir.to_string(), b.parse().unwrap()));
             }
         }
-        (xy, yx, folds)
+        (dots, folds)
     }
 
     pub fn part1() -> String {
-        let (mut xy, mut yx, mut folds) = parse();
-        let (dir, fold) = folds.pop_front().unwrap();
-        let (major, minor) = match dir {
-            Up => (&mut yx, &mut xy),
-            Left => (&mut xy, &mut yx),
-        };
-        for y in fold..=(fold * 2) {
-            if !major.contains_key(&y) {
-                continue;
-            }
-            let new_y = 2 * fold - y;
-            let mut xs = major.remove(&y).unwrap();
-            for x in xs.drain() {
-                major.entry(new_y).or_insert_with(HashSet::new).insert(x);
-                minor.get_mut(&x).unwrap().remove(&y);
-                minor.entry(x).or_insert_with(HashSet::new).insert(new_y);
-            }
-        }
-
-        yx.iter().fold(0, |sum, (_, v)| sum + v.len()).to_string()
+        let (dots, mut folds) = parse();
+        let (dir, f) = folds.pop_front().unwrap();
+        fold(dots, &dir, f).len().to_string()
     }
 
     pub fn part2() -> String {
-        let (mut xy, mut yx, folds) = parse();
-        for (dir, fold) in folds {
-            let (major, minor) = match dir {
-                Up => (&mut yx, &mut xy),
-                Left => (&mut xy, &mut yx),
-            };
-            for y in fold..=(fold * 2) {
-                if !major.contains_key(&y) {
-                    continue;
-                }
-                let new_y = 2 * fold - y;
-                let mut xs = major.remove(&y).unwrap();
-                for x in xs.drain() {
-                    major.entry(new_y).or_insert_with(HashSet::new).insert(x);
-                    minor.get_mut(&x).unwrap().remove(&y);
-                    minor.entry(x).or_insert_with(HashSet::new).insert(new_y);
-                }
+        let (mut dots, folds) = parse();
+        let (mut x_bound, mut y_bound) = (usize::MAX, usize::MAX);
+        for (dir, f) in folds {
+            dots = fold(dots, &dir, f);
+            match dir.as_str() {
+                "x" => x_bound = x_bound.min(f),
+                "y" => y_bound = y_bound.min(f),
+                _ => unreachable!(),
             }
         }
 
-        let n_rows = *yx.keys().max().unwrap();
-        let n_cols = *xy.keys().max().unwrap();
-
-        let mut grid = vec![vec![false; n_cols + 1]; n_rows + 1];
-        for (&y, xs) in &yx {
-            for &x in xs {
-                grid[y][x] = true;
-            }
-        }
-
-        for row in grid {
-            for col in row {
-                if col {
+        for y in 0..y_bound {
+            for x in 0..x_bound {
+                if dots.contains(&(x, y)) {
                     print!("#");
                 } else {
                     print!(".");
@@ -904,9 +858,19 @@ pub mod day13 {
             println!();
         }
 
-        let a = yx.iter().fold(0, |sum, (_, v)| sum + v.len());
-        let b = xy.iter().fold(0, |sum, (_, v)| sum + v.len());
-        ((a + b) / 2).to_string()
+        dots.len().to_string()
+    }
+
+    fn fold(dots: Dots, dir: &str, fold: usize) -> Dots {
+        dots.iter()
+            .map(|&(x, y)| match (dir, x <= fold, y <= fold) {
+                ("x", true, _) => (x, y),
+                ("y", _, true) => (x, y),
+                ("x", _, _) => (2 * fold - x, y),
+                ("y", _, _) => (x, 2 * fold - y),
+                _ => unreachable!(),
+            })
+            .collect()
     }
 }
 

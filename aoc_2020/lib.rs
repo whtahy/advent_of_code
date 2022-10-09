@@ -173,10 +173,11 @@ pub mod day4 {
     /// assert_eq!(aoc_2020::day4::part1(), 213.to_string());
     /// ```
     pub fn part1() -> String {
-        let required_fields: HashSet<_> = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-            .iter()
-            .cloned()
-            .collect();
+        let required_fields: HashSet<_> =
+            ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+                .iter()
+                .cloned()
+                .collect();
 
         INPUT
             .split("\r\n\r\n")
@@ -197,10 +198,11 @@ pub mod day4 {
     /// assert_eq!(aoc_2020::day4::part2(), 147.to_string());
     /// ```
     pub fn part2() -> String {
-        let required_fields: HashSet<_> = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-            .iter()
-            .cloned()
-            .collect();
+        let required_fields: HashSet<_> =
+            ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+                .iter()
+                .cloned()
+                .collect();
 
         INPUT
             .split("\r\n\r\n")
@@ -227,8 +229,10 @@ pub mod day4 {
             "iyr" => (2010..=2020).contains(&v.parse().unwrap()),
             "eyr" => (2020..=2030).contains(&v.parse().unwrap()),
             "hgt" => {
-                let hgt: String = v.chars().filter(char::is_ascii_digit).collect();
-                let unit: String = v.chars().filter(char::is_ascii_alphabetic).collect();
+                let hgt: String =
+                    v.chars().filter(char::is_ascii_digit).collect();
+                let unit: String =
+                    v.chars().filter(char::is_ascii_alphabetic).collect();
                 match (hgt.parse(), unit.as_str()) {
                     (Ok(h), "cm") => (150..=193).contains(&h),
                     (Ok(h), "in") => (59..=76).contains(&h),
@@ -237,9 +241,12 @@ pub mod day4 {
             }
             "hcl" => {
                 let mut hcl = v.chars();
-                hcl.next().unwrap() == '#' && hcl.all(|ch| ch.is_digit(16))
+                hcl.next().unwrap() == '#'
+                    && hcl.all(|ch| ch.is_ascii_hexdigit())
             }
-            "ecl" => ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].contains(&v),
+            "ecl" => {
+                ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].contains(&v)
+            }
             "pid" => v.len() == 9 && v.chars().all(|ch| ch.is_ascii_digit()),
             _ => false,
         }
@@ -267,7 +274,8 @@ pub mod day5 {
     /// assert_eq!(aoc_2020::day5::part2(), 743.to_string());
     /// ```
     pub fn part2() -> String {
-        let seat_ids: HashSet<_> = INPUT.lines().map(decode).map(seat_id).collect();
+        let seat_ids: HashSet<_> =
+            INPUT.lines().map(decode).map(seat_id).collect();
         for r in 1..=126 {
             for c in 0..=7 {
                 let seat = seat_id((r, c));
@@ -372,7 +380,8 @@ pub mod day7 {
         if c == "other" || rules[c].contains("other") {
             false
         } else {
-            rules[c].contains("shiny gold") || rules[c].iter().any(|x| recurse(rules, x))
+            rules[c].contains("shiny gold")
+                || rules[c].iter().any(|x| recurse(rules, x))
         }
     }
 

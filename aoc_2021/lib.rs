@@ -887,9 +887,9 @@ pub mod day14 {
     type Rules = HashMap<Pair, char>;
 
     fn parse() -> (ElementCount, PairCount, Rules) {
-        let mut element_count = HashMap::new();
-        let mut pair_count = HashMap::new();
-        let mut rules = HashMap::new();
+        let mut element_count = ElementCount::new();
+        let mut pair_count = PairCount::new();
+        let mut rules = Rules::new();
         let (template, r) = INPUT.split_once("\r\n\r\n").unwrap();
 
         for ln in r.lines() {
@@ -900,8 +900,7 @@ pub mod day14 {
         }
 
         for w in template.chars().collect::<Vec<_>>().windows(2) {
-            let w = [w[0], w[1]];
-            *pair_count.entry(w).or_insert(0) += 1;
+            *pair_count.entry([w[0], w[1]]).or_insert(0) += 1;
         }
 
         for ch in template.chars() {
@@ -922,7 +921,7 @@ pub mod day14 {
     fn insert(n: usize) -> T {
         let (mut element_count, mut pair_count, rules) = parse();
         for _ in 0..n {
-            let mut new_pairs = HashMap::new();
+            let mut new_pairs = PairCount::new();
             for p in pair_count.keys() {
                 let elem = rules.get(p).unwrap();
                 let n = *pair_count.get(p).unwrap();

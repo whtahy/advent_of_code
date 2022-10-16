@@ -875,12 +875,67 @@ pub mod day13 {
 }
 
 pub mod day14 {
+    shared::input!(14);
+    shared::test!(2_602, 2_942_885_922_173_u64); // 1_588, 2_188_189_693_529_u64
+
+    use std::collections::HashMap;
+
+    type T = u64;
+    type Pair = [char; 2];
+    type ElementCount = HashMap<char, T>;
+    type PairCount = HashMap<Pair, T>;
+    type Rules = HashMap<Pair, char>;
+
+    fn parse() -> (ElementCount, PairCount, Rules) {
+        let mut element_count = HashMap::new();
+        let mut pair_count = HashMap::new();
+        let mut rules = HashMap::new();
+        let (template, r) = INPUT.split_once("\r\n\r\n").unwrap();
+
+        for ln in r.lines() {
+            let (k, v) = ln.split_once(" -> ").unwrap();
+            let k = k.chars().collect::<Vec<_>>();
+            let v = v.chars().next().unwrap();
+            rules.insert([k[0], k[1]], v);
+        }
+
+        for w in template.chars().collect::<Vec<_>>().windows(2) {
+            let w = [w[0], w[1]];
+            *pair_count.entry(w).or_insert(0) += 1;
+        }
+
+        for ch in template.chars() {
+            *element_count.entry(ch).or_insert(0) += 1;
+        }
+
+        (element_count, pair_count, rules)
+    }
+
     pub fn part1() -> String {
-        todo!()
+        insert(10).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        insert(40).to_string()
+    }
+
+    fn insert(n: usize) -> T {
+        let (mut element_count, mut pair_count, rules) = parse();
+        for _ in 0..n {
+            let mut new_pairs = HashMap::new();
+            for p in pair_count.keys() {
+                let elem = rules.get(p).unwrap();
+                let n = *pair_count.get(p).unwrap();
+                *new_pairs.entry([p[0], *elem]).or_insert(0) += n;
+                *new_pairs.entry([*elem, p[1]]).or_insert(0) += n;
+                *element_count.entry(*elem).or_insert(0) += n;
+            }
+            pair_count = new_pairs;
+        }
+        let min = element_count.values().min().unwrap();
+        let max = element_count.values().max().unwrap();
+
+        max - min
     }
 }
 

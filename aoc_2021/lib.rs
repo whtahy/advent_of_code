@@ -565,7 +565,7 @@ pub mod day10 {
                         }
                 })
             })
-            .collect::<Vec<_>>();
+            .collect::<Vec<u64>>();
         scores.sort_unstable();
         scores[scores.len() / 2].to_string()
     }

@@ -696,7 +696,7 @@ pub mod day11 {
 }
 
 pub mod day12 {
-    shared::input!(12, example1);
+    shared::input!(12);
     shared::test!(4_573, 117_509); // examples: 10, 19, 226; 36, 103, 3_509
 
     use std::collections::HashMap;

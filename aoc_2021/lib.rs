@@ -939,12 +939,74 @@ pub mod day14 {
 }
 
 pub mod day15 {
+    shared::input!(15);
+    shared::test!(429, 2844); // 40, 315
+
+    use std::{cmp::Reverse, collections::BinaryHeap};
+
+    type T = usize;
+
+    fn parse() -> Vec<Vec<T>> {
+        INPUT
+            .lines()
+            .map(|ln| {
+                ln.chars().map(|ch| ch.to_digit(10).unwrap() as T).collect()
+            })
+            .collect()
+    }
+
     pub fn part1() -> String {
-        todo!()
+        let grid = parse();
+        let n_rows = grid.len();
+        let n_cols = grid[0].len();
+        let risk = |r: T, c: T| grid[r][c];
+
+        dijkstra(n_rows, n_cols, &risk).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let grid = parse();
+        let n_rows = grid.len();
+        let n_cols = grid[0].len();
+        let risk = |r: T, c: T| {
+            let mut risk =
+                grid[r % n_rows][c % n_cols] + r / n_rows + c / n_cols;
+            if risk >= 10 {
+                risk -= 9
+            }
+            risk
+        };
+
+        dijkstra(n_rows * 5, n_cols * 5, &risk).to_string()
+    }
+
+    fn dijkstra(n_rows: T, n_cols: T, risk: &dyn Fn(T, T) -> T) -> T {
+        let mut best_risk = vec![vec![T::MAX; n_cols]; n_rows];
+        best_risk[0][0] = 0;
+        let mut pq = BinaryHeap::new();
+        pq.push((Reverse(0), (0, 0)));
+
+        let adj = |(r, c)| {
+            [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]
+                .into_iter()
+                .filter(|&(r, c)| r < n_rows && c < n_cols)
+        };
+
+        while !pq.is_empty() {
+            let (Reverse(total), loc) = pq.pop().unwrap();
+            if loc == (n_rows - 1, n_cols - 1) {
+                return total;
+            }
+            for (r, c) in adj(loc) {
+                let new_risk = best_risk[loc.0][loc.1] + risk(r, c);
+                if new_risk < best_risk[r][c] {
+                    best_risk[r][c] = new_risk;
+                    pq.push((Reverse(new_risk), (r, c)));
+                }
+            }
+        }
+
+        unreachable!()
     }
 }
 

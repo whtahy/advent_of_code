@@ -697,7 +697,10 @@ pub mod day11 {
 
 pub mod day12 {
     shared::input!(12);
-    shared::test!(4_573, 117_509); // examples: 10, 19, 226; 36, 103, 3_509
+    shared::test!(4_573, 117_509);
+    // example1: 10, 36
+    // example2: 19, 103, 3_509
+    // example3: 226, 3_509
 
     use std::collections::HashMap;
 
@@ -876,7 +879,8 @@ pub mod day13 {
 
 pub mod day14 {
     shared::input!(14);
-    shared::test!(2_602, 2_942_885_922_173_u64); // 1_588, 2_188_189_693_529_u64
+    shared::test!(2_602, 2_942_885_922_173_u64);
+    // examples: 1_588, 2_188_189_693_529_u64
 
     use std::collections::HashMap;
 
@@ -940,7 +944,7 @@ pub mod day14 {
 
 pub mod day15 {
     shared::input!(15);
-    shared::test!(429, 2844); // 40, 315
+    shared::test!(429, 2844); // examples: 40, 315
 
     use std::{cmp::Reverse, collections::BinaryHeap};
 

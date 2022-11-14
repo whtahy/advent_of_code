@@ -1011,12 +1011,134 @@ pub mod day15 {
 }
 
 pub mod day16 {
+    shared::input!(16);
+    shared::test!(852, 19_348_959_966_392_u64);
+    // example1, part1: [16, 12, 23, 31]
+    // example2, part2: [3, 54, 7, 9, 1, 0, 0, 1]
+
+    use std::collections::VecDeque;
+
+    type Bits = VecDeque<char>;
+
+    struct Packet {
+        bits: Bits,
+        version_sum: usize,
+        value: usize,
+    }
+
+    impl Packet {
+        fn read(&mut self, n: usize) -> Bits {
+            let mut head = Bits::new();
+            for _ in 1..=n {
+                head.push_back(self.bits.pop_front().unwrap());
+            }
+            head
+        }
+
+        fn literal(&mut self) -> usize {
+            let mut value = Bits::new();
+            loop {
+                let prefix = self.read(1)[0];
+                value.append(&mut self.read(4));
+                if prefix == '0' {
+                    break;
+                }
+            }
+            dec(value)
+        }
+
+        fn decode(mut self) -> Self {
+            let version = dec(self.read(3));
+            let type_id = dec(self.read(3));
+            self.version_sum += version;
+
+            if type_id == 4 {
+                self.value = self.literal();
+                return self;
+            }
+
+            let mut vals = Vec::new();
+            match self.bits.pop_front().unwrap() {
+                '0' => {
+                    let mut length = dec(self.read(15));
+                    let mut sub_packet = Packet {
+                        bits: self.read(length),
+                        version_sum: 0,
+                        value: 0,
+                    };
+                    while length > 0 {
+                        sub_packet = sub_packet.decode();
+                        length = sub_packet.bits.len();
+                        vals.push(sub_packet.value);
+                    }
+                    self.version_sum += sub_packet.version_sum;
+                }
+                '1' => {
+                    let n_packets = dec(self.read(11));
+                    for _ in 1..=n_packets {
+                        self = self.decode();
+                        vals.push(self.value);
+                    }
+                }
+                _ => unreachable!(),
+            };
+
+            self.value = match type_id {
+                0 => vals.iter().sum(),             // sum
+                1 => vals.iter().product(),         // product
+                2 => *vals.iter().min().unwrap(),   // min
+                3 => *vals.iter().max().unwrap(),   // max
+                5 => (vals[0] > vals[1]) as usize,  // greater
+                6 => (vals[0] < vals[1]) as usize,  // less
+                7 => (vals[0] == vals[1]) as usize, // equal
+                _ => unreachable!(),
+            };
+
+            self
+        }
+    }
+
+    fn parse(s: &str) -> Packet {
+        let bits = s
+            .chars()
+            .flat_map(|ch| ch.to_digit(16))
+            .map(|x| format!("{:04b}", x))
+            .collect::<String>()
+            .chars()
+            .collect();
+        Packet {
+            bits,
+            version_sum: 0,
+            value: 0,
+        }
+    }
+
     pub fn part1() -> String {
-        todo!()
+        let ans = INPUT
+            .lines()
+            .map(|s| parse(s).decode().version_sum)
+            .collect::<Vec<_>>();
+        if ans.len() > 1 {
+            format!("{ans:?}")
+        } else {
+            ans[0].to_string()
+        }
     }
 
     pub fn part2() -> String {
-        todo!()
+        let ans = INPUT
+            .lines()
+            .map(|s| parse(s).decode().value)
+            .collect::<Vec<_>>();
+        if ans.len() > 1 {
+            format!("{ans:?}")
+        } else {
+            ans[0].to_string()
+        }
+    }
+
+    fn dec(bits: Bits) -> usize {
+        usize::from_str_radix(&bits.into_iter().collect::<String>(), 2).unwrap()
     }
 }
 

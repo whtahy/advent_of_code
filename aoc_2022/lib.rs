@@ -8,10 +8,6 @@ pub mod day1 {
 
     type T = usize;
 
-    fn inventory_sum(s: &str) -> T {
-        s.lines().map(|ln| ln.parse::<T>().unwrap()).sum()
-    }
-
     pub fn part1() -> String {
         INPUT
             .split("\r\n\r\n")
@@ -30,6 +26,10 @@ pub mod day1 {
             .take(3)
             .sum::<T>()
             .to_string()
+    }
+
+    fn inventory_sum(s: &str) -> T {
+        s.lines().map(|ln| ln.parse::<T>().unwrap()).sum()
     }
 }
 

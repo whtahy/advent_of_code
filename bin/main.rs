@@ -4,7 +4,7 @@ use std::panic;
 type Day = [fn() -> String; 2];
 type Year = [Day; 25];
 
-const TABLE_OF_CONTENTS: [Year; 7] = [
+const TABLE_OF_CONTENTS: [Year; 8] = [
     aoc_2015::TABLE_OF_CONTENTS,
     aoc_2016::TABLE_OF_CONTENTS,
     aoc_2017::TABLE_OF_CONTENTS,
@@ -12,6 +12,7 @@ const TABLE_OF_CONTENTS: [Year; 7] = [
     aoc_2019::TABLE_OF_CONTENTS,
     aoc_2020::TABLE_OF_CONTENTS,
     aoc_2021::TABLE_OF_CONTENTS,
+    aoc_2022::TABLE_OF_CONTENTS,
 ];
 
 fn main() {

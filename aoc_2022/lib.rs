@@ -1,15 +1,35 @@
 shared::table_of_contents!();
 
 pub mod day1 {
-    shared::input!();
-    shared::test!(); // examples:
+    use std::collections::BinaryHeap;
+
+    shared::input!(1);
+    shared::test!(72_602, 207_410); // examples: 24_000, 45_000
+
+    type T = usize;
+
+    fn inventory_sum(s: &str) -> T {
+        s.lines().map(|ln| ln.parse::<T>().unwrap()).sum()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .split("\r\n\r\n")
+            .map(inventory_sum)
+            .max()
+            .unwrap()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        INPUT
+            .split("\r\n\r\n")
+            .map(inventory_sum)
+            .collect::<BinaryHeap<_>>()
+            .iter()
+            .take(3)
+            .sum::<T>()
+            .to_string()
     }
 }
 

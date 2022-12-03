@@ -1,2 +1,2 @@
 [workspace]
-members = ["aoc_*", "bin", "shared"]
+members = ["bin"]

@@ -34,15 +34,93 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(2);
+    shared::test!(10_624, 14_060); // examples: 15, 12
+
+    type T = usize;
+
+    use crate::day2::Shape::*;
+    enum Shape {
+        Rock,
+        Paper,
+        Scissors,
+    }
+    use crate::day2::Outcome::*;
+    enum Outcome {
+        Win,
+        Draw,
+        Loss,
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let parse = |s: &str| {
+            let (left, right) = s.split_once(' ').unwrap();
+            let opponent = parse_left(left);
+            let you = match right {
+                "X" => Rock,
+                "Y" => Paper,
+                "Z" => Scissors,
+                _ => unreachable!(),
+            };
+            let outcome = match (&you, opponent) {
+                (Rock, Rock) => Draw,
+                (Rock, Paper) => Loss,
+                (Rock, Scissors) => Win,
+                (Paper, Rock) => Win,
+                (Paper, Paper) => Draw,
+                (Paper, Scissors) => Loss,
+                (Scissors, Rock) => Loss,
+                (Scissors, Paper) => Win,
+                (Scissors, Scissors) => Draw,
+            };
+            score(you, outcome)
+        };
+        INPUT.lines().map(parse).sum::<T>().to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let parse = |s: &str| {
+            let (left, right) = s.split_once(' ').unwrap();
+            let opponent = parse_left(left);
+            let outcome = match right {
+                "X" => Loss,
+                "Y" => Draw,
+                "Z" => Win,
+                _ => unreachable!(),
+            };
+            let shape = match (&outcome, &opponent) {
+                (Loss, Rock) => Scissors,
+                (Loss, Paper) => Rock,
+                (Loss, Scissors) => Paper,
+                (Draw, _) => opponent,
+                (Win, Rock) => Paper,
+                (Win, Paper) => Scissors,
+                (Win, Scissors) => Rock,
+            };
+            score(shape, outcome)
+        };
+        INPUT.lines().map(parse).sum::<T>().to_string()
+    }
+
+    fn score(shape: Shape, outcome: Outcome) -> T {
+        (match shape {
+            Rock => 1,
+            Paper => 2,
+            Scissors => 3,
+        }) + match outcome {
+            Win => 6,
+            Draw => 3,
+            Loss => 0,
+        }
+    }
+
+    fn parse_left(s: &str) -> Shape {
+        match s {
+            "A" => Rock,
+            "B" => Paper,
+            "C" => Scissors,
+            _ => unreachable!(),
+        }
     }
 }
 

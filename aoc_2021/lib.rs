@@ -1147,6 +1147,9 @@ pub mod day16 {
 }
 
 pub mod day17 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1157,6 +1160,9 @@ pub mod day17 {
 }
 
 pub mod day18 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1167,6 +1173,9 @@ pub mod day18 {
 }
 
 pub mod day19 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1177,6 +1186,9 @@ pub mod day19 {
 }
 
 pub mod day20 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1187,6 +1199,9 @@ pub mod day20 {
 }
 
 pub mod day21 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1197,6 +1212,9 @@ pub mod day21 {
 }
 
 pub mod day22 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1207,6 +1225,9 @@ pub mod day22 {
 }
 
 pub mod day23 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1217,6 +1238,9 @@ pub mod day23 {
 }
 
 pub mod day24 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }
@@ -1227,6 +1251,9 @@ pub mod day24 {
 }
 
 pub mod day25 {
+    shared::input!();
+    shared::test!(); // examples:
+
     pub fn part1() -> String {
         todo!()
     }

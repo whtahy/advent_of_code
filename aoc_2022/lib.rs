@@ -125,15 +125,47 @@ pub mod day2 {
 }
 
 pub mod day3 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(3);
+    shared::test!(8_515, 2_434); // examples: 157, 70
+
+    type T = usize;
+    type S = HashSet<T>;
+    use std::collections::HashSet;
 
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .map(|ln| {
+                let (left, right) = ln.split_at(ln.len() / 2);
+                (sack(left), sack(right))
+            })
+            .map(|(left, right)| *left.intersection(&right).next().unwrap())
+            .sum::<T>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .collect::<Vec<_>>()
+            .chunks(3)
+            .map(|chunk| chunk.iter().map(|x| sack(x)))
+            .map(|mut sacks| {
+                let mut badge = sacks.next().unwrap();
+                badge.retain(|x| sacks.clone().all(|other| other.contains(x)));
+                *badge.iter().next().unwrap()
+            })
+            .sum::<T>()
+            .to_string()
+    }
+
+    fn sack(s: &str) -> S {
+        s.chars()
+            .map(|ch| match ch.is_lowercase() {
+                true => ch as T - 96,
+                false => ch as T - 38,
+            })
+            .collect()
     }
 }
 

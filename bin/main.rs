@@ -36,7 +36,7 @@ fn get(year: usize, day: usize, part: usize) -> String {
 
 fn get_most_recent() {
     panic::set_hook(Box::new(|_| {}));
-    for year in (2015..=2021).rev() {
+    for year in (2015..=2014 + TABLE_OF_CONTENTS.len()).rev() {
         for day in (1..=25).rev() {
             for part in (1..=2).rev() {
                 if let Ok(ans) =

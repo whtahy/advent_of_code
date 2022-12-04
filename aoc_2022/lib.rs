@@ -170,15 +170,42 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(4);
+    shared::test!(477, 830); // examples: 2, 4
+
+    type T = usize;
+    type Pair = ((T, T), (T, T));
 
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .map(parse_pair)
+            .filter(|(left, right)| {
+                (left.0 >= right.0 && left.1 <= right.1)
+                    || (right.0 >= left.0 && right.1 <= left.1)
+            })
+            .count()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        INPUT
+            .lines()
+            .map(parse_pair)
+            .filter(|(left, right)| {
+                (left.0 <= right.0 && right.0 <= left.1)
+                    || (right.0 <= left.0 && left.0 <= right.1)
+            })
+            .count()
+            .to_string()
+    }
+
+    fn parse_pair(s: &str) -> Pair {
+        let v = s
+            .split(&[',', '-'])
+            .map(|n| n.parse().unwrap())
+            .collect::<Vec<_>>();
+        ((v[0], v[1]), (v[2], v[3]))
     }
 }
 

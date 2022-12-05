@@ -1147,15 +1147,81 @@ pub mod day16 {
 }
 
 pub mod day17 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(17);
+    shared::test!(5_886); // examples: 45, 112
+
+    type T = isize;
+
+    fn parse_target(s: &str) -> (T, T, T, T) {
+        let v = s
+            .trim()
+            .replace("..", "=")
+            .replace(", ", "=")
+            .split('=')
+            .flat_map(|s| s.parse())
+            .collect::<Vec<_>>();
+        (v[0], v[1], v[2], v[3])
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let (x_min, x_max, y_min, y_max) = parse_target(INPUT);
+        for vel_y in (1..=-y_min - 1).rev() {
+            let t_max = -y_min / vel_y + vel_y * 2 + 1;
+            for vel_x in (1..=x_max).rev() {
+                for t in (1..=t_max).rev() {
+                    let (x, y) = launch(t, vel_x, vel_y);
+                    if y > y_max || x < x_min {
+                        break;
+                    }
+                    if between(x, x_min, x_max) && between(y, y_min, y_max) {
+                        return pos(vel_y, vel_y).to_string();
+                    }
+                }
+            }
+        }
+
+        unreachable!()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut ans = 0;
+        let (x_min, x_max, y_min, y_max) = parse_target(INPUT);
+        for vel_y in y_min..=-y_min - 1 {
+            let t_max = match vel_y > 0 {
+                true => -y_min / vel_y + vel_y * 2 + 1,
+                false => y_min / vel_y.min(-1),
+            };
+            let t_min = match vel_y > 0 {
+                true => vel_y * 2 + 2,
+                false => y_max / (vel_y - t_max),
+            };
+            for vel_x in x_min / t_max..=x_max {
+                for t in (t_min..=t_max).rev() {
+                    let (x, y) = launch(t, vel_x, vel_y);
+                    if y > y_max || x < x_min {
+                        break;
+                    }
+                    if between(x, x_min, x_max) && between(y, y_min, y_max) {
+                        ans += 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        ans.to_string()
+    }
+
+    fn launch(t: T, vel_x: T, vel_y: T) -> (T, T) {
+        (pos(t.min(vel_x), vel_x), pos(t, vel_y))
+    }
+
+    fn pos(t: T, vel: T) -> T {
+        t * vel - ((t - 1) * t / 2)
+    }
+
+    fn between(x: T, min: T, max: T) -> bool {
+        min <= x && x <= max
     }
 }
 

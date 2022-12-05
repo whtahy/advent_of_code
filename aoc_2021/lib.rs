@@ -1148,7 +1148,7 @@ pub mod day16 {
 
 pub mod day17 {
     shared::input!(17);
-    shared::test!(5_886); // examples: 45, 112
+    shared::test!(5_886, 1_806); // examples: 45, 112
 
     type T = isize;
 

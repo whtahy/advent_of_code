@@ -4,7 +4,7 @@ pub mod day1 {
     use std::collections::BinaryHeap;
 
     shared::input!(1);
-    shared::test!(72_602, 207_410); // examples: 24_000, 45_000
+    shared::test!(72_602, 207_410);
 
     type T = usize;
 
@@ -35,7 +35,7 @@ pub mod day1 {
 
 pub mod day2 {
     shared::input!(2);
-    shared::test!(10_624, 14_060); // examples: 15, 12
+    shared::test!(10_624, 14_060);
 
     type T = usize;
 
@@ -126,7 +126,7 @@ pub mod day2 {
 
 pub mod day3 {
     shared::input!(3);
-    shared::test!(8_515, 2_434); // examples: 157, 70
+    shared::test!(8_515, 2_434);
 
     type T = usize;
     type S = HashSet<T>;
@@ -171,7 +171,7 @@ pub mod day3 {
 
 pub mod day4 {
     shared::input!(4);
-    shared::test!(477, 830); // examples: 2, 4
+    shared::test!(477, 830);
 
     type T = usize;
     type Pair = ((T, T), (T, T));
@@ -211,7 +211,7 @@ pub mod day4 {
 
 pub mod day5 {
     shared::input!(5);
-    shared::test!("WCZTHTMPS", "BLSGJSDTS"); // examples: CMZ, MCD
+    shared::test!("WCZTHTMPS", "BLSGJSDTS");
 
     type Stacks = Vec<Vec<char>>;
     type T = usize;
@@ -277,7 +277,7 @@ pub mod day5 {
 
 pub mod day6 {
     shared::input!(6);
-    shared::test!(1_647, 2_447); // examples: 7, 19
+    shared::test!(1_647, 2_447);
 
     use std::collections::HashSet;
 
@@ -303,7 +303,7 @@ pub mod day6 {
 
 pub mod day7 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -316,7 +316,7 @@ pub mod day7 {
 
 pub mod day8 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -329,7 +329,7 @@ pub mod day8 {
 
 pub mod day9 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -342,7 +342,7 @@ pub mod day9 {
 
 pub mod day10 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -355,7 +355,7 @@ pub mod day10 {
 
 pub mod day11 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -368,7 +368,7 @@ pub mod day11 {
 
 pub mod day12 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -381,7 +381,7 @@ pub mod day12 {
 
 pub mod day13 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -394,7 +394,7 @@ pub mod day13 {
 
 pub mod day14 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -407,7 +407,7 @@ pub mod day14 {
 
 pub mod day15 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -420,7 +420,7 @@ pub mod day15 {
 
 pub mod day16 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -433,7 +433,7 @@ pub mod day16 {
 
 pub mod day17 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -446,7 +446,7 @@ pub mod day17 {
 
 pub mod day18 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -459,7 +459,7 @@ pub mod day18 {
 
 pub mod day19 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -472,7 +472,7 @@ pub mod day19 {
 
 pub mod day20 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -485,7 +485,7 @@ pub mod day20 {
 
 pub mod day21 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -498,7 +498,7 @@ pub mod day21 {
 
 pub mod day22 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -511,7 +511,7 @@ pub mod day22 {
 
 pub mod day23 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -524,7 +524,7 @@ pub mod day23 {
 
 pub mod day24 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -537,7 +537,7 @@ pub mod day24 {
 
 pub mod day25 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()

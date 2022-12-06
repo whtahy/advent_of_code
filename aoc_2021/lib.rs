@@ -1226,8 +1226,8 @@ pub mod day17 {
 }
 
 pub mod day18 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(18);
+    shared::test!(); // examples: 4_140
 
     pub fn part1() -> String {
         todo!()

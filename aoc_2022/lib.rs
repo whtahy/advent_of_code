@@ -276,15 +276,28 @@ pub mod day5 {
 }
 
 pub mod day6 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(6);
+    shared::test!(1_647, 2_447); // examples: 7, 19
+
+    use std::collections::HashSet;
+
+    type T = usize;
 
     pub fn part1() -> String {
-        todo!()
+        find_marker(4).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        find_marker(14).to_string()
+    }
+
+    fn find_marker(len: T) -> T {
+        len + INPUT
+            .chars()
+            .collect::<Vec<_>>()
+            .windows(len)
+            .take_while(|w| w.iter().collect::<HashSet<_>>().len() < len)
+            .count()
     }
 }
 

@@ -2,7 +2,7 @@ shared::table_of_contents!();
 
 pub mod day1 {
     shared::input!(1);
-    shared::test!(1_521, 1_543); // examples: 7, 5
+    shared::test!(1_521, 1_543);
 
     pub fn part1() -> String {
         INPUT
@@ -29,7 +29,7 @@ pub mod day1 {
 
 pub mod day2 {
     shared::input!(2);
-    shared::test!(1_882_980, 1_971_232_560); // examples: 150, 900
+    shared::test!(1_882_980, 1_971_232_560);
 
     pub fn part1() -> String {
         let mut horizontal = 0;
@@ -71,7 +71,7 @@ pub mod day2 {
 
 pub mod day3 {
     shared::input!(3);
-    shared::test!(1_307_354, 482_500); // examples: 198, 230
+    shared::test!(1_307_354, 482_500);
 
     pub fn part1() -> String {
         let mut counts = [[0, 0]; 12];
@@ -141,7 +141,7 @@ pub mod day3 {
 
 pub mod day4 {
     shared::input!(4);
-    shared::test!(54_275, 13_158); // examples: 4_512, 1_924
+    shared::test!(54_275, 13_158);
 
     type Board = [[Option<u32>; 5]; 5];
 
@@ -225,7 +225,7 @@ pub mod day4 {
 
 pub mod day5 {
     shared::input!(5);
-    shared::test!(5_576, 18_144); // examples: 5, 12
+    shared::test!(5_576, 18_144);
 
     use std::collections::HashMap;
 
@@ -297,7 +297,6 @@ pub mod day5 {
 pub mod day6 {
     shared::input!(6);
     shared::test!(380_612, 1_710_166_656_900_u64);
-    // examples: 5_934, 26_984_457_539_u64
 
     type Counter = [u64; 9];
 
@@ -334,7 +333,7 @@ pub mod day6 {
 
 pub mod day7 {
     shared::input!(7);
-    shared::test!(344_297, 97_164_301); // examples: 37, 168
+    shared::test!(344_297, 97_164_301);
 
     pub fn part1() -> String {
         let mut input = parse();
@@ -376,7 +375,7 @@ pub mod day7 {
 
 pub mod day8 {
     shared::input!(8);
-    shared::test!(352, 936_117); // examples: 26, 61_229
+    shared::test!(352, 936_117);
 
     use std::collections::{HashMap, HashSet};
 
@@ -438,7 +437,7 @@ pub mod day8 {
 
 pub mod day9 {
     shared::input!(9);
-    shared::test!(575, 1_019_700); // examples: 15, 1_134
+    shared::test!(575, 1_019_700);
 
     use std::collections::{BTreeSet, HashSet};
 
@@ -519,7 +518,7 @@ pub mod day9 {
 
 pub mod day10 {
     shared::input!(10);
-    shared::test!(367_227, 3_583_341_858_u32); // examples: 26_397, 288_957
+    shared::test!(367_227, 3_583_341_858_u32);
 
     use SyntaxError::*;
 
@@ -598,7 +597,7 @@ pub mod day10 {
 
 pub mod day11 {
     shared::input!(11);
-    shared::test!(1_669, 351); // examples: 1_656, 195
+    shared::test!(1_669, 351);
 
     pub fn part1() -> String {
         let mut grid = grid();
@@ -698,9 +697,6 @@ pub mod day11 {
 pub mod day12 {
     shared::input!(12);
     shared::test!(4_573, 117_509);
-    // example1: 10, 36
-    // example2: 19, 103, 3_509
-    // example3: 226, 3_509
 
     use std::collections::HashMap;
 
@@ -807,7 +803,7 @@ pub mod day12 {
 
 pub mod day13 {
     shared::input!(13);
-    shared::test!(621, 95); // examples: 17, 16 -> HKUJGAJZ
+    shared::test!(621, 95);
 
     use std::collections::{HashSet, VecDeque};
 
@@ -880,7 +876,6 @@ pub mod day13 {
 pub mod day14 {
     shared::input!(14);
     shared::test!(2_602, 2_942_885_922_173_u64);
-    // examples: 1_588, 2_188_189_693_529_u64
 
     use std::collections::HashMap;
 
@@ -944,7 +939,7 @@ pub mod day14 {
 
 pub mod day15 {
     shared::input!(15);
-    shared::test!(429, 2844); // examples: 40, 315
+    shared::test!(429, 2844);
 
     use std::{cmp::Reverse, collections::BinaryHeap};
 
@@ -1017,8 +1012,6 @@ pub mod day15 {
 pub mod day16 {
     shared::input!(16);
     shared::test!(852, 19_348_959_966_392_u64);
-    // example1, part1: [16, 12, 23, 31]
-    // example2, part2: [3, 54, 7, 9, 1, 0, 0, 1]
 
     use std::collections::VecDeque;
 
@@ -1148,7 +1141,7 @@ pub mod day16 {
 
 pub mod day17 {
     shared::input!(17);
-    shared::test!(5_886, 1_806); // examples: 45, 112
+    shared::test!(5_886, 1_806);
 
     type T = isize;
 
@@ -1227,7 +1220,7 @@ pub mod day17 {
 
 pub mod day18 {
     shared::input!(18);
-    shared::test!(); // examples: 4_140
+    shared::test!(4_140);
 
     pub fn part1() -> String {
         todo!()
@@ -1240,7 +1233,7 @@ pub mod day18 {
 
 pub mod day19 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1253,7 +1246,7 @@ pub mod day19 {
 
 pub mod day20 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1266,7 +1259,7 @@ pub mod day20 {
 
 pub mod day21 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1279,7 +1272,7 @@ pub mod day21 {
 
 pub mod day22 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1292,7 +1285,7 @@ pub mod day22 {
 
 pub mod day23 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1305,7 +1298,7 @@ pub mod day23 {
 
 pub mod day24 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()
@@ -1318,7 +1311,7 @@ pub mod day24 {
 
 pub mod day25 {
     shared::input!();
-    shared::test!(); // examples:
+    shared::test!();
 
     pub fn part1() -> String {
         todo!()

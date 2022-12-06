@@ -210,15 +210,68 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    shared::input!();
-    shared::test!(); // examples:
+    shared::input!(5);
+    shared::test!("WCZTHTMPS", "BLSGJSDTS"); // examples: CMZ, MCD
+
+    type Stacks = Vec<Vec<char>>;
+    type T = usize;
+    struct Step {
+        n: T,
+        from: T,
+        to: T,
+    }
+
+    fn parse(s: &str) -> (Stacks, Vec<Step>) {
+        let (upper, lower) = s.split_once("\r\n\r\n").unwrap();
+        let stacks = parse_crates(upper);
+        let steps = lower.lines().map(parse_step).collect();
+        (stacks, steps)
+    }
+
+    fn parse_crates(s: &str) -> Stacks {
+        let n_stacks = s.lines().next().unwrap().len() / 4 + 1;
+        let mut stacks = vec![Vec::new(); n_stacks];
+        for ln in s.lines().rev() {
+            for (i, ch) in ln
+                .chars()
+                .enumerate()
+                .filter(|(_, ch)| ch.is_ascii_uppercase())
+            {
+                stacks[i / 4].push(ch);
+            }
+        }
+
+        stacks
+    }
+
+    fn parse_step(ln: &str) -> Step {
+        let v = ln.split(' ').flat_map(|x| x.parse()).collect::<Vec<_>>();
+        Step {
+            n: v[0],
+            from: v[1] - 1,
+            to: v[2] - 1,
+        }
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let (mut stacks, steps) = parse(INPUT);
+        for step in steps {
+            for _ in 1..=step.n {
+                let c = stacks[step.from].pop().unwrap();
+                stacks[step.to].push(c);
+            }
+        }
+        stacks.iter().map(|stack| stack[stack.len() - 1]).collect()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (mut stacks, steps) = parse(INPUT);
+        for step in steps {
+            let from = &mut stacks[step.from];
+            let c = from.split_off(from.len() - step.n);
+            stacks[step.to].extend(c);
+        }
+        stacks.iter().map(|stack| stack[stack.len() - 1]).collect()
     }
 }
 

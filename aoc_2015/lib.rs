@@ -64,15 +64,44 @@ pub mod day2 {
 }
 
 pub mod day3 {
-    shared::input!();
-    shared::test!();
+    shared::input!(3);
+    shared::test!(2_572, 2_631);
+
+    use std::collections::HashSet;
+
+    type T = isize;
+    type Coord = (T, T);
 
     pub fn part1() -> String {
-        todo!()
+        INPUT
+            .chars()
+            .scan((0, 0), travel)
+            .chain([(0, 0)])
+            .collect::<HashSet<_>>()
+            .len()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let santa = INPUT.chars().step_by(2).scan((0, 0), travel);
+        let robo_santa = INPUT.chars().skip(1).step_by(2).scan((0, 0), travel);
+        santa
+            .chain(robo_santa)
+            .chain([(0, 0)])
+            .collect::<HashSet<_>>()
+            .len()
+            .to_string()
+    }
+
+    fn travel(loc: &mut Coord, dir: char) -> Option<Coord> {
+        match dir {
+            '>' => loc.0 += 1,
+            '<' => loc.0 -= 1,
+            '^' => loc.1 += 1,
+            'v' => loc.1 -= 1,
+            _ => unreachable!(),
+        };
+        Some(*loc)
     }
 }
 

@@ -35,15 +35,31 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    shared::input!();
-    shared::test!();
+    shared::input!(2);
+    shared::test!(1_586_300, 3_737_498);
+
+    type T = usize;
+    type Dimensions = Vec<T>;
+
+    fn parse(ln: &str) -> Dimensions {
+        ln.split('x').flat_map(str::parse).cycle().take(4).collect()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let calc = |dims: Dimensions| {
+            let iter = dims.windows(2).map(|v| v[0] * v[1]);
+            2 * iter.clone().sum::<T>() + iter.min().unwrap()
+        };
+        INPUT.lines().map(parse).map(calc).sum::<T>().to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let calc = |mut dims: Dimensions| -> T {
+            dims[..3].sort_unstable();
+            let wrap = 2 * (dims[0] + dims[1]);
+            wrap + dims[..3].iter().product::<T>()
+        };
+        INPUT.lines().map(parse).map(calc).sum::<T>().to_string()
     }
 }
 

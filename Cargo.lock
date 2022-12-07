@@ -19,6 +19,9 @@ dependencies = [
 [[package]]
 name = "aoc_2015"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2016"

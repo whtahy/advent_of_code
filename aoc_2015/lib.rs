@@ -27,9 +27,8 @@ pub mod day1 {
                 Some(*floor)
             })
             .take_while(|&floor| floor != -1)
+            .chain([0])
             .count()
-            .checked_add(1)
-            .unwrap()
             .to_string()
     }
 }

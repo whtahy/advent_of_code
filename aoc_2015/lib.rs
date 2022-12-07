@@ -1,15 +1,36 @@
 shared::table_of_contents!();
 
 pub mod day1 {
-    shared::input!();
-    shared::test!();
+    shared::input!(1);
+    shared::test!(74, 1_795);
+
+    type T = i8;
+
+    fn parse(ch: char) -> T {
+        match ch {
+            '(' => 1,
+            ')' => -1,
+            _ => unreachable!(),
+        }
+    }
 
     pub fn part1() -> String {
-        todo!()
+        INPUT.chars().map(parse).sum::<T>().to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        INPUT
+            .chars()
+            .map(parse)
+            .scan(0, |floor, x| {
+                *floor += x;
+                Some(*floor)
+            })
+            .take_while(|&floor| floor != -1)
+            .count()
+            .checked_add(1)
+            .unwrap()
+            .to_string()
     }
 }
 

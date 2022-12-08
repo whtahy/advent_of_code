@@ -240,7 +240,6 @@ pub mod day5 {
                 stacks[i / 4].push(ch);
             }
         }
-
         stacks
     }
 

@@ -105,15 +105,48 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    shared::input!();
-    shared::test!();
+    shared::input!(4);
+    shared::test!(282_749, 9_962_624);
+
+    use md5::{Digest, Md5};
+    use std::sync::{Arc, RwLock};
 
     pub fn part1() -> String {
-        todo!()
+        mine(15).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        mine(0).to_string()
+    }
+
+    fn mine(n: u8) -> usize {
+        let ans = Arc::new(RwLock::new(usize::MAX));
+        let n_threads = std::thread::available_parallelism().unwrap().get();
+        let search = |t: usize| {
+            let ans = ans.clone();
+            let md5 = Md5::new_with_prefix(INPUT.trim());
+            std::thread::spawn(move || {
+                for i in (1..).skip(t - 1).step_by(n_threads) {
+                    let hash = md5
+                        .clone()
+                        .chain_update(i.to_string().into_bytes())
+                        .finalize();
+                    if hash[0] == 0 && hash[1] == 0 && hash[2] <= n {
+                        return *ans.write().unwrap() = i;
+                    } else if (i - t) % (n_threads * 256) == 0
+                        && i > *ans.read().unwrap()
+                    {
+                        return;
+                    }
+                }
+            })
+        };
+        for handle in
+            (1..=n_threads).map(search).collect::<Vec<_>>().into_iter()
+        {
+            handle.join().ok();
+        }
+        Arc::try_unwrap(ans).unwrap().into_inner().unwrap()
     }
 }
 

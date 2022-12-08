@@ -8,3 +8,5 @@ path = "lib.rs"
 
 [dependencies]
 shared = { path = "../shared" }
+md-5 = "*"
+rayon = "*"

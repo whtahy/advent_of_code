@@ -301,15 +301,82 @@ pub mod day6 {
 }
 
 pub mod day7 {
-    shared::input!();
-    shared::test!();
+    shared::input!(7);
+    shared::test!(1_783_610, 4_370_655);
+
+    use crate::day7::FsData::*;
+    use std::{collections::HashMap, path::PathBuf};
+
+    type T = usize;
+    type FsTree = HashMap<PathBuf, Vec<FsData>>;
+
+    #[derive(Debug)]
+    enum FsData {
+        File(T),
+        Folder(PathBuf),
+    }
+
+    fn parse() -> FsTree {
+        let mut fs_tree: FsTree = HashMap::new();
+        let mut path = PathBuf::new();
+        for cmd in INPUT.lines().map(|ln| ln.split(' ').collect::<Vec<_>>()) {
+            match cmd[..] {
+                ["$", "ls"] => continue,
+                ["$", "cd", ".."] => {
+                    path.pop();
+                }
+                ["$", "cd", s] => {
+                    path.push(s);
+                    fs_tree.entry(path.clone()).or_insert_with(Vec::new);
+                }
+                ["dir", s] => {
+                    let mut subfolder = path.clone();
+                    subfolder.push(s);
+                    fs_tree.get_mut(&path).unwrap().push(Folder(subfolder));
+                }
+                [n, _] => {
+                    let file = File(n.parse().unwrap());
+                    fs_tree.get_mut(&path).unwrap().push(file);
+                }
+                _ => unreachable!(),
+            }
+        }
+        fs_tree
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let fs_tree = parse();
+        fs_tree
+            .keys()
+            .into_iter()
+            .map(|k| size(k, &fs_tree))
+            .filter(|&n| n < 100_000)
+            .sum::<T>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let fs_tree = parse();
+        let mut sizes = fs_tree
+            .keys()
+            .into_iter()
+            .map(|k| size(k, &fs_tree))
+            .collect::<Vec<_>>();
+        sizes.sort_unstable();
+        let threshold = sizes.last().unwrap() - (70_000_000 - 30_000_000);
+        sizes.iter().find(|&&x| x >= threshold).unwrap().to_string()
+    }
+
+    fn size(path: &PathBuf, fs_tree: &FsTree) -> T {
+        fs_tree
+            .get(path)
+            .unwrap()
+            .iter()
+            .map(|x| match x {
+                File(n) => *n,
+                Folder(p) => size(p, fs_tree),
+            })
+            .sum()
     }
 }
 

@@ -37,15 +37,16 @@ pub mod day2 {
     shared::input!(2);
     shared::test!(10_624, 14_060);
 
+    use crate::day2::{Outcome::*, Shape::*};
+
     type T = usize;
 
-    use crate::day2::Shape::*;
     enum Shape {
         Rock,
         Paper,
         Scissors,
     }
-    use crate::day2::Outcome::*;
+
     enum Outcome {
         Win,
         Draw,

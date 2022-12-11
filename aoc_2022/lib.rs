@@ -381,15 +381,66 @@ pub mod day7 {
 }
 
 pub mod day8 {
-    shared::input!();
-    shared::test!();
+    shared::input!(8);
+    shared::test!(1_823, 211_680);
+
+    type T = usize;
+    type Trees = Vec<Vec<T>>;
+
+    fn parse() -> Trees {
+        INPUT
+            .lines()
+            .map(|ln| ln.chars().flat_map(|ch| ch.to_digit(10)).map(|x| x as T))
+            .map(|iter| iter.collect())
+            .collect()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let trees = parse();
+        let r_max = trees.len() - 1;
+        let c_max = trees[0].len() - 1;
+        let interior =
+            cartesian(1, r_max - 1, 1, c_max - 1).filter(|&(r, c)| {
+                let left = cartesian(r, r, 0, c - 1);
+                let right = cartesian(r, r, c + 1, c_max);
+                let up = cartesian(0, r - 1, c, c);
+                let down = cartesian(r + 1, r_max, c, c);
+                [left, right, up, down].into_iter().any(|mut iter| {
+                    iter.all(|(rr, cc)| trees[r][c] > trees[rr][cc])
+                })
+            });
+        (interior.count() + 2 * r_max + 2 * c_max).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let trees = parse();
+        let r_max = trees.len() - 1;
+        let c_max = trees[0].len() - 1;
+        let interior = cartesian(1, r_max - 1, 1, c_max - 1).map(|(r, c)| {
+            let left = cartesian(r, r, 1, c - 1).rev();
+            let right = cartesian(r, r, c + 1, c_max - 1);
+            let up = cartesian(1, r - 1, c, c).rev();
+            let down = cartesian(r + 1, r_max - 1, c, c);
+            let a = [left, up].into_iter().map(|iter| {
+                iter.take_while(|&(rr, cc)| trees[r][c] > trees[rr][cc])
+                    .count()
+            });
+            let b = [right, down].into_iter().map(|iter| {
+                iter.take_while(|&(rr, cc)| trees[r][c] > trees[rr][cc])
+                    .count()
+            });
+            a.chain(b).map(|view| view + 1).product::<T>()
+        });
+        interior.max().unwrap().to_string()
+    }
+
+    fn cartesian(
+        r1: T,
+        r2: T,
+        c1: T,
+        c2: T,
+    ) -> impl DoubleEndedIterator<Item = (T, T)> {
+        (r1..=r2).flat_map(move |r| (c1..=c2).map(move |c| (r, c)))
     }
 }
 

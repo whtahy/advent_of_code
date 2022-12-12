@@ -446,15 +446,63 @@ pub mod day8 {
 }
 
 pub mod day9 {
-    shared::input!();
-    shared::test!();
+    shared::input!(9);
+    shared::test!(6_367, 2_536);
+
+    use std::collections::HashSet;
+
+    type T = i16;
+    type Coord = (T, T);
+    type Motion = (String, T);
+
+    fn parse() -> impl Iterator<Item = Motion> {
+        INPUT.lines().map(|ln| {
+            let (dir, n) = ln.split_once(' ').unwrap();
+            (dir.to_string(), n.parse().unwrap())
+        })
+    }
 
     pub fn part1() -> String {
-        todo!()
+        move_rope(parse(), 2).len().to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        move_rope(parse(), 10).len().to_string()
+    }
+
+    fn move_rope(
+        motions: impl Iterator<Item = Motion>,
+        rope_length: usize,
+    ) -> HashSet<Coord> {
+        let mut rope = vec![(0, 0); rope_length];
+        let mut visited = HashSet::from([rope[0]]);
+        for (dir, n) in motions {
+            match dir.as_str() {
+                "R" => rope[0].0 += n,
+                "L" => rope[0].0 -= n,
+                "U" => rope[0].1 += n,
+                "D" => rope[0].1 -= n,
+                _ => unreachable!(),
+            }
+            for _ in 1..=n {
+                follow(&mut rope);
+                visited.insert(*rope.last().unwrap());
+            }
+        }
+        visited
+    }
+
+    fn follow(rope: &mut Vec<Coord>) {
+        for i in 1..rope.len() {
+            if !is_adjacent(rope[i], rope[i - 1]) {
+                rope[i].0 += (rope[i - 1].0 - rope[i].0).signum();
+                rope[i].1 += (rope[i - 1].1 - rope[i].1).signum();
+            }
+        }
+    }
+
+    fn is_adjacent(a: Coord, b: Coord) -> bool {
+        (a.0 - b.0).abs() <= 1 && (a.1 - b.1).abs() <= 1
     }
 }
 

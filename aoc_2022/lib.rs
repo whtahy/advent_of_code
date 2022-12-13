@@ -507,15 +507,76 @@ pub mod day9 {
 }
 
 pub mod day10 {
-    shared::input!();
-    shared::test!();
+    shared::input!(10);
+    shared::test!(
+        13_760,
+        "
+        ###..####.#..#.####..##..###..####.####.
+        #..#.#....#.#.....#.#..#.#..#.#....#....
+        #..#.###..##.....#..#....#..#.###..###..
+        ###..#....#.#...#...#....###..#....#....
+        #.#..#....#.#..#....#..#.#....#....#....
+        #..#.#....#..#.####..##..#....####.#...."
+            .replace(' ', "")
+    );
+
+    use crate::day10::Instruction::*;
+
+    type T = i32;
+
+    #[derive(Debug)]
+    enum Instruction {
+        Noop,
+        Addx(T),
+    }
+
+    fn parse() -> impl Iterator<Item = Instruction> {
+        INPUT
+            .lines()
+            .map(|ln| ln.split(' ').collect::<Vec<_>>())
+            .map(|v| match &v[..] {
+                ["noop"] => Noop,
+                ["addx", n] => Addx(n.parse().unwrap()),
+                _ => unreachable!(),
+            })
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let register = register();
+        (20..=220)
+            .step_by(40)
+            .map(|x| x as T * register[x - 1])
+            .sum::<T>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let register = register();
+        let (n_cols, n_pixels) = (40, 40 * 6);
+        let mut image = String::with_capacity(n_pixels);
+        for (i, x) in register.iter().enumerate().take(n_pixels) {
+            let j = (i % n_cols) as T;
+            if j == 0 {
+                image.push('\n');
+            }
+            match x - 1 <= j && j <= x + 1 {
+                true => image.push('#'),
+                false => image.push('.'),
+            }
+        }
+        image
+    }
+
+    fn register() -> Vec<T> {
+        let mut history = vec![1];
+        for instruction in parse() {
+            let x = history.last().unwrap();
+            match instruction {
+                Noop => history.push(*x),
+                Addx(n) => history.extend([*x, *x + n]),
+            }
+        }
+        history
     }
 }
 

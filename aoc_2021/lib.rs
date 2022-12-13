@@ -803,7 +803,17 @@ pub mod day12 {
 
 pub mod day13 {
     shared::input!(13);
-    shared::test!(621, 95);
+    shared::test!(
+        621,
+        "
+        #..#.#..#.#..#...##..##...##....##.####.
+        #..#.#.#..#..#....#.#..#.#..#....#....#.
+        ####.##...#..#....#.#....#..#....#...#..
+        #..#.#.#..#..#....#.#.##.####....#..#...
+        #..#.#.#..#..#.#..#.#..#.#..#.#..#.#....
+        #..#.#..#..##...##...###.#..#..##..####."
+            .replace(' ', "")
+    );
 
     use std::collections::{HashSet, VecDeque};
 
@@ -845,19 +855,17 @@ pub mod day13 {
                 _ => unreachable!(),
             }
         }
-
+        let mut code = String::new();
         for y in 0..y_bound {
+            code.push('\n');
             for x in 0..x_bound {
-                if dots.contains(&(x, y)) {
-                    print!("#");
-                } else {
-                    print!(".");
+                match dots.contains(&(x, y)) {
+                    true => code.push('#'),
+                    false => code.push('.'),
                 }
             }
-            println!();
         }
-
-        dots.len().to_string()
+        code
     }
 
     fn fold(dots: Dots, dir: &str, fold: usize) -> Dots {

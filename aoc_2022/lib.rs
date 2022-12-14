@@ -671,15 +671,79 @@ pub mod day11 {
 }
 
 pub mod day12 {
-    shared::input!();
-    shared::test!();
+    shared::input!(12);
+    shared::test!(383, 377);
+
+    use crate::day12::Goal::*;
+    use std::collections::VecDeque;
+
+    type T = usize;
+    type Coord = (T, T);
+    type Heightmap = Vec<Vec<T>>;
+
+    enum Goal {
+        Letter(char),
+        Square(Coord),
+    }
+
+    fn parse() -> (Heightmap, Coord, Coord) {
+        let (mut heightmap, mut start, mut end) = (Vec::new(), (0, 0), (0, 0));
+        for (r, ln) in INPUT.lines().enumerate() {
+            heightmap.push(Vec::new());
+            for (c, mut ch) in ln.chars().enumerate() {
+                if ch == 'S' {
+                    start = (r, c);
+                    ch = 'a';
+                } else if ch == 'E' {
+                    end = (r, c);
+                    ch = 'z';
+                }
+                heightmap[r].push(ch as T);
+            }
+        }
+        (heightmap, start, end)
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let (height, start, end) = parse();
+        dfs(&height, start, Square(end), |a, b| a + 1 >= b).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (height, _, end) = parse();
+        dfs(&height, end, Letter('a'), |a, b| b + 1 >= a).to_string()
+    }
+
+    fn dfs(
+        height: &Heightmap,
+        start: Coord,
+        goal: Goal,
+        valid: fn(T, T) -> bool,
+    ) -> T {
+        let mut queue = VecDeque::from([(start.0, start.1, 0)]);
+        let (n_rows, n_cols) = (height.len(), height[0].len());
+        let mut history = vec![vec![false; n_cols]; n_rows];
+        let adj = |r, c| {
+            [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]
+                .into_iter()
+                .filter(|&(rr, cc)| rr < n_rows && cc < n_cols)
+        };
+        while let Some((r, c, n)) = queue.pop_front() {
+            if match goal {
+                Square(sq) => (r, c) == sq,
+                Letter(ch) => height[r][c] == ch as T,
+            } {
+                return n;
+            }
+            for (rr, cc) in adj(r, c) {
+                if history[rr][cc] || !valid(height[r][c], height[rr][cc]) {
+                    continue;
+                }
+                queue.push_back((rr, cc, n + 1));
+                history[rr][cc] = true;
+            }
+        }
+        unreachable!()
     }
 }
 

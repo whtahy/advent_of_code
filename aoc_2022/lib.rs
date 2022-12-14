@@ -581,15 +581,92 @@ pub mod day10 {
 }
 
 pub mod day11 {
-    shared::input!();
-    shared::test!();
+    shared::input!(11);
+    shared::test!(50_616, 11_309_046_332_u64);
+
+    type T = u64;
+    type Troop = Vec<Monkey>;
+    struct Monkey {
+        items: Vec<T>,
+        operation: Box<dyn Fn(T) -> T>,
+        test: Box<dyn Fn(T) -> usize>,
+        test_divisor: T,
+    }
+
+    impl Monkey {
+        fn new(s: &str) -> Self {
+            let v = s.lines().into_iter().collect::<Vec<_>>();
+            let items = v[1]
+                .replace("  Starting items: ", "")
+                .split(", ")
+                .map(|s| s.parse().unwrap())
+                .collect::<Vec<_>>();
+            let operation: Box<dyn Fn(T) -> T> =
+                match v[2].rsplit(' ').take(2).collect::<Vec<_>>().as_slice() {
+                    ["old", "*"] => Box::new(move |old| old * old),
+                    [s, "*"] => {
+                        let n = s.parse::<T>().unwrap();
+                        Box::new(move |old| old * n)
+                    }
+                    [s, "+"] => {
+                        let n = s.parse::<T>().unwrap();
+                        Box::new(move |old| old + n)
+                    }
+                    _ => unreachable!(),
+                };
+            let last = |s: &str| s.rsplit_once(' ').unwrap().1.parse().unwrap();
+            let test_divisor = last(v[3]);
+            let (test_true, test_false) = (last(v[4]), last(v[5]));
+            let test = Box::new(move |x| match x % test_divisor == 0 {
+                true => test_true as usize,
+                false => test_false as usize,
+            });
+            Monkey {
+                items,
+                operation,
+                test,
+                test_divisor,
+            }
+        }
+    }
+
+    fn parse() -> Troop {
+        INPUT.split("\r\n\r\n").map(Monkey::new).collect()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let mut troop = parse();
+        let mut counts = vec![0; troop.len()];
+        for _ in 1..=20 {
+            for i in 0..troop.len() {
+                while let Some(mut item) = troop[i].items.pop() {
+                    item = (troop[i].operation)(item) / 3;
+                    counts[i] += 1;
+                    let new = (troop[i].test)(item);
+                    troop[new].items.push(item);
+                }
+            }
+        }
+        counts.sort_unstable();
+        counts.iter().rev().take(2).product::<T>().to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut troop = parse();
+        let mut counts = vec![0; troop.len()];
+        let worry: T = troop.iter().map(|monkey| monkey.test_divisor).product();
+        for _ in 1..=10_000 {
+            for m in 0..troop.len() {
+                while let Some(mut item) = troop[m].items.pop() {
+                    item = (troop[m].operation)(item) % worry;
+                    counts[m] += 1;
+                    let new = (troop[m].test)(item);
+                    troop[new].items.push(item);
+                }
+            }
+        }
+        counts.sort_unstable();
+        counts.iter().rev().take(2).product::<T>().to_string()
     }
 }
 

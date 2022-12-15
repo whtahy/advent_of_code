@@ -748,15 +748,100 @@ pub mod day12 {
 }
 
 pub mod day13 {
-    shared::input!();
-    shared::test!();
+    shared::input!(13);
+    shared::test!(6_484, 19_305);
+
+    use crate::day13::Data::*;
+    use std::cmp::Ordering::{self, Equal, Less};
+
+    type T = u8;
+
+    #[derive(Debug, Clone)]
+    enum Data {
+        Int(T),
+        List(Vec<Data>),
+    }
+
+    fn parse_packet(ln: &str) -> Data {
+        let tokens = ln
+            .replace('[', "[ ")
+            .replace(']', " ]")
+            .replace(',', " ")
+            .split_whitespace()
+            .map(String::from)
+            .collect();
+        parse_data(tokens)
+    }
+
+    fn parse_data(tokens: Vec<String>) -> Data {
+        let (mut data, mut subdata) = (Vec::new(), Vec::new());
+        let mut depth = 0;
+        for t in tokens {
+            match t.as_str() {
+                "[" => depth += 1,
+                "]" => depth -= 1,
+                _ => (),
+            }
+            match (depth, t.as_str()) {
+                (1, "[") => continue,
+                (1, "]") => {
+                    data.push(parse_data(subdata));
+                    subdata = Vec::new();
+                }
+                (1, _) => data.push(Int(t.parse().unwrap())),
+                _ => subdata.push(t),
+            }
+        }
+        List(data)
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let signal = INPUT
+            .split("\r\n\r\n")
+            .map(|s| s.lines().map(parse_packet).collect::<Vec<_>>())
+            .collect::<Vec<_>>();
+        signal
+            .iter()
+            .enumerate()
+            .filter_map(|(i, v)| match order(&v[0], &v[1]) {
+                Less => Some(i + 1),
+                _ => None,
+            })
+            .sum::<usize>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (key_a, key_b) = ("[[2]]", "[[6]]");
+        let mut signal = INPUT
+            .lines()
+            .filter(|s| !s.is_empty())
+            .chain([key_a, key_b])
+            .map(parse_packet)
+            .collect::<Vec<_>>();
+        signal.sort_by(order);
+        let find =
+            |key| signal.binary_search_by(|x| order(x, &parse_packet(key)));
+        let index_a = find(key_a).unwrap() + 1;
+        let index_b = find(key_b).unwrap() + 1;
+        (index_a * index_b).to_string()
+    }
+
+    fn order(a: &Data, b: &Data) -> Ordering {
+        match (a, b) {
+            (Int(x), Int(y)) => x.cmp(y),
+            (List(v), List(w)) => {
+                for (aa, bb) in v.iter().zip(w) {
+                    match order(aa, bb) {
+                        Equal => continue,
+                        order => return order,
+                    }
+                }
+                v.len().cmp(&w.len())
+            }
+            (List(_), Int(_)) => order(a, &List(vec![b.clone()])),
+            (Int(_), List(_)) => order(&List(vec![a.clone()]), b),
+        }
     }
 }
 

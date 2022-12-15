@@ -752,59 +752,74 @@ pub mod day13 {
     shared::test!(6_484, 19_305);
 
     use crate::day13::Data::*;
-    use std::cmp::Ordering::{self, Equal, Less};
+    use std::{cmp::Ordering, slice::from_ref};
+
+    const TEN: char = char::REPLACEMENT_CHARACTER;
 
     type T = u8;
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Clone, Eq, PartialEq)]
     enum Data {
         Int(T),
         List(Vec<Data>),
     }
 
-    fn parse_packet(ln: &str) -> Data {
-        let tokens = ln
-            .replace('[', "[ ")
-            .replace(']', " ]")
-            .replace(',', " ")
-            .split_whitespace()
-            .map(String::from)
-            .collect();
-        parse_data(tokens)
+    impl Ord for Data {
+        fn cmp(&self, other: &Self) -> Ordering {
+            match (self, other) {
+                (Int(x), Int(y)) => x.cmp(y),
+                (List(v), List(w)) => v.cmp(w),
+                (Int(_), List(v)) => from_ref(self).cmp(v.as_slice()),
+                (List(v), Int(_)) => v.as_slice().cmp(from_ref(other)),
+            }
+        }
     }
 
-    fn parse_data(tokens: Vec<String>) -> Data {
+    impl PartialOrd for Data {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            Some(self.cmp(other))
+        }
+    }
+
+    fn parse() -> Vec<Data> {
+        INPUT
+            .lines()
+            .filter(|ln| !ln.is_empty())
+            .map(|ln| ln.replace("10", &TEN.to_string()))
+            .map(|ln| parse_data(ln.chars()))
+            .collect()
+    }
+
+    fn parse_data(tokens: impl Iterator<Item = char>) -> Data {
         let (mut data, mut subdata) = (Vec::new(), Vec::new());
         let mut depth = 0;
-        for t in tokens {
-            match t.as_str() {
-                "[" => depth += 1,
-                "]" => depth -= 1,
+        for ch in tokens {
+            match ch {
+                '[' => depth += 1,
+                ']' => depth -= 1,
+                ',' => continue,
                 _ => (),
             }
-            match (depth, t.as_str()) {
-                (1, "[") => continue,
-                (1, "]") => {
-                    data.push(parse_data(subdata));
+            match (depth, ch) {
+                (1, '[') => continue,
+                (1, ']') => {
+                    data.push(parse_data(subdata.into_iter()));
                     subdata = Vec::new();
                 }
-                (1, _) => data.push(Int(t.parse().unwrap())),
-                _ => subdata.push(t),
+                (1, TEN) => data.push(Int(10)),
+                (1, _) => data.push(Int(ch.to_digit(10).unwrap() as T)),
+                _ => subdata.push(ch),
             }
         }
         List(data)
     }
 
     pub fn part1() -> String {
-        let signal = INPUT
-            .split("\r\n\r\n")
-            .map(|s| s.lines().map(parse_packet).collect::<Vec<_>>())
-            .collect::<Vec<_>>();
-        signal
-            .iter()
+        parse()
+            .chunks(2)
             .enumerate()
-            .filter_map(|(i, v)| match order(&v[0], &v[1]) {
-                Less => Some(i + 1),
+            .filter_map(|(i, chunk)| match chunk[0] < chunk[1] {
+                true => Some(i + 1),
                 _ => None,
             })
             .sum::<usize>()
@@ -812,36 +827,10 @@ pub mod day13 {
     }
 
     pub fn part2() -> String {
-        let (key_a, key_b) = ("[[2]]", "[[6]]");
-        let mut signal = INPUT
-            .lines()
-            .filter(|s| !s.is_empty())
-            .chain([key_a, key_b])
-            .map(parse_packet)
-            .collect::<Vec<_>>();
-        signal.sort_by(order);
-        let find =
-            |key| signal.binary_search_by(|x| order(x, &parse_packet(key)));
-        let index_a = find(key_a).unwrap() + 1;
-        let index_b = find(key_b).unwrap() + 1;
-        (index_a * index_b).to_string()
-    }
-
-    fn order(a: &Data, b: &Data) -> Ordering {
-        match (a, b) {
-            (Int(x), Int(y)) => x.cmp(y),
-            (List(v), List(w)) => {
-                for (aa, bb) in v.iter().zip(w) {
-                    match order(aa, bb) {
-                        Equal => continue,
-                        order => return order,
-                    }
-                }
-                v.len().cmp(&w.len())
-            }
-            (List(_), Int(_)) => order(a, &List(vec![b.clone()])),
-            (Int(_), List(_)) => order(&List(vec![a.clone()]), b),
-        }
+        let signal = parse();
+        let [key_a, key_b] = ["[[2]]", "[[6]]"].map(|k| parse_data(k.chars()));
+        let index = |key| signal.iter().filter(|&p| p < key).count() + 1;
+        (index(&key_a) * (index(&key_b) + 1)).to_string()
     }
 }
 

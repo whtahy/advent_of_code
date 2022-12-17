@@ -881,7 +881,7 @@ pub mod day14 {
         let mut cave = vec![vec![Empty; n_cols]; n_rows];
         for ln in rocks.iter() {
             for w in ln.windows(2) {
-                for (r, c) in cartesian(w[0].0, w[1].0, w[0].1, w[1].1) {
+                for (r, c) in cartesian(w[0].0, w[0].1, w[1].0, w[1].1) {
                     cave[r][c - COLUMN_OFFSET + n_cols / 2] = Rock;
                 }
             }
@@ -901,12 +901,11 @@ pub mod day14 {
     }
 
     fn simulate(mut cave: Cave, start_col: T) -> T {
-        let n_rows = cave.len();
         let start = (0, start_col);
         let (mut r, mut c) = start;
         let mut ans = 0;
         loop {
-            if r >= n_rows - 1 {
+            if r >= cave.len() - 1 {
                 break; // part 1
             } else if cave[r + 1][c] == Empty {
                 cave[r][c] = Empty;
@@ -932,25 +931,24 @@ pub mod day14 {
         ans
     }
 
-    fn cartesian(r1: T, r2: T, c1: T, c2: T) -> impl Iterator<Item = (T, T)> {
+    fn cartesian(r1: T, c1: T, r2: T, c2: T) -> impl Iterator<Item = (T, T)> {
         let (r1, r2) = (r1.min(r2), r1.max(r2));
         let (c1, c2) = (c1.min(c2), c1.max(c2));
         (r1..=r2).flat_map(move |r| (c1..=c2).map(move |c| (r, c)))
     }
 
-    #[allow(dead_code)]
     fn print_cave(cave: &Cave) {
         if cave.len() > 20 {
             return;
         }
-        print!("{esc}c", esc = 27 as char);
+        print!("{}c", 27 as char);
         for row in cave.iter() {
             for item in row.iter() {
                 print!("{item}");
             }
             println!();
         }
-        std::thread::sleep(std::time::Duration::from_millis(10));
+        std::thread::sleep(std::time::Duration::from_millis(25));
     }
 }
 

@@ -901,12 +901,12 @@ pub mod day14 {
     }
 
     fn simulate(mut cave: Cave, start_col: T) -> T {
-        let (n_rows, _) = (cave.len(), cave[0].len());
+        let (n_rows, n_cols) = (cave.len(), cave[0].len());
         let start = (0, start_col);
         let (mut r, mut c) = start;
         let mut ans = 0;
         loop {
-            if r >= n_rows - 2 {
+            if r >= n_rows - 1 || c >= n_cols - 1 {
                 break; // part 1
             } else if cave[r + 1][c] == Empty {
                 cave[r][c] = Empty;

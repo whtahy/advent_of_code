@@ -835,15 +835,122 @@ pub mod day13 {
 }
 
 pub mod day14 {
-    shared::input!();
-    shared::test!();
+    shared::input!(14);
+    shared::test!(614, 26_170);
+
+    use crate::day14::Tile::*;
+
+    const COLUMN_OFFSET: T = 500;
+
+    type T = usize;
+    type Cave = Vec<Vec<Tile>>;
+
+    #[derive(Clone, PartialEq, Eq)]
+    enum Tile {
+        Empty,
+        Rock,
+        Sand,
+    }
+
+    impl std::fmt::Display for Tile {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            match self {
+                Empty => write!(f, "."),
+                Rock => write!(f, "#"),
+                Sand => write!(f, "o"),
+            }
+        }
+    }
+
+    fn parse() -> (Cave, T) {
+        let mut r_max = T::MIN;
+        let parse_line = |ln: &str| {
+            ln.split([',', ' '])
+                .flat_map(|s| s.parse::<T>())
+                .collect::<Vec<_>>()
+                .chunks(2)
+                .map(|chunk| {
+                    r_max = r_max.max(chunk[1]);
+                    (chunk[1], chunk[0])
+                })
+                .collect()
+        };
+        let rocks = INPUT.lines().map(parse_line).collect::<Vec<Vec<_>>>();
+        let n_rows = r_max + 2;
+        let n_cols = n_rows * 2 + 1;
+        let mut cave = vec![vec![Empty; n_cols]; n_rows];
+        for ln in rocks.iter() {
+            for w in ln.windows(2) {
+                for (r, c) in cartesian(w[0].0, w[1].0, w[0].1, w[1].1) {
+                    cave[r][c - COLUMN_OFFSET + n_cols / 2] = Rock;
+                }
+            }
+        }
+        (cave, n_cols / 2)
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let (cave, start_col) = parse();
+        simulate(cave, start_col).to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (mut cave, start_col) = parse();
+        cave.push(vec![Rock; cave[0].len()]);
+        simulate(cave, start_col).to_string()
+    }
+
+    fn simulate(mut cave: Cave, start_col: T) -> T {
+        let (n_rows, n_cols) = (cave.len(), cave[0].len());
+        let start = (0, start_col);
+        let (mut r, mut c) = start;
+        let mut ans = 0;
+        loop {
+            if r >= n_rows - 1 || c >= n_cols - 1 {
+                break; // part 1
+            } else if cave[r + 1][c] == Empty {
+                cave[r][c] = Empty;
+                r += 1;
+            } else if cave[r + 1][c - 1] == Empty {
+                cave[r][c] = Empty;
+                r += 1;
+                c -= 1;
+            } else if cave[r + 1][c + 1] == Empty {
+                cave[r][c] = Empty;
+                r += 1;
+                c += 1;
+            } else if (r, c) == start {
+                ans += 1;
+                break; // part 2
+            } else {
+                (r, c) = start;
+                ans += 1;
+            }
+            cave[r][c] = Sand;
+            print_cave(&cave);
+        }
+        ans
+    }
+
+    fn cartesian(r1: T, r2: T, c1: T, c2: T) -> impl Iterator<Item = (T, T)> {
+        let (r1, r2) = (r1.min(r2), r1.max(r2));
+        let (c1, c2) = (c1.min(c2), c1.max(c2));
+        (r1..=r2).flat_map(move |r| (c1..=c2).map(move |c| (r, c)))
+    }
+
+    #[allow(dead_code)]
+    fn print_cave(cave: &Cave) {
+        if cave.len() > 20 {
+            return;
+        }
+        print!("{esc}c", esc = 27 as char);
+        for row in cave.iter() {
+            for item in row.iter() {
+                print!("{item}");
+            }
+            println!();
+        }
+        std::thread::sleep(std::time::Duration::from_millis(10));
     }
 }
 

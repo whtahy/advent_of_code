@@ -881,7 +881,7 @@ pub mod day14 {
         let mut cave = vec![vec![Empty; n_cols]; n_rows];
         for ln in rocks.iter() {
             for w in ln.windows(2) {
-                for (r, c) in cartesian(w[0].0, w[0].1, w[1].0, w[1].1) {
+                for (r, c) in cartesian(w[0].0, w[1].0, w[0].1, w[1].1) {
                     cave[r][c - COLUMN_OFFSET + n_cols / 2] = Rock;
                 }
             }
@@ -931,7 +931,7 @@ pub mod day14 {
         ans
     }
 
-    fn cartesian(r1: T, c1: T, r2: T, c2: T) -> impl Iterator<Item = (T, T)> {
+    fn cartesian(r1: T, r2: T, c1: T, c2: T) -> impl Iterator<Item = (T, T)> {
         let (r1, r2) = (r1.min(r2), r1.max(r2));
         let (c1, c2) = (c1.min(c2), c1.max(c2));
         (r1..=r2).flat_map(move |r| (c1..=c2).map(move |c| (r, c)))
@@ -953,15 +953,93 @@ pub mod day14 {
 }
 
 pub mod day15 {
-    shared::input!();
-    shared::test!();
+    shared::input!(15);
+    shared::test!(5_299_855, 13_615_843_289_729_i64);
+
+    type T = i64;
+    type LineSegment = (T, T);
+
+    #[derive(Debug)]
+    struct Data {
+        sensor: Coord,
+        beacon: Coord,
+        radius: T,
+    }
+
+    #[derive(Debug)]
+    struct Coord {
+        x: T,
+        y: T,
+    }
+
+    fn parse() -> Vec<Data> {
+        INPUT
+            .lines()
+            .map(|ln| ln.split(['=', ',', ':']).flat_map(str::parse).collect())
+            .map(|v: Vec<_>| Data {
+                sensor: Coord { x: v[0], y: v[1] },
+                beacon: Coord { x: v[2], y: v[3] },
+                radius: (v[0] - v[2]).abs() + (v[1] - v[3]).abs(),
+            })
+            .collect()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let data = parse();
+        let row = 2_000_000;
+        let beacons = data
+            .iter()
+            .filter(|d| d.beacon.y == row)
+            .map(|d| d.beacon.x)
+            .collect::<Vec<_>>();
+        search(&data, row)
+            .iter()
+            .map(|&(a, b)| match beacons.iter().any(|&x| a <= x && x <= b) {
+                true => b - a,
+                false => b - a + 1,
+            })
+            .sum::<T>()
+            .to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let data = parse();
+        let max = 4_000_000;
+        let signal = (0..=max)
+            .filter_map(|row| {
+                let v = search(&data, row);
+                match v.len() > 1 {
+                    true => Some((v[0].1 + 1, row)),
+                    false => None,
+                }
+            })
+            .find(|&(x, _)| x <= max)
+            .unwrap();
+        (max * signal.0 + signal.1).to_string()
+    }
+
+    fn search(data: &[Data], row: T) -> Vec<LineSegment> {
+        let mut line_segments = data
+            .iter()
+            .map(|d| {
+                let delta_y = (d.sensor.y - row).abs();
+                let delta_x = (d.radius - delta_y).max(0);
+                (d.sensor.x - delta_x, d.sensor.x + delta_x)
+            })
+            .filter(|(a, b)| a < b)
+            .collect::<Vec<_>>();
+        line_segments.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        line_segments
+            .iter()
+            .fold(vec![line_segments[0]], |mut acc, &ln| {
+                let i = acc.len() - 1;
+                if acc[i].1 >= ln.0 - 1 {
+                    acc[i].1 = acc[i].1.max(ln.1);
+                } else {
+                    acc.push(ln);
+                }
+                acc
+            })
     }
 }
 

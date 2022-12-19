@@ -956,8 +956,10 @@ pub mod day15 {
     shared::input!(15);
     shared::test!(5_299_855, 13_615_843_289_729_i64);
 
+    use std::collections::HashSet;
+
     type T = i64;
-    type LineSegment = (T, T);
+    type Coord = (T, T);
 
     #[derive(Debug)]
     struct Data {
@@ -966,20 +968,19 @@ pub mod day15 {
         radius: T,
     }
 
-    #[derive(Debug)]
-    struct Coord {
-        x: T,
-        y: T,
-    }
-
     fn parse() -> Vec<Data> {
         INPUT
             .lines()
             .map(|ln| ln.split(['=', ',', ':']).flat_map(str::parse).collect())
-            .map(|v: Vec<_>| Data {
-                sensor: Coord { x: v[0], y: v[1] },
-                beacon: Coord { x: v[2], y: v[3] },
-                radius: (v[0] - v[2]).abs() + (v[1] - v[3]).abs(),
+            .map(|v: Vec<_>| {
+                let sensor = (v[0], v[1]);
+                let beacon = (v[2], v[3]);
+                let radius = manhattan(&sensor, &beacon);
+                Data {
+                    sensor,
+                    beacon,
+                    radius,
+                }
             })
             .collect()
     }
@@ -987,59 +988,54 @@ pub mod day15 {
     pub fn part1() -> String {
         let data = parse();
         let row = 2_000_000;
-        let beacons = data
+        let n_beacons = data
             .iter()
-            .filter(|d| d.beacon.y == row)
-            .map(|d| d.beacon.x)
-            .collect::<Vec<_>>();
-        search(&data, row)
-            .iter()
-            .map(|&(a, b)| match beacons.iter().any(|&x| a <= x && x <= b) {
-                true => b - a,
-                false => b - a + 1,
-            })
-            .sum::<T>()
-            .to_string()
+            .filter(|d| d.beacon.1 == row)
+            .map(|d| d.beacon.0)
+            .collect::<HashSet<_>>()
+            .len() as T;
+        let (start, end) = data.iter().fold((T::MAX, T::MIN), |acc, d| {
+            let delta_y = (d.sensor.1 - row).abs();
+            let delta_x = (d.radius - delta_y).max(0);
+            let start = acc.0.min(d.sensor.0 - delta_x);
+            let end = acc.1.max(d.sensor.0 + delta_x);
+            (start, end)
+        });
+        (end - start + 1 - n_beacons).to_string()
     }
 
     pub fn part2() -> String {
         let data = parse();
-        let max = 4_000_000;
-        let signal = (0..=max)
-            .filter_map(|row| {
-                let v = search(&data, row);
-                match v.len() > 1 {
-                    true => Some((v[0].1 + 1, row)),
-                    false => None,
-                }
-            })
-            .find(|&(x, _)| x <= max)
-            .unwrap();
-        (max * signal.0 + signal.1).to_string()
+        let (min, max) = (0, 4_000_000);
+        let mut stack = vec![(min, max, min, max)];
+        while !stack.is_empty() {
+            let (x1, x2, y1, y2) = stack.pop().unwrap();
+            if x1 > x2 || y1 > y2 {
+                continue;
+            }
+            let corners = [(x1, y1), (x1, y2), (x2, y1), (x2, y2)];
+            if !data.iter().all(|d| {
+                corners.iter().any(|c| manhattan(&d.sensor, c) > d.radius)
+            }) {
+                continue;
+            };
+            if x1 == x2 && y1 == y2 {
+                return (x1 * max + y1).to_string();
+            }
+            let mid_x = (x1 + x2) / 2;
+            let mid_y = (y1 + y2) / 2;
+            stack.extend([
+                (x1, mid_x, y1, mid_y),
+                (x1, mid_x, mid_y + 1, y2),
+                (mid_x + 1, x2, y1, mid_y),
+                (mid_x + 1, x2, mid_y + 1, y2),
+            ]);
+        }
+        unreachable!()
     }
 
-    fn search(data: &[Data], row: T) -> Vec<LineSegment> {
-        let mut line_segments = data
-            .iter()
-            .map(|d| {
-                let delta_y = (d.sensor.y - row).abs();
-                let delta_x = (d.radius - delta_y).max(0);
-                (d.sensor.x - delta_x, d.sensor.x + delta_x)
-            })
-            .filter(|(a, b)| a < b)
-            .collect::<Vec<_>>();
-        line_segments.sort_unstable_by(|a, b| a.0.cmp(&b.0));
-        line_segments
-            .iter()
-            .fold(vec![line_segments[0]], |mut acc, &ln| {
-                let i = acc.len() - 1;
-                if acc[i].1 >= ln.0 - 1 {
-                    acc[i].1 = acc[i].1.max(ln.1);
-                } else {
-                    acc.push(ln);
-                }
-                acc
-            })
+    fn manhattan(p1: &Coord, p2: &Coord) -> T {
+        (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
     }
 }
 

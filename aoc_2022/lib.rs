@@ -1040,15 +1040,188 @@ pub mod day15 {
 }
 
 pub mod day16 {
-    shared::input!();
-    shared::test!();
+    shared::input!(16);
+    shared::test!(2_114, 2_666);
+
+    use std::collections::{BinaryHeap, HashMap};
+
+    type T = usize;
+
+    type Distances = Vec<Vec<T>>;
+    type ValveIds<'a> = HashMap<&'a str, T>;
+    type FlowRates = Vec<T>;
+
+    #[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
+    struct Path {
+        flow: T,
+        time: T,
+        valve: T,
+        todos: Vec<bool>,
+    }
+
+    #[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
+    struct DuoPath {
+        flow: T,
+        time: [T; 2],
+        valve: [T; 2],
+        todos: Vec<bool>,
+    }
+
+    fn parse_line(line: &str) -> (&str, usize, impl Iterator<Item = &str>) {
+        let mut words =
+            line.split([' ', '=', ';', ',']).filter(|x| !x.is_empty());
+        let valve_name = words.nth(1).unwrap();
+        let flow_rate = words.nth(3).unwrap().parse().unwrap();
+        let tunnels = words.skip(4);
+        (valve_name, flow_rate, tunnels)
+    }
+
+    fn parse<'a>() -> (ValveIds<'a>, FlowRates, Distances) {
+        let mut valve_ids = HashMap::new();
+        let mut flow_rates = Vec::new();
+        let mut empty_valves = Vec::new();
+        for ln in INPUT.lines() {
+            let (valve_name, flow_rate, _) = parse_line(ln);
+            if flow_rate > 0 || valve_name == "AA" {
+                flow_rates.push(flow_rate);
+                valve_ids.insert(valve_name, flow_rates.len() - 1);
+            } else {
+                empty_valves.push(valve_name);
+            }
+        }
+
+        // truncate empty valves after floyd warshall
+        for (i, valve) in empty_valves.iter().enumerate() {
+            valve_ids.insert(valve, flow_rates.len() + i);
+        }
+
+        // beware overflow
+        let infinity = flow_rates.iter().sum::<T>() + 1;
+        let mut dist = vec![vec![infinity; valve_ids.len()]; valve_ids.len()];
+        for ln in INPUT.lines() {
+            let (valve_name, _, tunnels) = parse_line(ln);
+            let i = *valve_ids.get(valve_name).unwrap();
+            dist[i][i] = 0;
+            for v in tunnels {
+                let j = *valve_ids.get(v).unwrap();
+                dist[i][j] = 1;
+                dist[j][i] = 1;
+            }
+        }
+
+        // floyd warshall
+        let n = dist.len();
+        for k in 0..n {
+            for i in 0..n {
+                for j in 0..n {
+                    dist[i][j] = dist[i][j].min(dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+
+        // remove empty valves
+        dist.truncate(flow_rates.len());
+        for row in dist.iter_mut() {
+            row.truncate(flow_rates.len());
+        }
+
+        (valve_ids, flow_rates, dist)
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let (valve_ids, flow_rates, distances) = parse();
+        let start = Path {
+            flow: 0,
+            time: 30,
+            valve: *valve_ids.get("AA").unwrap(),
+            todos: flow_rates.iter().map(|&flow| flow != 0).collect(),
+        };
+        let mut best = 0;
+        let mut pqueue = BinaryHeap::from([start]);
+        while let Some(path) = pqueue.pop() {
+            for next in (0..flow_rates.len()).filter(|&v| path.todos[v]) {
+                let delta_t = distances[path.valve][next] + 1;
+                if delta_t > path.time {
+                    continue;
+                }
+                let new_time = path.time - delta_t;
+                let new_flow = path.flow + new_time * flow_rates[next];
+                best = best.max(new_flow);
+                let mut new_todos = path.todos.clone();
+                new_todos[next] = false;
+                let upper_bound = flow_rates
+                    .iter()
+                    .enumerate()
+                    .filter(|&(v, _)| new_todos[v])
+                    .map(|(v, flow)| {
+                        flow * new_time.saturating_sub(distances[next][v] + 1)
+                    })
+                    .sum::<T>()
+                    + new_flow;
+                if upper_bound <= best {
+                    continue;
+                }
+                pqueue.push(Path {
+                    flow: new_flow,
+                    time: new_time,
+                    valve: next,
+                    todos: new_todos,
+                });
+            }
+        }
+        best.to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let (valve_ids, flow_rates, distances) = parse();
+        let valve_aa = *valve_ids.get("AA").unwrap();
+        let start = DuoPath {
+            flow: 0,
+            time: [26; 2],
+            valve: [valve_aa; 2],
+            todos: flow_rates.iter().map(|&flow| flow != 0).collect(),
+        };
+        let mut best = 0;
+        let mut pqueue = BinaryHeap::from([start]);
+        while let Some(mut path) = pqueue.pop() {
+            for next in (0..flow_rates.len()).filter(|&v| path.todos[v]) {
+                if path.time[0] < path.time[1] {
+                    path.time.swap(0, 1);
+                    path.valve.swap(0, 1);
+                }
+                let delta_t = distances[path.valve[0]][next] + 1;
+                if delta_t > path.time[0] {
+                    continue;
+                }
+                let new_time = path.time[0] - delta_t;
+                let new_flow = path.flow + new_time * flow_rates[next];
+                best = best.max(new_flow);
+                let mut new_todos = path.todos.clone();
+                new_todos[next] = false;
+                let upper_bound = flow_rates
+                    .iter()
+                    .enumerate()
+                    .filter(|&(v, _)| new_todos[v])
+                    .map(|(v, flow)| {
+                        let time = new_time.max(path.time[1]);
+                        let distance =
+                            distances[next][v].min(distances[path.valve[1]][v]);
+                        flow * time.saturating_sub(distance + 1)
+                    })
+                    .sum::<T>()
+                    + new_flow;
+                if upper_bound <= best {
+                    continue;
+                }
+                pqueue.push(DuoPath {
+                    flow: new_flow,
+                    time: [new_time, path.time[1]],
+                    valve: [next, path.valve[1]],
+                    todos: new_todos,
+                });
+            }
+        }
+        best.to_string()
     }
 }
 

@@ -1226,15 +1226,208 @@ pub mod day16 {
 }
 
 pub mod day17 {
-    shared::input!();
-    shared::test!();
+    shared::input!(17);
+    shared::test!(3_239, 1_594_842_406_882_isize);
+
+    use std::collections::{HashMap, HashSet};
+
+    const CAVERN_WIDTH: T = 7;
+    const SPAWN_X: T = 3;
+    const SPAWN_Y: T = 4;
+
+    // Shapes
+    //  A       B       C       D       E
+    //                          x
+    //           x        x     x
+    //          xxx       x     x       xx
+    //  xxxx     x      xxx     x       xx
+    const SHAPES: [[Coord; 5]; 5] = [
+        [(0, 0), (1, 0), (2, 0), (3, 0), (3, 0)],
+        [(0, 1), (1, 0), (1, 1), (1, 2), (2, 1)],
+        [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
+        [(0, 0), (0, 1), (0, 2), (0, 3), (0, 3)],
+        [(0, 0), (0, 1), (1, 0), (1, 1), (1, 1)],
+    ];
+    const SHAPES_LEN: [usize; 5] = [4, 5, 5, 4, 4];
+
+    type T = i16;
+    type U = u64;
+    type Coord = (T, T); // x, y
+    type Hash = [u8; 3]; // shape, x coord, delta height
+
+    #[derive(Debug)]
+    struct Tetris {
+        block: Coord,
+        shape: u8,
+        stopped: HashSet<Coord>,
+        height: T,
+    }
+
+    impl Tetris {
+        fn new() -> Self {
+            Tetris {
+                block: (SPAWN_X, SPAWN_Y),
+                shape: 0,
+                stopped: HashSet::new(),
+                height: 0,
+            }
+        }
+
+        fn collision(&self, coord: &Coord) -> bool {
+            self.stopped.contains(coord)
+                || coord.1 <= 0
+                || coord.0 <= 0
+                || coord.0 > CAVERN_WIDTH
+        }
+
+        fn shift(coord: Coord, delta_x: T, delta_y: T) -> Coord {
+            (coord.0 + delta_x, coord.1 + delta_y)
+        }
+
+        fn coords(&self) -> impl Iterator<Item = Coord> + '_ {
+            let i = self.shape as usize;
+            SHAPES[i].into_iter().take(SHAPES_LEN[i]).map(
+                |(delta_x, delta_y)| {
+                    Tetris::shift(self.block, delta_x, delta_y)
+                },
+            )
+        }
+
+        fn push(&mut self, dir: T) {
+            if !self
+                .coords()
+                .map(|coord| Tetris::shift(coord, dir, 0))
+                .any(|coord| self.collision(&coord))
+            {
+                self.block.0 += dir;
+            }
+        }
+
+        fn fall(&mut self) -> Option<Hash> {
+            if !self
+                .coords()
+                .map(|coord| Tetris::shift(coord, 0, -1))
+                .any(|coord| self.collision(&coord))
+            {
+                self.block.1 -= 1;
+                None
+            } else {
+                let old_x = self.block.0 as u8;
+                let old_shape = self.shape;
+                let old_height = self.height;
+
+                let coords = self.coords().collect::<Vec<_>>();
+                self.stopped.extend(coords.iter());
+                self.height = coords
+                    .iter()
+                    .map(|c| c.1)
+                    .chain([self.height])
+                    .max()
+                    .unwrap();
+                self.shape = (self.shape + 1) % SHAPES.len() as u8;
+                self.block = (SPAWN_X, self.height + SPAWN_Y);
+
+                Some([old_shape, old_x, (self.height - old_height) as u8])
+            }
+        }
+
+        fn _print(&self) {
+            let max_height = 25;
+            if self.height >= max_height {
+                return;
+            }
+            print!("{}c", 27 as char);
+            for coord in (1..max_height + 1)
+                .rev()
+                .flat_map(|y| (1..CAVERN_WIDTH + 1).map(move |x| (x, y)))
+            {
+                if self.stopped.contains(&coord) {
+                    print!("#");
+                } else if self.coords().collect::<HashSet<_>>().contains(&coord)
+                {
+                    print!("@");
+                } else {
+                    print!(".");
+                }
+                if coord.0 == CAVERN_WIDTH {
+                    println!();
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_millis(250));
+        }
+    }
+
+    fn parse() -> impl Iterator<Item = T> {
+        INPUT
+            .chars()
+            .flat_map(|ch| match ch {
+                '<' => Some(-1),
+                '>' => Some(1),
+                _ => None,
+            })
+            .cycle()
+    }
 
     pub fn part1() -> String {
-        todo!()
+        let mut tetris = Tetris::new();
+        parse()
+            .flat_map(|delta_x| {
+                tetris.push(delta_x);
+                tetris.fall()
+            })
+            .nth(2021);
+        tetris.height.to_string()
     }
 
     pub fn part2() -> String {
-        todo!()
+        let mut tetris = Tetris::new();
+        let mut hashes = Vec::new();
+        let mut indexes = HashMap::new();
+        let mut hash_iter = parse()
+            .flat_map(|delta_x| {
+                tetris.push(delta_x);
+                tetris.fall()
+            })
+            .enumerate();
+        let (cycle_i, cycle_len) = (0..)
+            .find_map(|i| {
+                for (i, hash) in
+                    hash_iter.by_ref().take((i + 1) * 3 - hashes.len())
+                {
+                    hashes.push(hash);
+                    indexes.entry(hash).or_insert(Vec::new()).push(i);
+                }
+                let hash = hashes[i];
+                for &ii in
+                    indexes.get(&hash).unwrap().iter().filter(|&&ii| ii < i)
+                {
+                    let n = i - ii;
+                    if hashes[ii..i] == hashes[i..i + n]
+                        && hashes[ii..i] == hashes[i + n..i + n * 2]
+                    {
+                        return Some((ii as U, (i - ii) as U));
+                    }
+                }
+                None
+            })
+            .unwrap();
+        let partial_height = |n_blocks, skip| {
+            hashes
+                .iter()
+                .map(|&[_, _, h]| h as U)
+                .skip(skip as usize)
+                .take(n_blocks as usize)
+                .sum::<U>()
+        };
+        let n_blocks: U = 1_000_000_000_000;
+        let n_cycles = (n_blocks - cycle_i) / cycle_len;
+        let height = partial_height(cycle_i, 0)
+            + n_cycles * partial_height(cycle_len, cycle_i)
+            + partial_height(
+                n_blocks - n_cycles * cycle_len - cycle_i,
+                cycle_i,
+            );
+        height.to_string()
     }
 }
 

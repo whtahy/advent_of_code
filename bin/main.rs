@@ -1,5 +1,3 @@
-use std::env;
-
 const TABLE_OF_CONTENTS: &[shared::Year] = &[
     aoc_2015::TABLE_OF_CONTENTS,
     aoc_2016::TABLE_OF_CONTENTS,
@@ -16,7 +14,7 @@ const N_DAYS: usize = TABLE_OF_CONTENTS[0].len();
 const N_PARTS: usize = 2;
 
 fn main() {
-    let args = env::args().flat_map(|s| s.parse()).collect::<Vec<_>>();
+    let args = std::env::args().flat_map(|s| s.parse()).collect::<Vec<_>>();
     let valid = |arg: Option<&_>, min, max| {
         arg.is_some() && min <= *arg.unwrap() && *arg.unwrap() <= max
     };

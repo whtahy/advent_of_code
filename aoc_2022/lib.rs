@@ -1005,7 +1005,7 @@ pub mod day15 {
 
     pub fn part1(puzzle_input: &str) -> String {
         let data = parse(puzzle_input);
-        let row = 2_000_000;
+        let row = if data.len() == 14 { 10 } else { 2_000_000 };
         let n_beacons = data
             .iter()
             .filter(|d| d.beacon.1 == row)
@@ -1024,7 +1024,8 @@ pub mod day15 {
 
     pub fn part2(puzzle_input: &str) -> String {
         let data = parse(puzzle_input);
-        let (min, max) = (0, 4_000_000);
+        let min = 0;
+        let max = if data.len() == 14 { 20 } else { 4_000_000 };
         let mut stack = vec![(min, max, min, max)];
         while !stack.is_empty() {
             let (x1, x2, y1, y2) = stack.pop().unwrap();
@@ -1038,7 +1039,7 @@ pub mod day15 {
                 continue;
             };
             if x1 == x2 && y1 == y2 {
-                return (x1 * max + y1).to_string();
+                return (x1 * 4_000_000 + y1).to_string();
             }
             let mid_x = (x1 + x2) / 2;
             let mid_y = (y1 + y2) / 2;

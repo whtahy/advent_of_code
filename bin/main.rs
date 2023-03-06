@@ -1,10 +1,6 @@
 use std::env;
-use std::panic;
 
-type Day = [fn() -> String; 2];
-type Year = [Day; 25];
-
-const TABLE_OF_CONTENTS: [Year; 8] = [
+const TABLE_OF_CONTENTS: &[shared::Year] = &[
     aoc_2015::TABLE_OF_CONTENTS,
     aoc_2016::TABLE_OF_CONTENTS,
     aoc_2017::TABLE_OF_CONTENTS,
@@ -14,37 +10,63 @@ const TABLE_OF_CONTENTS: [Year; 8] = [
     aoc_2021::TABLE_OF_CONTENTS,
     aoc_2022::TABLE_OF_CONTENTS,
 ];
+const START_YEAR: usize = 2015;
+const END_YEAR: usize = START_YEAR + TABLE_OF_CONTENTS.len() - 1;
+const N_DAYS: usize = TABLE_OF_CONTENTS[0].len();
+const N_PARTS: usize = 2;
 
 fn main() {
-    let args: Vec<usize> = env::args().filter_map(|s| s.parse().ok()).collect();
-    if let [year, day] = args[..] {
-        let ans1 = get(year, day, 1);
-        println!("{year} Day{day} Part1: {ans1}");
-        let ans2 = get(year, day, 2);
-        println!("{year} Day{day} Part2: {ans2}");
-    } else if let [year, day, part] = args[..] {
-        let ans = get(year, day, part);
-        println!("{year} Day{day} Part{part}: {ans}");
+    let args = env::args().flat_map(|s| s.parse()).collect::<Vec<_>>();
+    let valid = |arg: Option<&_>, min, max| {
+        arg.is_some() && min <= *arg.unwrap() && *arg.unwrap() <= max
+    };
+    let valid_year = |i| valid(args.get(i), START_YEAR, END_YEAR);
+    let valid_day = |i| valid(args.get(i), 1, N_DAYS);
+    let valid_part = |i| valid(args.get(i), 1, N_PARTS);
+    let both = (1..=N_PARTS).collect();
+    let (year, day, part) = if valid_year(0) && valid_day(1) && valid_part(2) {
+        (args[0], args[1], vec![args[2]])
+    } else if valid_year(0) && valid_day(1) {
+        (args[0], args[1], both)
+    } else if valid_day(0) && valid_part(1) {
+        (END_YEAR, args[0], vec![args[1]])
+    } else if valid_year(0) {
+        let recent = TABLE_OF_CONTENTS[args[0] - START_YEAR]
+            .iter()
+            .take_while(|day| day.puzzle != "")
+            .count();
+        (args[0], recent, both)
+    } else if valid_day(0) {
+        (END_YEAR, args[0], both)
+    } else if args.is_empty() {
+        let recent = TABLE_OF_CONTENTS
+            .last()
+            .unwrap()
+            .iter()
+            .take_while(|day| day.puzzle != "")
+            .count();
+        (END_YEAR, recent, both)
     } else {
-        get_most_recent()
+        println!("Usage: <year> <day> <part>");
+        return;
+    };
+    for pt in part {
+        get(year, day, pt);
     }
 }
 
-fn get(year: usize, day: usize, part: usize) -> String {
-    TABLE_OF_CONTENTS[year - 2015][day - 1][part - 1]()
-}
-
-fn get_most_recent() {
-    panic::set_hook(Box::new(|_| {}));
-    for year in (2015..=2014 + TABLE_OF_CONTENTS.len()).rev() {
-        for day in (1..=25).rev() {
-            for part in (1..=2).rev() {
-                if let Ok(ans) =
-                    std::panic::catch_unwind(|| get(year, day, part))
-                {
-                    return println!("{year} Day{day} Part{part}: {ans}");
-                }
-            }
-        }
-    }
+fn get(yr: usize, dy: usize, pt: usize) {
+    let shared::Day {
+        part,
+        puzzle,
+        example,
+    } = TABLE_OF_CONTENTS[yr - START_YEAR][dy - 1];
+    let ex = example
+        .iter()
+        .map(|s| part[pt - 1](s))
+        .collect::<Vec<_>>()
+        .join(" ");
+    println!("{yr} day{dy} part{pt}: {}", part[pt - 1](puzzle));
+    let indent = 7 + (dy >= 10) as usize;
+    println!("{}example{pt}: {}", ".".repeat(indent), ex);
 }

@@ -14,6 +14,7 @@ dependencies = [
  "aoc_2020",
  "aoc_2021",
  "aoc_2022",
+ "shared",
 ]
 
 [[package]]
@@ -27,22 +28,37 @@ dependencies = [
 [[package]]
 name = "aoc_2016"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2017"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2018"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2019"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2020"
 version = "0.1.0"
+dependencies = [
+ "shared",
+]
 
 [[package]]
 name = "aoc_2021"

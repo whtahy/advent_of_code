@@ -1,61 +1,130 @@
+pub type Year = [Day; 25];
+pub struct Day {
+    pub part: [Part; 2],
+    pub puzzle: &'static str,
+    pub example: &'static [&'static str],
+}
+type Part = fn(&str) -> String;
+
 #[macro_export]
-macro_rules! input {
-    () => {};
-    ($x:expr) => {
-        const INPUT: &str = include_str!(concat!("./day", $x, ".txt"));
+macro_rules! puzzle {
+    () => {
+        pub const PUZZLE: &str = "";
+    };
+    ($day:expr) => {
+        pub const PUZZLE: &str = include_str!(concat!("./day", $day, ".txt"));
+    };
+    ($day:expr, $part1:expr) => {
+        shared::puzzle!($day);
+        #[test]
+        pub fn test_part1() {
+            assert_eq!(part1(PUZZLE), $part1.to_string());
+        }
+    };
+    ($day:expr, $part1:expr, $part2:expr) => {
+        shared::puzzle!($day, $part1);
+        #[test]
+        pub fn test_part2() {
+            assert_eq!(part2(PUZZLE), $part2.to_string());
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! example {
+    () => {
+        pub const EXAMPLE: &'static [&str] = &[""];
+    };
+    ($day:expr) => {
+        pub const EXAMPLE: &'static [&str] =
+            &[include_str!(concat!("./example", $day, ".txt"))];
+    };
+    ($day:expr, $part1:expr) => {
+        shared::example!($day);
+        #[test]
+        fn test_part1_example() {
+            assert_eq!(part1(EXAMPLE[0]), $part1.to_string());
+        }
+    };
+    ($day:expr, $part1:expr, $part2:expr) => {
+        shared::example!($day, $part1);
+        #[test]
+        fn test_part2_example() {
+            assert_eq!(part2(EXAMPLE[0]), $part2.to_string());
+        }
+    };
+    ($day:expr, $($example:ident => ($part1:expr, ),)+) => {
+        pub const EXAMPLE: &'static [&str] = &[$(
+            include_str!(concat!(
+                "./example", $day, stringify!($example), ".txt"
+            )),
+        )+];
+        #[test]
+        fn test_part1_example() {
+            for (actual, expected) in EXAMPLE
+                .iter()
+                .map(|s| part1(s))
+                .zip([$($part1.to_string(),)+])
+            {
+                assert_eq!(actual, expected);
+            }
+        }
+    };
+    ($day:expr, $($example:ident => ($part1:expr, $part2:expr),)+) => {
+        shared::example!($day, $($example => ($part1, ),)+);
+        #[test]
+        fn test_part2_example() {
+            for (actual, expected) in EXAMPLE
+                .iter()
+                .map(|s| part2(s))
+                .zip([$($part2.to_string(),)+])
+            {
+                assert_eq!(actual, expected);
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! toc_helper {
+    ($day:ident) => {
+        shared::Day {
+            part: [$day::part1, $day::part2],
+            puzzle: $day::PUZZLE,
+            example: $day::EXAMPLE,
+        }
     };
 }
 
 #[macro_export]
 macro_rules! table_of_contents {
     () => {
-        pub const TABLE_OF_CONTENTS: [[fn() -> String; 2]; 25] = [
-            [day1::part1, day1::part2],
-            [day2::part1, day2::part2],
-            [day3::part1, day3::part2],
-            [day4::part1, day4::part2],
-            [day5::part1, day5::part2],
-            [day6::part1, day6::part2],
-            [day7::part1, day7::part2],
-            [day8::part1, day8::part2],
-            [day9::part1, day9::part2],
-            [day10::part1, day10::part2],
-            [day11::part1, day11::part2],
-            [day12::part1, day12::part2],
-            [day13::part1, day13::part2],
-            [day14::part1, day14::part2],
-            [day15::part1, day15::part2],
-            [day16::part1, day16::part2],
-            [day17::part1, day17::part2],
-            [day18::part1, day18::part2],
-            [day19::part1, day19::part2],
-            [day20::part1, day20::part2],
-            [day21::part1, day21::part2],
-            [day22::part1, day22::part2],
-            [day23::part1, day23::part2],
-            [day24::part1, day24::part2],
-            [day25::part1, day25::part2],
+        pub const TABLE_OF_CONTENTS: shared::Year = [
+            shared::toc_helper!(day1),
+            shared::toc_helper!(day2),
+            shared::toc_helper!(day3),
+            shared::toc_helper!(day4),
+            shared::toc_helper!(day5),
+            shared::toc_helper!(day6),
+            shared::toc_helper!(day7),
+            shared::toc_helper!(day8),
+            shared::toc_helper!(day9),
+            shared::toc_helper!(day10),
+            shared::toc_helper!(day11),
+            shared::toc_helper!(day12),
+            shared::toc_helper!(day13),
+            shared::toc_helper!(day14),
+            shared::toc_helper!(day15),
+            shared::toc_helper!(day16),
+            shared::toc_helper!(day17),
+            shared::toc_helper!(day18),
+            shared::toc_helper!(day19),
+            shared::toc_helper!(day20),
+            shared::toc_helper!(day21),
+            shared::toc_helper!(day22),
+            shared::toc_helper!(day23),
+            shared::toc_helper!(day24),
+            shared::toc_helper!(day25),
         ];
-    };
-}
-
-#[macro_export]
-macro_rules! test {
-    () => {};
-    ($part1:expr) => {
-        #[test]
-        fn test_part1() {
-            assert_eq!(part1(), $part1.to_string())
-        }
-    };
-    ($part1:expr, $part2:expr) => {
-        #[test]
-        fn test_part1() {
-            assert_eq!(part1(), $part1.to_string())
-        }
-        #[test]
-        fn test_part2() {
-            assert_eq!(part2(), $part2.to_string())
-        }
     };
 }

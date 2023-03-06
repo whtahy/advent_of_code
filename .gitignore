@@ -7,5 +7,4 @@
 !*.md
 !*.txt
 !*.rs
-!cargo.lock
 !cargo.toml

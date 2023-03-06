@@ -453,7 +453,11 @@ pub mod day8 {
 
 pub mod day9 {
     shared::puzzle!(9, 6_367, 2_536);
-    shared::example!(9, 13, 36);
+    shared::example!(
+        9,
+        a => (13, 1),
+        b => (88, 36),
+    );
 
     use std::collections::HashSet;
 

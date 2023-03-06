@@ -16,3 +16,4 @@ aoc_2018 = { path = "../aoc_2018" }
 aoc_2017 = { path = "../aoc_2017" }
 aoc_2016 = { path = "../aoc_2016" }
 aoc_2015 = { path = "../aoc_2015" }
+shared = { path = "../shared" }

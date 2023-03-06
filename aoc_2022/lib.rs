@@ -1,15 +1,15 @@
 shared::table_of_contents!();
 
 pub mod day1 {
-    use std::collections::BinaryHeap;
+    shared::puzzle!(1, 72_602, 207_410);
+    shared::example!(1, 24_000, 45_000);
 
-    shared::input!(1);
-    shared::test!(72_602, 207_410);
+    use std::collections::BinaryHeap;
 
     type T = usize;
 
-    pub fn part1() -> String {
-        INPUT
+    pub fn part1(puzzle_input: &str) -> String {
+        puzzle_input
             .split("\r\n\r\n")
             .map(inventory_sum)
             .max()
@@ -17,8 +17,8 @@ pub mod day1 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        INPUT
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
             .split("\r\n\r\n")
             .map(inventory_sum)
             .collect::<BinaryHeap<_>>()
@@ -34,8 +34,8 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    shared::input!(2);
-    shared::test!(10_624, 14_060);
+    shared::puzzle!(2, 10_624, 14_060);
+    shared::example!(2, 15, 12);
 
     use crate::day2::{Outcome::*, Shape::*};
 
@@ -53,7 +53,7 @@ pub mod day2 {
         Loss,
     }
 
-    pub fn part1() -> String {
+    pub fn part1(puzzle_input: &str) -> String {
         let parse = |s: &str| {
             let (left, right) = s.split_once(' ').unwrap();
             let opponent = parse_left(left);
@@ -76,10 +76,10 @@ pub mod day2 {
             };
             score(you, outcome)
         };
-        INPUT.lines().map(parse).sum::<T>().to_string()
+        puzzle_input.lines().map(parse).sum::<T>().to_string()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(puzzle_input: &str) -> String {
         let parse = |s: &str| {
             let (left, right) = s.split_once(' ').unwrap();
             let opponent = parse_left(left);
@@ -100,7 +100,7 @@ pub mod day2 {
             };
             score(shape, outcome)
         };
-        INPUT.lines().map(parse).sum::<T>().to_string()
+        puzzle_input.lines().map(parse).sum::<T>().to_string()
     }
 
     fn score(shape: Shape, outcome: Outcome) -> T {
@@ -126,15 +126,15 @@ pub mod day2 {
 }
 
 pub mod day3 {
-    shared::input!(3);
-    shared::test!(8_515, 2_434);
+    shared::puzzle!(3, 8_515, 2_434);
+    shared::example!(3, 157, 70);
 
     type T = usize;
     type S = HashSet<T>;
     use std::collections::HashSet;
 
-    pub fn part1() -> String {
-        INPUT
+    pub fn part1(puzzle_input: &str) -> String {
+        puzzle_input
             .lines()
             .map(|ln| {
                 let (left, right) = ln.split_at(ln.len() / 2);
@@ -145,8 +145,8 @@ pub mod day3 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        INPUT
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
             .lines()
             .collect::<Vec<_>>()
             .chunks(3)
@@ -171,14 +171,14 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    shared::input!(4);
-    shared::test!(477, 830);
+    shared::puzzle!(4, 477, 830);
+    shared::example!(4, 2, 4);
 
     type T = usize;
     type Pair = ((T, T), (T, T));
 
-    pub fn part1() -> String {
-        INPUT
+    pub fn part1(puzzle_input: &str) -> String {
+        puzzle_input
             .lines()
             .map(parse_pair)
             .filter(|(left, right)| {
@@ -189,8 +189,8 @@ pub mod day4 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        INPUT
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
             .lines()
             .map(parse_pair)
             .filter(|(left, right)| {
@@ -211,8 +211,8 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    shared::input!(5);
-    shared::test!("WCZTHTMPS", "BLSGJSDTS");
+    shared::puzzle!(5, "WCZTHTMPS", "BLSGJSDTS");
+    shared::example!(5, "CMZ", "MCD");
 
     type Stacks = Vec<Vec<char>>;
     type T = usize;
@@ -253,8 +253,8 @@ pub mod day5 {
         }
     }
 
-    pub fn part1() -> String {
-        let (mut stacks, steps) = parse(INPUT);
+    pub fn part1(puzzle_input: &str) -> String {
+        let (mut stacks, steps) = parse(puzzle_input);
         for step in steps {
             for _ in 1..=step.n {
                 let c = stacks[step.from].pop().unwrap();
@@ -264,8 +264,8 @@ pub mod day5 {
         stacks.iter().map(|stack| stack[stack.len() - 1]).collect()
     }
 
-    pub fn part2() -> String {
-        let (mut stacks, steps) = parse(INPUT);
+    pub fn part2(puzzle_input: &str) -> String {
+        let (mut stacks, steps) = parse(puzzle_input);
         for step in steps {
             let from = &mut stacks[step.from];
             let c = from.split_off(from.len() - step.n);
@@ -276,23 +276,30 @@ pub mod day5 {
 }
 
 pub mod day6 {
-    shared::input!(6);
-    shared::test!(1_647, 2_447);
+    shared::puzzle!(6, 1_647, 2_447);
+    shared::example!(
+        6,
+        a => (7, 19),
+        b => (5, 23),
+        c => (6, 23),
+        d => (10, 29),
+        e => (11, 26),
+    );
 
     use std::collections::HashSet;
 
     type T = usize;
 
-    pub fn part1() -> String {
-        find_marker(4).to_string()
+    pub fn part1(puzzle_input: &str) -> String {
+        find_marker(puzzle_input, 4).to_string()
     }
 
-    pub fn part2() -> String {
-        find_marker(14).to_string()
+    pub fn part2(puzzle_input: &str) -> String {
+        find_marker(puzzle_input, 14).to_string()
     }
 
-    fn find_marker(len: T) -> T {
-        len + INPUT
+    fn find_marker(s: &str, len: T) -> T {
+        len + s
             .chars()
             .collect::<Vec<_>>()
             .windows(len)
@@ -302,8 +309,8 @@ pub mod day6 {
 }
 
 pub mod day7 {
-    shared::input!(7);
-    shared::test!(1_783_610, 4_370_655);
+    shared::puzzle!(7, 1_783_610, 4_370_655);
+    shared::example!(7, 95_437, 24_933_642);
 
     use crate::day7::FsData::*;
     use std::{collections::HashMap, path::PathBuf};
@@ -317,10 +324,10 @@ pub mod day7 {
         Folder(PathBuf),
     }
 
-    fn parse() -> FsTree {
+    fn parse(s: &str) -> FsTree {
         let mut fs_tree: FsTree = HashMap::new();
         let mut path = PathBuf::new();
-        for cmd in INPUT.lines().map(|ln| ln.split(' ').collect::<Vec<_>>()) {
+        for cmd in s.lines().map(|ln| ln.split(' ').collect::<Vec<_>>()) {
             match cmd[..] {
                 ["$", "ls"] => continue,
                 ["$", "cd", ".."] => {
@@ -345,8 +352,8 @@ pub mod day7 {
         fs_tree
     }
 
-    pub fn part1() -> String {
-        let fs_tree = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let fs_tree = parse(puzzle_input);
         fs_tree
             .keys()
             .into_iter()
@@ -356,8 +363,8 @@ pub mod day7 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        let fs_tree = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let fs_tree = parse(puzzle_input);
         let mut sizes = fs_tree
             .keys()
             .into_iter()
@@ -382,22 +389,21 @@ pub mod day7 {
 }
 
 pub mod day8 {
-    shared::input!(8);
-    shared::test!(1_823, 211_680);
+    shared::puzzle!(8, 1_823, 211_680);
+    shared::example!(8, 21, 8);
 
     type T = usize;
     type Trees = Vec<Vec<T>>;
 
-    fn parse() -> Trees {
-        INPUT
-            .lines()
+    fn parse(s: &str) -> Trees {
+        s.lines()
             .map(|ln| ln.chars().flat_map(|ch| ch.to_digit(10)).map(|x| x as T))
             .map(|iter| iter.collect())
             .collect()
     }
 
-    pub fn part1() -> String {
-        let trees = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let trees = parse(puzzle_input);
         let r_max = trees.len() - 1;
         let c_max = trees[0].len() - 1;
         let interior =
@@ -413,8 +419,8 @@ pub mod day8 {
         (interior.count() + 2 * r_max + 2 * c_max).to_string()
     }
 
-    pub fn part2() -> String {
-        let trees = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let trees = parse(puzzle_input);
         let r_max = trees.len() - 1;
         let c_max = trees[0].len() - 1;
         let interior = cartesian(1, r_max - 1, 1, c_max - 1).map(|(r, c)| {
@@ -446,8 +452,8 @@ pub mod day8 {
 }
 
 pub mod day9 {
-    shared::input!(9);
-    shared::test!(6_367, 2_536);
+    shared::puzzle!(9, 6_367, 2_536);
+    shared::example!(9, 13, 36);
 
     use std::collections::HashSet;
 
@@ -455,19 +461,19 @@ pub mod day9 {
     type Coord = (T, T);
     type Motion = (String, T);
 
-    fn parse() -> impl Iterator<Item = Motion> {
-        INPUT.lines().map(|ln| {
+    fn parse(s: &str) -> impl Iterator<Item = Motion> + '_ {
+        s.lines().map(|ln| {
             let (dir, n) = ln.split_once(' ').unwrap();
             (dir.to_string(), n.parse().unwrap())
         })
     }
 
-    pub fn part1() -> String {
-        move_rope(parse(), 2).len().to_string()
+    pub fn part1(puzzle_input: &str) -> String {
+        move_rope(parse(puzzle_input), 2).len().to_string()
     }
 
-    pub fn part2() -> String {
-        move_rope(parse(), 10).len().to_string()
+    pub fn part2(puzzle_input: &str) -> String {
+        move_rope(parse(puzzle_input), 10).len().to_string()
     }
 
     fn move_rope(
@@ -507,8 +513,8 @@ pub mod day9 {
 }
 
 pub mod day10 {
-    shared::input!(10);
-    shared::test!(
+    shared::puzzle!(
+        10,
         13_760,
         "
         ###..####.#..#.####..##..###..####.####.
@@ -517,6 +523,18 @@ pub mod day10 {
         ###..#....#.#...#...#....###..#....#....
         #.#..#....#.#..#....#..#.#....#....#....
         #..#.#....#..#.####..##..#....####.#...."
+            .replace(' ', "")
+    );
+    shared::example!(
+        10,
+        13_140,
+        "
+        ##..##..##..##..##..##..##..##..##..##..
+        ###...###...###...###...###...###...###.
+        ####....####....####....####....####....
+        #####.....#####.....#####.....#####.....
+        ######......######......######......####
+        #######.......#######.......#######....."
             .replace(' ', "")
     );
 
@@ -530,19 +548,18 @@ pub mod day10 {
         Addx(T),
     }
 
-    fn parse() -> impl Iterator<Item = Instruction> {
-        INPUT
-            .lines()
-            .map(|ln| ln.split(' ').collect::<Vec<_>>())
-            .map(|v| match &v[..] {
+    fn parse(s: &str) -> impl Iterator<Item = Instruction> + '_ {
+        s.lines().map(|ln| ln.split(' ').collect::<Vec<_>>()).map(
+            |v| match &v[..] {
                 ["noop"] => Noop,
                 ["addx", n] => Addx(n.parse().unwrap()),
                 _ => unreachable!(),
-            })
+            },
+        )
     }
 
-    pub fn part1() -> String {
-        let register = register();
+    pub fn part1(puzzle_input: &str) -> String {
+        let register = register(puzzle_input);
         (20..=220)
             .step_by(40)
             .map(|x| x as T * register[x - 1])
@@ -550,8 +567,8 @@ pub mod day10 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        let register = register();
+    pub fn part2(puzzle_input: &str) -> String {
+        let register = register(puzzle_input);
         let (n_cols, n_pixels) = (40, 40 * 6);
         let mut image = String::with_capacity(n_pixels);
         for (i, x) in register.iter().enumerate().take(n_pixels) {
@@ -567,9 +584,9 @@ pub mod day10 {
         image
     }
 
-    fn register() -> Vec<T> {
+    fn register(s: &str) -> Vec<T> {
         let mut history = vec![1];
-        for instruction in parse() {
+        for instruction in parse(s) {
             let x = history.last().unwrap();
             match instruction {
                 Noop => history.push(*x),
@@ -581,8 +598,8 @@ pub mod day10 {
 }
 
 pub mod day11 {
-    shared::input!(11);
-    shared::test!(50_616, 11_309_046_332_u64);
+    shared::puzzle!(11, 50_616, 11_309_046_332_u64);
+    shared::example!(11, 10_605, 2_713_310_158_u64);
 
     type T = u64;
     type Troop = Vec<Monkey>;
@@ -630,12 +647,12 @@ pub mod day11 {
         }
     }
 
-    fn parse() -> Troop {
-        INPUT.split("\r\n\r\n").map(Monkey::new).collect()
+    fn parse(s: &str) -> Troop {
+        s.split("\r\n\r\n").map(Monkey::new).collect()
     }
 
-    pub fn part1() -> String {
-        let mut troop = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let mut troop = parse(puzzle_input);
         let mut counts = vec![0; troop.len()];
         for _ in 1..=20 {
             for i in 0..troop.len() {
@@ -651,8 +668,8 @@ pub mod day11 {
         counts.iter().rev().take(2).product::<T>().to_string()
     }
 
-    pub fn part2() -> String {
-        let mut troop = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let mut troop = parse(puzzle_input);
         let mut counts = vec![0; troop.len()];
         let worry: T = troop.iter().map(|monkey| monkey.test_divisor).product();
         for _ in 1..=10_000 {
@@ -671,8 +688,8 @@ pub mod day11 {
 }
 
 pub mod day12 {
-    shared::input!(12);
-    shared::test!(383, 377);
+    shared::puzzle!(12, 383, 377);
+    shared::example!(12, 31, 29);
 
     use crate::day12::Goal::*;
     use std::collections::VecDeque;
@@ -686,9 +703,9 @@ pub mod day12 {
         Square(Coord),
     }
 
-    fn parse() -> (Heightmap, Coord, Coord) {
+    fn parse(s: &str) -> (Heightmap, Coord, Coord) {
         let (mut heightmap, mut start, mut end) = (Vec::new(), (0, 0), (0, 0));
-        for (r, ln) in INPUT.lines().enumerate() {
+        for (r, ln) in s.lines().enumerate() {
             heightmap.push(Vec::new());
             for (c, mut ch) in ln.chars().enumerate() {
                 if ch == 'S' {
@@ -704,13 +721,13 @@ pub mod day12 {
         (heightmap, start, end)
     }
 
-    pub fn part1() -> String {
-        let (height, start, end) = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let (height, start, end) = parse(puzzle_input);
         dfs(&height, start, Square(end), |a, b| a + 1 >= b).to_string()
     }
 
-    pub fn part2() -> String {
-        let (height, _, end) = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let (height, _, end) = parse(puzzle_input);
         dfs(&height, end, Letter('a'), |a, b| b + 1 >= a).to_string()
     }
 
@@ -748,8 +765,8 @@ pub mod day12 {
 }
 
 pub mod day13 {
-    shared::input!(13);
-    shared::test!(6_484, 19_305);
+    shared::puzzle!(13, 6_484, 19_305);
+    shared::example!(13, 13, 140);
 
     use crate::day13::Data::*;
     use std::{cmp::Ordering, slice::from_ref};
@@ -781,9 +798,8 @@ pub mod day13 {
         }
     }
 
-    fn parse() -> Vec<Data> {
-        INPUT
-            .lines()
+    fn parse(s: &str) -> Vec<Data> {
+        s.lines()
             .filter(|ln| !ln.is_empty())
             .map(|ln| ln.replace("10", &TEN.to_string()))
             .map(|ln| parse_data(ln.chars()))
@@ -814,8 +830,8 @@ pub mod day13 {
         List(data)
     }
 
-    pub fn part1() -> String {
-        parse()
+    pub fn part1(puzzle_input: &str) -> String {
+        parse(puzzle_input)
             .chunks(2)
             .enumerate()
             .filter_map(|(i, chunk)| match chunk[0] < chunk[1] {
@@ -826,8 +842,8 @@ pub mod day13 {
             .to_string()
     }
 
-    pub fn part2() -> String {
-        let signal = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let signal = parse(puzzle_input);
         let [key_a, key_b] = ["[[2]]", "[[6]]"].map(|k| parse_data(k.chars()));
         let index = |key| signal.iter().filter(|&p| p < key).count() + 1;
         (index(&key_a) * (index(&key_b) + 1)).to_string()
@@ -835,8 +851,8 @@ pub mod day13 {
 }
 
 pub mod day14 {
-    shared::input!(14);
-    shared::test!(614, 26_170);
+    shared::puzzle!(14, 614, 26_170);
+    shared::example!(14, 24, 93);
 
     use crate::day14::Tile::*;
 
@@ -862,7 +878,7 @@ pub mod day14 {
         }
     }
 
-    fn parse() -> (Cave, T) {
+    fn parse(s: &str) -> (Cave, T) {
         let mut r_max = T::MIN;
         let parse_line = |ln: &str| {
             ln.split([',', ' '])
@@ -875,7 +891,7 @@ pub mod day14 {
                 })
                 .collect()
         };
-        let rocks = INPUT.lines().map(parse_line).collect::<Vec<Vec<_>>>();
+        let rocks = s.lines().map(parse_line).collect::<Vec<Vec<_>>>();
         let n_rows = r_max + 2;
         let n_cols = n_rows * 2 + 1;
         let mut cave = vec![vec![Empty; n_cols]; n_rows];
@@ -889,13 +905,13 @@ pub mod day14 {
         (cave, n_cols / 2)
     }
 
-    pub fn part1() -> String {
-        let (cave, start_col) = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let (cave, start_col) = parse(puzzle_input);
         simulate(cave, start_col).to_string()
     }
 
-    pub fn part2() -> String {
-        let (mut cave, start_col) = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let (mut cave, start_col) = parse(puzzle_input);
         cave.push(vec![Rock; cave[0].len()]);
         simulate(cave, start_col).to_string()
     }
@@ -926,7 +942,6 @@ pub mod day14 {
                 ans += 1;
             }
             cave[r][c] = Sand;
-            print_cave(&cave);
         }
         ans
     }
@@ -937,7 +952,7 @@ pub mod day14 {
         (r1..=r2).flat_map(move |r| (c1..=c2).map(move |c| (r, c)))
     }
 
-    fn print_cave(cave: &Cave) {
+    fn _print_cave(cave: &Cave) {
         if cave.len() > 20 {
             return;
         }
@@ -953,8 +968,8 @@ pub mod day14 {
 }
 
 pub mod day15 {
-    shared::input!(15);
-    shared::test!(5_299_855, 13_615_843_289_729_i64);
+    shared::puzzle!(15, 5_299_855, 13_615_843_289_729_i64);
+    shared::example!(15, 26, 56_000_011);
 
     use std::collections::HashSet;
 
@@ -968,9 +983,8 @@ pub mod day15 {
         radius: T,
     }
 
-    fn parse() -> Vec<Data> {
-        INPUT
-            .lines()
+    fn parse(s: &str) -> Vec<Data> {
+        s.lines()
             .map(|ln| ln.split(['=', ',', ':']).flat_map(str::parse).collect())
             .map(|v: Vec<_>| {
                 let sensor = (v[0], v[1]);
@@ -985,8 +999,8 @@ pub mod day15 {
             .collect()
     }
 
-    pub fn part1() -> String {
-        let data = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let data = parse(puzzle_input);
         let row = 2_000_000;
         let n_beacons = data
             .iter()
@@ -1004,8 +1018,8 @@ pub mod day15 {
         (end - start + 1 - n_beacons).to_string()
     }
 
-    pub fn part2() -> String {
-        let data = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let data = parse(puzzle_input);
         let (min, max) = (0, 4_000_000);
         let mut stack = vec![(min, max, min, max)];
         while !stack.is_empty() {
@@ -1040,8 +1054,8 @@ pub mod day15 {
 }
 
 pub mod day16 {
-    shared::input!(16);
-    shared::test!(2_114, 2_666);
+    shared::puzzle!(16, 2_114, 2_666);
+    shared::example!(16, 1_651, 1_707);
 
     use std::collections::{BinaryHeap, HashMap};
 
@@ -1076,11 +1090,11 @@ pub mod day16 {
         (valve_name, flow_rate, tunnels)
     }
 
-    fn parse<'a>() -> (ValveIds<'a>, FlowRates, Distances) {
+    fn parse(s: &str) -> (ValveIds, FlowRates, Distances) {
         let mut valve_ids = HashMap::new();
         let mut flow_rates = Vec::new();
         let mut empty_valves = Vec::new();
-        for ln in INPUT.lines() {
+        for ln in s.lines() {
             let (valve_name, flow_rate, _) = parse_line(ln);
             if flow_rate > 0 || valve_name == "AA" {
                 flow_rates.push(flow_rate);
@@ -1098,7 +1112,7 @@ pub mod day16 {
         // beware overflow
         let infinity = flow_rates.iter().sum::<T>() + 1;
         let mut dist = vec![vec![infinity; valve_ids.len()]; valve_ids.len()];
-        for ln in INPUT.lines() {
+        for ln in s.lines() {
             let (valve_name, _, tunnels) = parse_line(ln);
             let i = *valve_ids.get(valve_name).unwrap();
             dist[i][i] = 0;
@@ -1128,8 +1142,8 @@ pub mod day16 {
         (valve_ids, flow_rates, dist)
     }
 
-    pub fn part1() -> String {
-        let (valve_ids, flow_rates, distances) = parse();
+    pub fn part1(puzzle_input: &str) -> String {
+        let (valve_ids, flow_rates, distances) = parse(puzzle_input);
         let start = Path {
             flow: 0,
             time: 30,
@@ -1172,8 +1186,8 @@ pub mod day16 {
         best.to_string()
     }
 
-    pub fn part2() -> String {
-        let (valve_ids, flow_rates, distances) = parse();
+    pub fn part2(puzzle_input: &str) -> String {
+        let (valve_ids, flow_rates, distances) = parse(puzzle_input);
         let valve_aa = *valve_ids.get("AA").unwrap();
         let start = DuoPath {
             flow: 0,
@@ -1226,8 +1240,8 @@ pub mod day16 {
 }
 
 pub mod day17 {
-    shared::input!(17);
-    shared::test!(3_239, 1_594_842_406_882_isize);
+    shared::puzzle!(17, 3_239, 1_594_842_406_882_u64);
+    shared::example!(17, 3_068, 1_514_285_714_288_u64);
 
     use std::collections::{HashMap, HashSet};
 
@@ -1357,9 +1371,8 @@ pub mod day17 {
         }
     }
 
-    fn parse() -> impl Iterator<Item = T> {
-        INPUT
-            .chars()
+    fn parse(s: &str) -> impl Iterator<Item = T> + '_ {
+        s.chars()
             .flat_map(|ch| match ch {
                 '<' => Some(-1),
                 '>' => Some(1),
@@ -1368,9 +1381,9 @@ pub mod day17 {
             .cycle()
     }
 
-    pub fn part1() -> String {
+    pub fn part1(puzzle_input: &str) -> String {
         let mut tetris = Tetris::new();
-        parse()
+        parse(puzzle_input)
             .flat_map(|delta_x| {
                 tetris.push(delta_x);
                 tetris.fall()
@@ -1379,11 +1392,11 @@ pub mod day17 {
         tetris.height.to_string()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(puzzle_input: &str) -> String {
         let mut tetris = Tetris::new();
         let mut hashes = Vec::new();
         let mut indexes = HashMap::new();
-        let mut hash_iter = parse()
+        let mut hash_iter = parse(puzzle_input)
             .flat_map(|delta_x| {
                 tetris.push(delta_x);
                 tetris.fall()
@@ -1432,105 +1445,105 @@ pub mod day17 {
 }
 
 pub mod day18 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day19 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day20 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day21 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day22 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day23 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day24 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }
 
 pub mod day25 {
-    shared::input!();
-    shared::test!();
+    shared::puzzle!();
+    shared::example!();
 
-    pub fn part1() -> String {
+    pub fn part1(_: &str) -> String {
         todo!()
     }
 
-    pub fn part2() -> String {
+    pub fn part2(_: &str) -> String {
         todo!()
     }
 }

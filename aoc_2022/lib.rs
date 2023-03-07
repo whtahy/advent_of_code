@@ -1450,15 +1450,94 @@ pub mod day17 {
 }
 
 pub mod day18 {
-    shared::puzzle!();
-    shared::example!();
+    shared::puzzle!(18, 3_494, 2_062);
+    shared::example!(
+        18,
+        a => (10, 10),
+        b => (64, 58),
+    );
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::collections::{HashSet, VecDeque};
+
+    type T = usize;
+    type Coord = (T, T, T);
+
+    fn parse(s: &str) -> HashSet<Coord> {
+        let parse_line = |ln: &str| {
+            let coord: Vec<_> =
+                ln.split(',').map(|s| s.parse::<T>().unwrap() + 1).collect();
+            (coord[0], coord[1], coord[2])
+        };
+        s.lines().map(parse_line).collect()
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        let cubes = parse(puzzle_input);
+        let adj = |(x, y, z)| {
+            [
+                (x + 1, y, z),
+                (x - 1, y, z),
+                (x, y + 1, z),
+                (x, y - 1, z),
+                (x, y, z + 1),
+                (x, y, z - 1),
+            ]
+            .into_iter()
+        };
+        cubes
+            .iter()
+            .fold(0, |acc, &c| {
+                acc + adj(c).filter(|cc| !cubes.contains(cc)).count()
+            })
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let cubes = parse(puzzle_input);
+        let adj = |(x, y, z)| {
+            [
+                (x + 1, y, z),
+                (x - 1, y, z),
+                (x, y + 1, z),
+                (x, y - 1, z),
+                (x, y, z + 1),
+                (x, y, z - 1),
+            ]
+            .into_iter()
+        };
+
+        // bfs flood fill
+        let (x_max, y_max, z_max) =
+            cubes.iter().fold((0, 0, 0), |(x1, y1, z1), &(x2, y2, z2)| {
+                (x1.max(x2), y1.max(y2), z1.max(z2))
+            });
+        let start = [(0, 0, 0)];
+        let mut exterior = HashSet::from(start);
+        let mut queue = VecDeque::from(start);
+        while !queue.is_empty() {
+            for coord in adj(queue.pop_front().unwrap()) {
+                let (x, y, z) = coord;
+                if exterior.contains(&coord)
+                    || cubes.contains(&coord)
+                    || x > x_max + 1
+                    || y > y_max + 1
+                    || z > z_max + 1
+                {
+                    continue;
+                }
+                exterior.insert(coord);
+                queue.push_back(coord);
+            }
+        }
+
+        cubes
+            .iter()
+            .fold(0, |acc, &c| {
+                acc + adj(c)
+                    .filter(|cc| !cubes.contains(cc) && exterior.contains(cc))
+                    .count()
+            })
+            .to_string()
     }
 }
 

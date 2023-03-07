@@ -29,7 +29,7 @@ pub mod day1 {
     }
 
     fn inventory_sum(s: &str) -> T {
-        s.lines().map(|ln| ln.parse::<T>().unwrap()).sum()
+        s.lines().flat_map(str::parse::<T>).sum()
     }
 }
 
@@ -204,7 +204,7 @@ pub mod day4 {
     fn parse_pair(s: &str) -> Pair {
         let v = s
             .split(&[',', '-'])
-            .map(|n| n.parse().unwrap())
+            .flat_map(str::parse)
             .collect::<Vec<_>>();
         ((v[0], v[1]), (v[2], v[3]))
     }
@@ -245,7 +245,7 @@ pub mod day5 {
     }
 
     fn parse_step(ln: &str) -> Step {
-        let v = ln.split(' ').flat_map(|x| x.parse()).collect::<Vec<_>>();
+        let v = ln.split(' ').flat_map(str::parse).collect::<Vec<_>>();
         Step {
             n: v[0],
             from: v[1] - 1,
@@ -620,7 +620,7 @@ pub mod day11 {
             let items = v[1]
                 .replace("  Starting items: ", "")
                 .split(", ")
-                .map(|s| s.parse().unwrap())
+                .flat_map(str::parse)
                 .collect::<Vec<_>>();
             let operation: Box<dyn Fn(T) -> T> =
                 match v[2].rsplit(' ').take(2).collect::<Vec<_>>().as_slice() {
@@ -886,7 +886,7 @@ pub mod day14 {
         let mut r_max = T::MIN;
         let parse_line = |ln: &str| {
             ln.split([',', ' '])
-                .flat_map(|s| s.parse::<T>())
+                .flat_map(str::parse)
                 .collect::<Vec<_>>()
                 .chunks(2)
                 .map(|chunk| {

@@ -29,21 +29,21 @@ fn main() {
     } else if valid_day(0) && valid_part(1) {
         (END_YEAR, args[0], vec![args[1]])
     } else if valid_year(0) {
-        let recent = TABLE_OF_CONTENTS[args[0] - START_YEAR]
+        let recent_day = TABLE_OF_CONTENTS[args[0] - START_YEAR]
             .iter()
-            .take_while(|day| day.puzzle != "")
+            .take_while(|day| !day.example.is_empty())
             .count();
-        (args[0], recent, both)
+        (args[0], recent_day, both)
     } else if valid_day(0) {
         (END_YEAR, args[0], both)
     } else if args.is_empty() {
-        let recent = TABLE_OF_CONTENTS
+        let recent_day = TABLE_OF_CONTENTS
             .last()
             .unwrap()
             .iter()
-            .take_while(|day| day.puzzle != "")
+            .take_while(|day| !day.example.is_empty())
             .count();
-        (END_YEAR, recent, both)
+        (END_YEAR, recent_day, both)
     } else {
         println!("Usage: <year> <day> <part>");
         return;

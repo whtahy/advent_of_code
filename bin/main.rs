@@ -31,7 +31,7 @@ fn main() {
     } else if valid_year(0) {
         let recent_day = TABLE_OF_CONTENTS[args[0] - START_YEAR]
             .iter()
-            .take_while(|day| !day.example.is_empty())
+            .take_while(|day| !day.example[0].is_empty())
             .count();
         (args[0], recent_day, both)
     } else if valid_day(0) {
@@ -41,7 +41,7 @@ fn main() {
             .last()
             .unwrap()
             .iter()
-            .take_while(|day| !day.example.is_empty())
+            .take_while(|day| !day.example[0].is_empty())
             .count();
         (END_YEAR, recent_day, both)
     } else {

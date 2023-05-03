@@ -356,7 +356,6 @@ pub mod day7 {
         let fs_tree = parse(puzzle_input);
         fs_tree
             .keys()
-            .into_iter()
             .map(|k| size(k, &fs_tree))
             .filter(|&n| n < 100_000)
             .sum::<T>()
@@ -367,7 +366,6 @@ pub mod day7 {
         let fs_tree = parse(puzzle_input);
         let mut sizes = fs_tree
             .keys()
-            .into_iter()
             .map(|k| size(k, &fs_tree))
             .collect::<Vec<_>>();
         sizes.sort_unstable();
@@ -616,7 +614,7 @@ pub mod day11 {
 
     impl Monkey {
         fn new(s: &str) -> Self {
-            let v = s.lines().into_iter().collect::<Vec<_>>();
+            let v = s.lines().collect::<Vec<_>>();
             let items = v[1]
                 .replace("  Starting items: ", "")
                 .split(", ")

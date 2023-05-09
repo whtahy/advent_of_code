@@ -1540,15 +1540,118 @@ pub mod day18 {
 }
 
 pub mod day19 {
-    shared::puzzle!();
-    shared::example!();
+    shared::puzzle!(19, 1_092, 3_542);
+    shared::example!(19, 33, 3_472);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::collections::BinaryHeap;
+
+    type T = u16;
+    type Blueprint = [[T; 3]; 4]; // ore, clay, obsidian, geode
+
+    const OBSIDIAN: usize = 2;
+    const GEODE: usize = 3;
+
+    #[derive(Debug, Hash, Ord, PartialOrd, Eq, PartialEq, Clone)]
+    struct State {
+        robots: [T; 4],
+        resources: [T; 4],
+        time: T,
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    fn parse_blueprint(s: &str) -> Blueprint {
+        let costs = s.split(' ').flat_map(str::parse).collect::<Vec<_>>();
+        [
+            [costs[0], 0, 0],
+            [costs[1], 0, 0],
+            [costs[2], costs[3], 0],
+            [costs[4], 0, costs[5]],
+        ]
+    }
+
+    pub fn part1(puzzle_input: &str) -> String {
+        puzzle_input
+            .lines()
+            .map(parse_blueprint)
+            .map(|b| eval_blueprint(b, 24))
+            .enumerate()
+            .map(|(i, x)| (i + 1) as T * x)
+            .sum::<T>()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
+            .lines()
+            .map(parse_blueprint)
+            .map(|b| eval_blueprint(b, 32))
+            .take(3)
+            .product::<T>()
+            .to_string()
+    }
+
+    fn eval_blueprint(blueprint: Blueprint, time_limit: T) -> T {
+        let max_robots = blueprint.iter().fold(vec![0; GEODE], |max, cost| {
+            max.into_iter().zip(cost).map(|(m, &c)| m.max(c)).collect()
+        });
+        let mut best = 0;
+        let mut pqueue = BinaryHeap::from_iter([State {
+            robots: [1, 0, 0, 0],
+            resources: [0; 4],
+            time: 0,
+        }]);
+        while let Some(state) = pqueue.pop() {
+            let t = time_limit - state.time;
+            let run_rate = |i| state.resources[i] + t * state.robots[i];
+            let upper_bound = |i| run_rate(i) + t * (t - 1) / 2;
+            best = best.max(run_rate(GEODE));
+            if upper_bound(GEODE) <= best
+                || upper_bound(OBSIDIAN) < blueprint[GEODE][OBSIDIAN]
+            {
+                continue;
+            }
+            (0..=GEODE)
+                .filter(|&i| i == GEODE || state.robots[i] < max_robots[i])
+                .flat_map(|i| build_robot(i, &state, blueprint[i], time_limit))
+                .for_each(|new_state| pqueue.push(new_state));
+        }
+        best
+    }
+
+    fn build_robot(
+        robot: usize,
+        state: &State,
+        cost: [T; GEODE],
+        time_limit: T,
+    ) -> Option<State> {
+        // check required robots
+        if cost.iter().zip(state.robots).any(|(&c, r)| c > 0 && r == 0) {
+            return None;
+        }
+        // check required time
+        let t = state
+            .resources
+            .iter()
+            .zip(state.robots)
+            .zip(cost)
+            .map(|((&r, n), c)| if r >= c { 0 } else { (c - r + n - 1) / n })
+            .max()
+            .unwrap();
+        if state.time + t + 2 > time_limit {
+            return None;
+        }
+        // collect (t) + build (1)
+        let mut new_state = state.clone();
+        for ((r, n), c) in new_state
+            .resources
+            .iter_mut()
+            .zip(new_state.robots)
+            .zip(cost.iter().chain(&[0]))
+        {
+            *r += n * (t + 1) - c;
+        }
+        new_state.time += t + 1;
+        new_state.robots[robot] += 1;
+        Some(new_state)
     }
 }
 

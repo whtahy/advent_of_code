@@ -1656,15 +1656,55 @@ pub mod day19 {
 }
 
 pub mod day20 {
-    shared::puzzle!();
-    shared::example!();
+    shared::puzzle!(20, 2_827, 7_834_270_093_909_i64);
+    shared::example!(20, 3, 1_623_178_306);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    type T = i64;
+
+    fn parse(s: &str, key: T) -> Vec<T> {
+        s.lines().flat_map(str::parse).map(|x: T| x * key).collect()
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        let coords = parse(puzzle_input, 1);
+        let mut idx = Vec::from_iter(0..coords.len());
+        (0..coords.len()).for_each(|i| mix(i, &coords, &mut idx));
+        let i_zero_old = coords.iter().position(|&i| i == 0).unwrap();
+        let i_zero_new = idx.iter().position(|&i| i == i_zero_old).unwrap();
+        [1000, 2000, 3000]
+            .into_iter()
+            .map(|n| (i_zero_new + n).rem_euclid(coords.len()))
+            .map(|i| coords[idx[i]])
+            .sum::<T>()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let coords = parse(puzzle_input, 811_589_153);
+        let mut idx = Vec::from_iter(0..coords.len());
+        for _ in 1..=10 {
+            (0..coords.len()).for_each(|i| mix(i, &coords, &mut idx));
+        }
+        let i_zero_old = coords.iter().position(|&i| i == 0).unwrap();
+        let i_zero_new = idx.iter().position(|&i| i == i_zero_old).unwrap();
+        [1000, 2000, 3000]
+            .into_iter()
+            .map(|n| (i_zero_new + n).rem_euclid(coords.len()))
+            .map(|i| coords[idx[i]])
+            .sum::<T>()
+            .to_string()
+    }
+
+    fn mix(index: usize, coords: &[T], idx: &mut Vec<usize>) {
+        let n_forward = if coords[index] == 0 {
+            return;
+        } else {
+            coords[index].rem_euclid(coords.len() as T - 1) as usize
+        };
+        let i_old = idx.iter().position(|&i| i == index).unwrap();
+        idx.remove(i_old);
+        let i_new = (i_old + n_forward) % idx.len();
+        idx.insert(i_new, index);
     }
 }
 

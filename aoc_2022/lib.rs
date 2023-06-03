@@ -1709,15 +1709,168 @@ pub mod day20 {
 }
 
 pub mod day21 {
-    shared::puzzle!();
-    shared::example!();
+    shared::puzzle!(21, 83_056_452_926_300_u64, 3_469_704_905_529_u64);
+    shared::example!(21, 152, 301);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::collections::HashMap;
+
+    type T = u64;
+    type Puzzle<'a> = HashMap<&'a str, MathEq<'a>>;
+
+    #[derive(Debug, Clone)]
+    enum MathEq<'a> {
+        Number(T),
+        Thunk(Thunk<'a>, &'a str, Thunk<'a>),
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    #[derive(Debug, Clone)]
+    enum Thunk<'a> {
+        Number(T),
+        Str(&'a str),
+    }
+
+    fn parse(s: &str) -> Puzzle {
+        s.lines().map(parse_line).collect()
+    }
+
+    fn parse_line(ln: &str) -> (&str, MathEq) {
+        let v = ln
+            .split([':', ' '])
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<_>>();
+        let math_eq = match v[1].parse() {
+            Ok(x) => MathEq::Number(x),
+            Err(_) => MathEq::Thunk(Thunk::Str(v[1]), v[2], Thunk::Str(v[3])),
+        };
+        (v[0], math_eq)
+    }
+
+    pub fn part1(puzzle_input: &str) -> String {
+        let mut map = parse(puzzle_input);
+        for k in map.clone().keys().cycle() {
+            let (k, mut v) = if let MathEq::Thunk(..) = map.get(k).unwrap() {
+                map.remove_entry(k).unwrap()
+            } else if let MathEq::Number(x) = map.get("root").unwrap() {
+                return x.to_string();
+            } else {
+                continue;
+            };
+            let (lhs, op, rhs) = match v {
+                MathEq::Thunk(ref mut lhs, op, ref mut rhs) => (lhs, op, rhs),
+                MathEq::Number(_) => unreachable!(),
+            };
+            let solve = |thunk: &mut Thunk| {
+                if let Thunk::Str(s) = thunk {
+                    if let MathEq::Number(x) = map.get(*s).unwrap() {
+                        *thunk = Thunk::Number(*x);
+                    }
+                }
+            };
+            solve(lhs);
+            solve(rhs);
+            if let (Thunk::Number(lhs), Thunk::Number(rhs)) = (lhs, rhs) {
+                let f = match op {
+                    "+" => T::checked_add,
+                    "-" => T::checked_sub,
+                    "*" => T::checked_mul,
+                    "/" => T::checked_div,
+                    _ => unreachable!(),
+                };
+                v = MathEq::Number(f(*lhs, *rhs).unwrap());
+            }
+            map.insert(k, v);
+        }
+        unreachable!()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let mut forward = parse(puzzle_input);
+        let mut backward = HashMap::new();
+        forward.remove("humn");
+
+        // forward
+        for k in forward.clone().keys().cycle() {
+            let (k, mut v) = if let MathEq::Thunk(..) = forward.get(k).unwrap()
+            {
+                forward.remove_entry(k).unwrap()
+            } else {
+                continue;
+            };
+            let (lhs, op, rhs) = match v {
+                MathEq::Thunk(ref mut a, b, ref mut c) => (a, b, c),
+                MathEq::Number(_) => unreachable!(),
+            };
+            let solve = |thunk: &mut Thunk| {
+                if let Thunk::Str(s) = thunk {
+                    if let Some(MathEq::Number(x)) = forward.get(*s) {
+                        *thunk = Thunk::Number(*x);
+                    }
+                }
+            };
+            solve(lhs);
+            solve(rhs);
+            match (k, lhs, rhs) {
+                (_, Thunk::Number(lhs), Thunk::Number(rhs)) => {
+                    let f = match op {
+                        "+" => T::checked_add,
+                        "-" => T::checked_sub,
+                        "*" => T::checked_mul,
+                        "/" => T::checked_div,
+                        _ => unreachable!(),
+                    };
+                    v = MathEq::Number(f(*lhs, *rhs).unwrap());
+                }
+                ("root", Thunk::Number(x), Thunk::Str(s))
+                | ("root", Thunk::Str(s), Thunk::Number(x)) => {
+                    backward.insert(*s, *x);
+                    break;
+                }
+                _ => (),
+            };
+            forward.insert(k, v);
+        }
+
+        forward.retain(|_, v| match v {
+            MathEq::Thunk(..) => true,
+            MathEq::Number(_) => false,
+        });
+
+        // backward
+        for k in forward.clone().keys().cycle() {
+            let (k, v) = if backward.contains_key("humn") {
+                return backward.get("humn").unwrap().to_string();
+            } else if backward.contains_key(k) && forward.contains_key(k) {
+                forward.remove_entry(k).unwrap()
+            } else {
+                continue;
+            };
+            let ans = *backward.get(k).unwrap();
+            let (next_k, next_v) = match v {
+                MathEq::Thunk(Thunk::Str(s), op, Thunk::Number(x)) => (
+                    s,
+                    match op {
+                        "+" => ans - x,
+                        "-" => ans + x,
+                        "*" => ans / x,
+                        "/" => ans * x,
+                        _ => unreachable!(),
+                    },
+                ),
+                MathEq::Thunk(Thunk::Number(x), op, Thunk::Str(s)) => (
+                    s,
+                    match op {
+                        "+" => ans - x,
+                        "-" => x - ans,
+                        "*" => ans / x,
+                        "/" => x / ans,
+                        _ => unreachable!(),
+                    },
+                ),
+                _ => continue,
+            };
+            backward.insert(next_k, next_v);
+        }
+        unreachable!()
     }
 }
 

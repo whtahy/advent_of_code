@@ -1755,9 +1755,8 @@ pub mod day21 {
             } else {
                 continue;
             };
-            let (lhs, op, rhs) = match v {
-                MathEq::Thunk(ref mut lhs, op, ref mut rhs) => (lhs, op, rhs),
-                MathEq::Number(_) => unreachable!(),
+            let MathEq::Thunk(ref mut lhs, op, ref mut rhs) = v else {
+                unreachable!()
             };
             let solve = |thunk: &mut Thunk| {
                 if let Thunk::Str(s) = thunk {
@@ -1796,9 +1795,8 @@ pub mod day21 {
             } else {
                 continue;
             };
-            let (lhs, op, rhs) = match v {
-                MathEq::Thunk(ref mut a, b, ref mut c) => (a, b, c),
-                MathEq::Number(_) => unreachable!(),
+            let MathEq::Thunk(ref mut lhs, op, ref mut rhs) = v else {
+                unreachable!()
             };
             let solve = |thunk: &mut Thunk| {
                 if let Thunk::Str(s) = thunk {

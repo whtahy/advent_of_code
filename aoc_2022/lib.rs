@@ -335,7 +335,7 @@ pub mod day7 {
                 }
                 ["$", "cd", s] => {
                     path.push(s);
-                    fs_tree.entry(path.clone()).or_insert_with(Vec::new);
+                    fs_tree.entry(path.clone()).or_default();
                 }
                 ["dir", s] => {
                     let mut subfolder = path.clone();
@@ -500,7 +500,7 @@ pub mod day9 {
         visited
     }
 
-    fn follow(rope: &mut Vec<Coord>) {
+    fn follow(rope: &mut [Coord]) {
         for i in 1..rope.len() {
             if !is_adjacent(rope[i], rope[i - 1]) {
                 rope[i].0 += (rope[i - 1].0 - rope[i].0).signum();
@@ -1025,8 +1025,7 @@ pub mod day15 {
         let min = 0;
         let max = if data.len() == 14 { 20 } else { 4_000_000 };
         let mut stack = vec![(min, max, min, max)];
-        while !stack.is_empty() {
-            let (x1, x2, y1, y2) = stack.pop().unwrap();
+        while let Some((x1, x2, y1, y2)) = stack.pop() {
             if x1 > x2 || y1 > y2 {
                 continue;
             }

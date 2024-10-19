@@ -1872,15 +1872,131 @@ pub mod day21 {
 }
 
 pub mod day22 {
-    shared::puzzle!();
-    shared::example!();
+    shared::puzzle!(22, 123_046);
+    shared::example!(22, 6_032);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    type T = i16;
+    type Map = Vec<Vec<MapTile>>;
+    type Path = Vec<PathItem>;
+
+    #[derive(PartialEq, Eq)]
+    enum MapTile {
+        Open,
+        Wall,
+        WrapAround,
+    }
+
+    use crate::day22::PathItem::*;
+    enum PathItem {
+        Number(T),
+        TurnLeft,
+        TurnRight,
+    }
+
+    use crate::day22::Direction2d::*;
+    enum Direction2d {
+        Up,
+        Right,
+        Down,
+        Left,
+    }
+
+    pub fn part1(puzzle_input: &str) -> String {
+        let (map, path) = parse_2d(puzzle_input);
+        let (mut row, mut col, mut dir) = (0, 0, Right);
+        while map[row][col] != MapTile::Open {
+            col += 1;
+        }
+        for p in path {
+            match p {
+                Number(n) => {
+                    let (dy, dx) = match dir {
+                        Up => (-1, 0),
+                        Down => (1, 0),
+                        Right => (0, 1),
+                        Left => (0, -1),
+                    };
+                    let mut n_steps = 0;
+                    let (mut next_row, mut next_col) = (row, col);
+                    let wrap = |x: usize, dx: T, len: usize| {
+                        (x as T + dx).rem_euclid(len as T) as usize
+                    };
+                    while n_steps < n {
+                        next_row = wrap(next_row, dy, map.len());
+                        next_col = wrap(next_col, dx, map[row].len());
+                        if map[next_row].get(next_col).is_none() {
+                            continue;
+                        }
+                        match map[next_row][next_col] {
+                            MapTile::Open => {
+                                (row, col) = (next_row, next_col);
+                                n_steps += 1;
+                            }
+                            MapTile::Wall => break,
+                            MapTile::WrapAround => continue,
+                        }
+                    }
+                }
+                TurnRight => {
+                    dir = {
+                        match dir {
+                            Up => Right,
+                            Right => Down,
+                            Down => Left,
+                            Left => Up,
+                        }
+                    }
+                }
+                TurnLeft => {
+                    dir = match dir {
+                        Up => Left,
+                        Left => Down,
+                        Down => Right,
+                        Right => Up,
+                    }
+                }
+            }
+        }
+        (1000 * (row + 1)
+            + 4 * (col + 1)
+            + match dir {
+                Right => 0,
+                Down => 1,
+                Left => 2,
+                Up => 3,
+            })
+        .to_string()
     }
 
     pub fn part2(_: &str) -> String {
         todo!()
+    }
+
+    fn parse_2d(s: &str) -> (Map, Path) {
+        let (top, bottom) = s.split_once("\n\n").unwrap();
+        let tile = |ch| match ch {
+            ' ' => MapTile::WrapAround,
+            '.' => MapTile::Open,
+            '#' => MapTile::Wall,
+            _ => unreachable!(),
+        };
+        let map = top
+            .lines()
+            .map(|ln| ln.chars().map(tile).collect())
+            .collect();
+        let path = bottom
+            .trim()
+            .replace('R', "|R|")
+            .replace('L', "|L|")
+            .split('|')
+            .filter(|s| !s.is_empty())
+            .map(|s| match s {
+                "L" => PathItem::TurnLeft,
+                "R" => PathItem::TurnRight,
+                _ => PathItem::Number(s.parse().unwrap()),
+            })
+            .collect();
+        (map, path)
     }
 }
 

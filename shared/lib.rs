@@ -7,81 +7,89 @@ pub struct Day {
 type Part = fn(&str) -> String;
 
 #[macro_export]
-macro_rules! puzzle {
+macro_rules! day {
     () => {
         pub const PUZZLE: &str = "";
+        pub const EXAMPLE: &'static [&str] = &[""];
     };
     ($day:expr) => {
         pub const PUZZLE: &str = include_str!(concat!("./day", $day, ".txt"));
+        pub const EXAMPLE: &'static [&str] =
+            &[include_str!(concat!("./example", $day, ".txt"))];
     };
-    ($day:expr, $part1:expr) => {
-        shared::puzzle!($day);
-        #[test]
-        pub fn test_part1() {
-            assert_eq!(part1(PUZZLE), $part1.to_string());
-        }
+    ($day:expr, $($example:ident),+) => {
+        pub const PUZZLE: &str = include_str!(concat!("./day", $day, ".txt"));
+        pub const EXAMPLE: &'static [&str] = &[$(
+            include_str!(concat!(
+                "./example", $day, stringify!($example), ".txt"
+            ))
+        ),+];
     };
-    ($day:expr, $part1:expr, $part2:expr) => {
-        shared::puzzle!($day, $part1);
+}
+
+#[macro_export]
+macro_rules! test_puzzle {
+    ($part:ident, $test:ident, $soln:expr) => {
         #[test]
-        pub fn test_part2() {
-            assert_eq!(part2(PUZZLE), $part2.to_string());
+        fn $test() {
+            assert_eq!($part(PUZZLE), $soln.to_string());
         }
     };
 }
 
 #[macro_export]
-macro_rules! example {
-    () => {
-        pub const EXAMPLE: &'static [&str] = &[""];
-    };
-    ($day:expr) => {
-        pub const EXAMPLE: &'static [&str] =
-            &[include_str!(concat!("./example", $day, ".txt"))];
-    };
-    ($day:expr, $part1:expr) => {
-        shared::example!($day);
+macro_rules! test_example {
+    ($part:ident, $test:ident, [$($soln:expr),+]) => {
         #[test]
-        fn test_part1_example() {
-            assert_eq!(part1(EXAMPLE[0]), $part1.to_string());
+        fn $test() {
+            let actual = vec![$($soln.to_string()),+];
+            let expected = EXAMPLE.iter().map(|s| $part(s)).collect::<Vec<_>>();
+            assert_eq!(actual, expected);
         }
     };
-    ($day:expr, $part1:expr, $part2:expr) => {
-        shared::example!($day, $part1);
+    ($part:ident, $test:ident, $soln:expr) => {
         #[test]
-        fn test_part2_example() {
-            assert_eq!(part2(EXAMPLE[0]), $part2.to_string());
+        fn $test() {
+            assert_eq!($part(EXAMPLE[0]), $soln.to_string());
         }
     };
-    ($day:expr, $($example:ident => ($part1:expr, ),)+) => {
-        pub const EXAMPLE: &'static [&str] = &[$(
-            include_str!(concat!(
-                "./example", $day, stringify!($example), ".txt"
-            )),
-        )+];
-        #[test]
-        fn test_part1_example() {
-            for (actual, expected) in EXAMPLE
-                .iter()
-                .map(|s| part1(s))
-                .zip([$($part1.to_string(),)+])
-            {
-                assert_eq!(actual, expected);
-            }
-        }
+}
+
+#[macro_export]
+macro_rules! part1 {
+    () => {};
+    ([$($example:expr),+]) => {
+        shared::test_example!(part1, test_part1_example, [$($example),+]);
     };
-    ($day:expr, $($example:ident => ($part1:expr, $part2:expr),)+) => {
-        shared::example!($day, $($example => ($part1, ),)+);
-        #[test]
-        fn test_part2_example() {
-            for (actual, expected) in EXAMPLE
-                .iter()
-                .map(|s| part2(s))
-                .zip([$($part2.to_string(),)+])
-            {
-                assert_eq!(actual, expected);
-            }
-        }
+    ($example:expr) => {
+        shared::test_example!(part1, test_part1_example, $example);
+    };
+    ([$($example:expr),+], $puzzle:expr) => {
+        shared::test_example!(part1, test_part1_example, [$($example),+]);
+        shared::test_puzzle!(part1, test_part1, $puzzle);
+    };
+    ($example:expr, $puzzle:expr) => {
+        shared::test_example!(part1, test_part1_example, $example);
+        shared::test_puzzle!(part1, test_part1, $puzzle);
+    };
+}
+
+#[macro_export]
+macro_rules! part2 {
+    () => {};
+    ([$($example:expr),+]) => {
+        shared::test_example!(part2, test_part2_example, [$($example),+]);
+    };
+    ($example:expr) => {
+        shared::test_example!(part2, test_part2_example, $example);
+    };
+    ([$($example:expr),+], $puzzle:expr) => {
+        shared::test_example!(part2, test_part2_example, [$($example),+]);
+        shared::test_puzzle!(part2, test_part2, $puzzle);
+    };
+    ($example:expr, $puzzle:expr) => {
+        shared::test_example!(part2, test_part2_example, $example);
+        shared::test_puzzle!(part2, test_part2, $puzzle);
     };
 }
 

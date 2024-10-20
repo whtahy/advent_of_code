@@ -1,8 +1,9 @@
 shared::table_of_contents!();
 
 pub mod day1 {
-    shared::puzzle!(1, 72_602, 207_410);
-    shared::example!(1, 24_000, 45_000);
+    shared::day!(1);
+    shared::part1!(24_000, 72_602);
+    shared::part2!(45_000, 207_410);
 
     use std::collections::BinaryHeap;
 
@@ -34,8 +35,9 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    shared::puzzle!(2, 10_624, 14_060);
-    shared::example!(2, 15, 12);
+    shared::day!(2);
+    shared::part1!(15, 10_624);
+    shared::part2!(12, 14_060);
 
     use crate::day2::{Outcome::*, Shape::*};
 
@@ -126,8 +128,9 @@ pub mod day2 {
 }
 
 pub mod day3 {
-    shared::puzzle!(3, 8_515, 2_434);
-    shared::example!(3, 157, 70);
+    shared::day!(3);
+    shared::part1!(157, 8_515);
+    shared::part2!(70, 2_434);
 
     type T = usize;
     type S = HashSet<T>;
@@ -171,8 +174,9 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    shared::puzzle!(4, 477, 830);
-    shared::example!(4, 2, 4);
+    shared::day!(4);
+    shared::part1!(2, 477);
+    shared::part2!(4, 830);
 
     type T = usize;
     type Pair = ((T, T), (T, T));
@@ -211,8 +215,9 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    shared::puzzle!(5, "WCZTHTMPS", "BLSGJSDTS");
-    shared::example!(5, "CMZ", "MCD");
+    shared::day!(5);
+    shared::part1!("CMZ", "WCZTHTMPS");
+    shared::part2!("MCD", "BLSGJSDTS");
 
     type Stacks = Vec<Vec<char>>;
     type T = usize;
@@ -276,15 +281,9 @@ pub mod day5 {
 }
 
 pub mod day6 {
-    shared::puzzle!(6, 1_647, 2_447);
-    shared::example!(
-        6,
-        a => (7, 19),
-        b => (5, 23),
-        c => (6, 23),
-        d => (10, 29),
-        e => (11, 26),
-    );
+    shared::day!(6, a, b, c, d, e);
+    shared::part1!([7, 5, 6, 10, 11], 1_647);
+    shared::part2!([19, 23, 23, 29, 26], 2_447);
 
     use std::collections::HashSet;
 
@@ -309,8 +308,9 @@ pub mod day6 {
 }
 
 pub mod day7 {
-    shared::puzzle!(7, 1_783_610, 4_370_655);
-    shared::example!(7, 95_437, 24_933_642);
+    shared::day!(7);
+    shared::part1!(95_437, 1_783_610);
+    shared::part2!(24_933_642, 4_370_655);
 
     use crate::day7::FsData::*;
     use std::{collections::HashMap, path::PathBuf};
@@ -387,8 +387,9 @@ pub mod day7 {
 }
 
 pub mod day8 {
-    shared::puzzle!(8, 1_823, 211_680);
-    shared::example!(8, 21, 8);
+    shared::day!(8);
+    shared::part1!(21, 1_823);
+    shared::part2!(8, 211_680);
 
     type T = usize;
     type Trees = Vec<Vec<T>>;
@@ -450,12 +451,9 @@ pub mod day8 {
 }
 
 pub mod day9 {
-    shared::puzzle!(9, 6_367, 2_536);
-    shared::example!(
-        9,
-        a => (13, 1),
-        b => (88, 36),
-    );
+    shared::day!(9, a, b);
+    shared::part1!([13, 88], 6_367);
+    shared::part2!([1, 36], 2_536);
 
     use std::collections::HashSet;
 
@@ -515,21 +513,9 @@ pub mod day9 {
 }
 
 pub mod day10 {
-    shared::puzzle!(
-        10,
-        13_760,
-        "
-        ###..####.#..#.####..##..###..####.####.
-        #..#.#....#.#.....#.#..#.#..#.#....#....
-        #..#.###..##.....#..#....#..#.###..###..
-        ###..#....#.#...#...#....###..#....#....
-        #.#..#....#.#..#....#..#.#....#....#....
-        #..#.#....#..#.####..##..#....####.#...."
-            .replace(' ', "")
-    );
-    shared::example!(
-        10,
-        13_140,
+    shared::day!(10);
+    shared::part1!(13_140, 13_760);
+    shared::part2!(
         "
         ##..##..##..##..##..##..##..##..##..##..
         ###...###...###...###...###...###...###.
@@ -537,6 +523,14 @@ pub mod day10 {
         #####.....#####.....#####.....#####.....
         ######......######......######......####
         #######.......#######.......#######....."
+            .replace(' ', ""),
+        "
+        ###..####.#..#.####..##..###..####.####.
+        #..#.#....#.#.....#.#..#.#..#.#....#....
+        #..#.###..##.....#..#....#..#.###..###..
+        ###..#....#.#...#...#....###..#....#....
+        #.#..#....#.#..#....#..#.#....#....#....
+        #..#.#....#..#.####..##..#....####.#...."
             .replace(' ', "")
     );
 
@@ -600,8 +594,9 @@ pub mod day10 {
 }
 
 pub mod day11 {
-    shared::puzzle!(11, 50_616, 11_309_046_332_u64);
-    shared::example!(11, 10_605, 2_713_310_158_u64);
+    shared::day!(11);
+    shared::part1!(10_605, 50_616);
+    shared::part2!(2_713_310_158_u64, 11_309_046_332_u64);
 
     type T = u64;
     type Troop = Vec<Monkey>;
@@ -690,8 +685,9 @@ pub mod day11 {
 }
 
 pub mod day12 {
-    shared::puzzle!(12, 383, 377);
-    shared::example!(12, 31, 29);
+    shared::day!(12);
+    shared::part1!(31, 383);
+    shared::part2!(29, 377);
 
     use crate::day12::Goal::*;
     use std::collections::VecDeque;
@@ -767,8 +763,9 @@ pub mod day12 {
 }
 
 pub mod day13 {
-    shared::puzzle!(13, 6_484, 19_305);
-    shared::example!(13, 13, 140);
+    shared::day!(13);
+    shared::part1!(13, 6_484);
+    shared::part2!(140, 19_305);
 
     use crate::day13::Data::*;
     use std::{cmp::Ordering, slice::from_ref};
@@ -853,8 +850,9 @@ pub mod day13 {
 }
 
 pub mod day14 {
-    shared::puzzle!(14, 614, 26_170);
-    shared::example!(14, 24, 93);
+    shared::day!(14);
+    shared::part1!(24, 614);
+    shared::part2!(93, 26_170);
 
     use crate::day14::Tile::*;
 
@@ -970,8 +968,9 @@ pub mod day14 {
 }
 
 pub mod day15 {
-    shared::puzzle!(15, 5_299_855, 13_615_843_289_729_i64);
-    shared::example!(15, 26, 56_000_011);
+    shared::day!(15);
+    shared::part1!(26, 5_299_855);
+    shared::part2!(56_000_011, 13_615_843_289_729_i64);
 
     use std::collections::HashSet;
 
@@ -1056,8 +1055,9 @@ pub mod day15 {
 }
 
 pub mod day16 {
-    shared::puzzle!(16, 2_114, 2_666);
-    shared::example!(16, 1_651, 1_707);
+    shared::day!(16);
+    shared::part1!(1_651, 2_114);
+    shared::part2!(1_707, 2_666);
 
     use std::collections::{BinaryHeap, HashMap};
 
@@ -1242,8 +1242,9 @@ pub mod day16 {
 }
 
 pub mod day17 {
-    shared::puzzle!(17, 3_239, 1_594_842_406_882_u64);
-    shared::example!(17, 3_068, 1_514_285_714_288_u64);
+    shared::day!(17);
+    shared::part1!(3_068, 3_239);
+    shared::part2!(1_514_285_714_288_u64, 1_594_842_406_882_u64);
 
     use std::collections::{HashMap, HashSet};
 
@@ -1447,12 +1448,9 @@ pub mod day17 {
 }
 
 pub mod day18 {
-    shared::puzzle!(18, 3_494, 2_062);
-    shared::example!(
-        18,
-        a => (10, 10),
-        b => (64, 58),
-    );
+    shared::day!(18, a, b);
+    shared::part1!([10, 64], 3_494);
+    shared::part2!([10, 58], 2_062);
 
     use std::collections::{HashSet, VecDeque};
 
@@ -1539,8 +1537,9 @@ pub mod day18 {
 }
 
 pub mod day19 {
-    shared::puzzle!(19, 1_092, 3_542);
-    shared::example!(19, 33, 3_472);
+    shared::day!(19);
+    shared::part1!(33, 1_092);
+    shared::part2!(3_472, 3_542);
 
     use std::collections::BinaryHeap;
 
@@ -1655,8 +1654,9 @@ pub mod day19 {
 }
 
 pub mod day20 {
-    shared::puzzle!(20, 2_827, 7_834_270_093_909_i64);
-    shared::example!(20, 3, 1_623_178_306);
+    shared::day!(20);
+    shared::part1!(3, 2_827);
+    shared::part2!(1_623_178_306, 7_834_270_093_909_i64);
 
     type T = i64;
 
@@ -1708,8 +1708,9 @@ pub mod day20 {
 }
 
 pub mod day21 {
-    shared::puzzle!(21, 83_056_452_926_300_u64, 3_469_704_905_529_u64);
-    shared::example!(21, 152, 301);
+    shared::day!(21);
+    shared::part1!(152, 83_056_452_926_300_u64);
+    shared::part2!(301, 3_469_704_905_529_u64);
 
     use std::collections::HashMap;
 
@@ -1872,8 +1873,9 @@ pub mod day21 {
 }
 
 pub mod day22 {
-    shared::puzzle!(22, 123_046);
-    shared::example!(22, 6_032);
+    shared::day!(22);
+    shared::part1!(6_032, 123_046);
+    shared::part2!();
 
     type T = i16;
     type Map = Vec<Vec<MapTile>>;
@@ -2001,8 +2003,9 @@ pub mod day22 {
 }
 
 pub mod day23 {
-    shared::puzzle!();
-    shared::example!();
+    shared::day!();
+    shared::part1!();
+    shared::part2!();
 
     pub fn part1(_: &str) -> String {
         todo!()
@@ -2014,8 +2017,9 @@ pub mod day23 {
 }
 
 pub mod day24 {
-    shared::puzzle!();
-    shared::example!();
+    shared::day!();
+    shared::part1!();
+    shared::part2!();
 
     pub fn part1(_: &str) -> String {
         todo!()
@@ -2027,8 +2031,9 @@ pub mod day24 {
 }
 
 pub mod day25 {
-    shared::puzzle!();
-    shared::example!();
+    shared::day!();
+    shared::part1!();
+    shared::part2!();
 
     pub fn part1(_: &str) -> String {
         todo!()

@@ -1631,7 +1631,7 @@ pub mod day19 {
             .iter()
             .zip(state.robots)
             .zip(cost)
-            .map(|((&r, n), c)| if r >= c { 0 } else { (c - r + n - 1) / n })
+            .map(|((&r, n), c)| if r >= c { 0 } else { (c - r).div_ceil(n) })
             .max()
             .unwrap();
         if state.time + t + 2 > time_limit {

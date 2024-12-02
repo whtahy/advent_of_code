@@ -1,16 +1,46 @@
 shared::table_of_contents!();
 
 pub mod day1 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(1);
+    shared::part1!(11, 2_000_468);
+    shared::part2!(31, 18_567_089);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::collections::HashMap;
+
+    type T = u32;
+
+    fn parse_line(ln: &str) -> (T, T) {
+        let split = ln.split_once("   ").unwrap();
+        (split.0.parse().unwrap(), split.1.parse().unwrap())
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        let (mut lhs, mut rhs) = (Vec::<T>::new(), Vec::new());
+        for ln in puzzle_input.lines() {
+            let (left, right) = parse_line(ln);
+            lhs.push(left);
+            rhs.push(right);
+        }
+        lhs.sort();
+        rhs.sort();
+        lhs.iter()
+            .zip(rhs.iter())
+            .map(|(x, y)| x.abs_diff(*y))
+            .sum::<T>()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let (mut lhs, mut rhs) = (Vec::<T>::new(), HashMap::<T, T>::new());
+        for ln in puzzle_input.lines() {
+            let (left, right) = parse_line(ln);
+            lhs.push(left);
+            *rhs.entry(right).or_insert(0) += 1;
+        }
+        lhs.iter()
+            .map(|x| x * rhs.get(x).unwrap_or(&0))
+            .sum::<T>()
+            .to_string()
     }
 }
 

@@ -1,0 +1,9 @@
+[package]
+name = "aoc_2023"
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+shared = { path = "../shared" }

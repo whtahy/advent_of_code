@@ -7,6 +7,8 @@ const TABLE_OF_CONTENTS: &[shared::Year] = &[
     aoc_2020::TABLE_OF_CONTENTS,
     aoc_2021::TABLE_OF_CONTENTS,
     aoc_2022::TABLE_OF_CONTENTS,
+    aoc_2023::TABLE_OF_CONTENTS,
+    aoc_2024::TABLE_OF_CONTENTS,
 ];
 const START_YEAR: usize = 2015;
 const END_YEAR: usize = START_YEAR + TABLE_OF_CONTENTS.len() - 1;

@@ -45,16 +45,71 @@ pub mod day1 {
 }
 
 pub mod day2 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(2);
+    shared::part1!(2, 564);
+    shared::part2!(4, 604);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    type T = i32;
+
+    fn parse_line(ls: &str) -> Vec<T> {
+        ls.split_ascii_whitespace()
+            .map(|x| x.parse().unwrap())
+            .collect()
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    fn delta(v: Vec<T>) -> Vec<T> {
+        v.windows(2).map(|w| w[0] - w[1]).collect()
+    }
+
+    pub fn part1(puzzle_input: &str) -> String {
+        puzzle_input
+            .lines()
+            .map(parse_line)
+            .map(delta)
+            .filter(|delta| {
+                delta.iter().all(|x| [1, 2, 3].contains(x))
+                    || delta.iter().all(|x| [-1, -2, -3].contains(x))
+            })
+            .count()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
+            .lines()
+            .map(parse_line)
+            .map(delta)
+            .filter(|delta| {
+                safe(delta, &[1, 2, 3]) || safe(delta, &[-1, -2, -3])
+            })
+            .count()
+            .to_string()
+    }
+
+    fn safe(delta: &[T], valid: &[T]) -> bool {
+        let invalid = delta
+            .iter()
+            .enumerate()
+            .filter(|(_, x)| !valid.contains(x))
+            .map(|(i, _)| i)
+            .take(3)
+            .collect::<Vec<_>>();
+        match invalid.len() {
+            0 => true,
+            1 => {
+                let i = invalid[0];
+                i == 0
+                    || i == delta.len() - 1
+                    || valid.contains(&(delta[i] + delta[i + 1]))
+                    || valid.contains(&(delta[i] + delta[i - 1]))
+            }
+            2 => {
+                let (i, j) = (invalid[0], invalid[1]);
+                i.abs_diff(j) == 1 && valid.contains(&(delta[i] + delta[j]))
+            }
+            3 => false,
+            _ => unreachable!(),
+        }
     }
 }
 

@@ -114,16 +114,33 @@ pub mod day2 {
 }
 
 pub mod day3 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(3);
+    shared::part1!(161, 160_672_468);
+    shared::part2!(48, 84_893_551);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    type T = u32;
+
+    fn parse(s: &str) -> T {
+        s.split("mul(")
+            .flat_map(|s| {
+                let inner = s.split(')').next()?;
+                let (a, b) = inner.split_once(',')?;
+                Some(a.parse::<T>().ok()? * b.parse::<T>().ok()?)
+            })
+            .sum()
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        parse(puzzle_input).to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        puzzle_input
+            .split("do()")
+            .map(|s| s.split("don't()").next().unwrap_or(s))
+            .map(parse)
+            .sum::<T>()
+            .to_string()
     }
 }
 

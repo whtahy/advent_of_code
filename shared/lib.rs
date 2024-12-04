@@ -28,34 +28,6 @@ macro_rules! day {
 }
 
 #[macro_export]
-macro_rules! test_puzzle {
-    ($part:ident, $test:ident, $soln:expr) => {
-        #[test]
-        fn $test() {
-            assert_eq!($part(PUZZLE), $soln.to_string());
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! test_example {
-    ($part:ident, $test:ident, [$($soln:expr),+]) => {
-        #[test]
-        fn $test() {
-            let actual = vec![$($soln.to_string()),+];
-            let expected = EXAMPLE.iter().map(|s| $part(s)).collect::<Vec<_>>();
-            assert_eq!(actual, expected);
-        }
-    };
-    ($part:ident, $test:ident, $soln:expr) => {
-        #[test]
-        fn $test() {
-            assert_eq!($part(EXAMPLE[0]), $soln.to_string());
-        }
-    };
-}
-
-#[macro_export]
 macro_rules! part1 {
     () => {};
     ([$($example:expr),+]) => {
@@ -90,6 +62,34 @@ macro_rules! part2 {
     ($example:expr, $puzzle:expr) => {
         shared::test_example!(part2, test_part2_example, $example);
         shared::test_puzzle!(part2, test_part2, $puzzle);
+    };
+}
+
+#[macro_export]
+macro_rules! test_puzzle {
+    ($part:ident, $test:ident, $soln:expr) => {
+        #[test]
+        fn $test() {
+            assert_eq!($part(PUZZLE), $soln.to_string());
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! test_example {
+    ($part:ident, $test:ident, [$($soln:expr),+]) => {
+        #[test]
+        fn $test() {
+            let actual = vec![$($soln.to_string()),+];
+            let expected = EXAMPLE.iter().map(|s| $part(s)).collect::<Vec<_>>();
+            assert_eq!(actual, expected);
+        }
+    };
+    ($part:ident, $test:ident, $soln:expr) => {
+        #[test]
+        fn $test() {
+            assert_eq!($part(EXAMPLE[0]), $soln.to_string());
+        }
     };
 }
 

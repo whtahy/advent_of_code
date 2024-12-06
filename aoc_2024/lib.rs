@@ -191,16 +191,66 @@ pub mod day4 {
 }
 
 pub mod day5 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(5);
+    shared::part1!(143, 5_108);
+    shared::part2!(123, 7_380);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::{cmp::Ordering, collections::HashMap};
+
+    type T = u32;
+    type Rules = HashMap<T, Vec<T>>;
+    type Pages = Vec<Book>;
+    type Book = Vec<T>;
+
+    fn parse(s: &str) -> (Rules, Pages) {
+        let (upper, lower) = s.split_once("\r\n\r\n").unwrap();
+        let rules: Rules = upper.lines().fold(HashMap::new(), |mut map, ln| {
+            let kv = ln
+                .split('|')
+                .map(|x| x.parse().unwrap())
+                .collect::<Vec<_>>();
+            map.entry(kv[0]).or_default().push(kv[1]);
+            map
+        });
+        let pages = lower
+            .lines()
+            .map(|ln| ln.split(',').map(|s| s.parse().unwrap()).collect())
+            .collect();
+        (rules, pages)
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        let (rules, pages) = parse(puzzle_input);
+        pages
+            .iter()
+            .filter(|book| safe(&rules, book))
+            .map(|book| book[book.len() / 2])
+            .sum::<T>()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let (rules, pages) = parse(puzzle_input);
+        pages
+            .into_iter()
+            .filter(|book| !safe(&rules, book))
+            .map(|mut book| {
+                book.sort_by(|&a, &b| ord(&rules, a, b));
+                book[book.len() / 2]
+            })
+            .sum::<T>()
+            .to_string()
+    }
+
+    fn safe(rules: &Rules, book: &Book) -> bool {
+        book.is_sorted_by(|&a, &b| matches!(ord(rules, a, b), Ordering::Less))
+    }
+
+    fn ord(rules: &Rules, a: T, b: T) -> Ordering {
+        match rules.get(&a).map(|v| v.contains(&b)) {
+            Some(true) => Ordering::Less,
+            _ => Ordering::Greater,
+        }
     }
 }
 

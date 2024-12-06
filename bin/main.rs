@@ -10,79 +10,64 @@ const TABLE_OF_CONTENTS: &[shared::Year] = &[
     aoc_2023::TABLE_OF_CONTENTS,
     aoc_2024::TABLE_OF_CONTENTS,
 ];
-const START_YEAR: usize = 2015;
-const END_YEAR: usize = START_YEAR + TABLE_OF_CONTENTS.len() - 1;
+const FIRST_YEAR: usize = 2015;
+const LAST_YEAR: usize = FIRST_YEAR + TABLE_OF_CONTENTS.len() - 1;
 const N_DAYS: usize = 25;
 const N_PARTS: usize = 2;
 
 fn main() {
-    let args = std::env::args().flat_map(|s| s.parse()).collect::<Vec<_>>();
-    let valid = |arg: Option<&_>, min, max| {
-        arg.is_some() && min <= *arg.unwrap() && *arg.unwrap() <= max
-    };
-    let valid_year = |i| valid(args.get(i), START_YEAR, END_YEAR);
-    let valid_day = |i| valid(args.get(i), 1, N_DAYS);
-    let valid_part = |i| valid(args.get(i), 1, N_PARTS);
-    let both = Vec::from_iter(1..=N_PARTS);
-    // year day part
-    let (year, day, part) = if valid_year(0) && valid_day(1) && valid_part(2) {
-        (args[0], args[1], vec![args[2]])
-    }
-    // year day
-    else if valid_year(0) && valid_day(1) {
-        (args[0], args[1], both)
-    }
-    // day part -> recent year
-    else if valid_day(0) && valid_part(1) {
-        (END_YEAR, args[0], vec![args[1]])
-    }
-    // year -> recent day
-    else if valid_year(0) {
-        let recent_day = TABLE_OF_CONTENTS[args[0] - START_YEAR]
+    let args: Vec<usize> = std::env::args().flat_map(|s| s.parse()).collect();
+    let recent_day = |year: &usize| {
+        TABLE_OF_CONTENTS[year - FIRST_YEAR]
             .iter()
             .take_while(|day| day.example != [""])
-            .count();
-        (args[0], recent_day, both)
-    }
-    // day -> recent year
-    else if valid_day(0) {
-        (END_YEAR, args[0], both)
-    }
-    // <none>
-    else if args.is_empty() {
-        let recent_day = TABLE_OF_CONTENTS
-            .last()
-            .unwrap()
-            .iter()
-            .take_while(|day| day.example != [""])
-            .count();
-        (END_YEAR, recent_day, both)
-    } else {
-        println!("Usage: <year> <day> <part>");
-        return;
+            .count()
     };
-    let is_example = std::env::args().any(|arg| arg == "example");
+    let both_parts = 1..=N_PARTS;
+    let (year, day, part) = match (args.first(), args.get(1), args.get(2)) {
+        // year day part
+        (
+            Some(year @ FIRST_YEAR..=LAST_YEAR),
+            Some(day @ 1..=N_DAYS),
+            Some(&part @ 1..=N_PARTS),
+        ) => (year, day, part..=part),
+        // year day -> both parts
+        (Some(year @ FIRST_YEAR..=LAST_YEAR), Some(day @ 1..=N_DAYS), _) => {
+            (year, day, both_parts)
+        }
+        // year -> recent day, both parts
+        (Some(year @ FIRST_YEAR..=LAST_YEAR), _, _) => {
+            (year, &recent_day(year), both_parts)
+        }
+        // day part -> last year
+        (Some(day @ 1..=N_DAYS), Some(&part @ 1..=N_PARTS), _) => {
+            (&LAST_YEAR, day, part..=part)
+        }
+        // day -> last year, both parts
+        (Some(day @ 1..=N_DAYS), _, _) => (&LAST_YEAR, day, both_parts),
+        // <blank> -> last year, recent day, both parts
+        (None, None, None) => (&LAST_YEAR, &recent_day(&LAST_YEAR), both_parts),
+        _ => {
+            println!("Usage: <year> <day> <part>");
+            return;
+        }
+    };
     for pt in part {
-        get(year, day, pt, is_example);
-    }
-}
-
-fn get(yr: usize, dy: usize, pt: usize, is_example: bool) {
-    let shared::Day {
-        part,
-        puzzle,
-        example,
-    } = TABLE_OF_CONTENTS[yr - START_YEAR][dy - 1];
-    if puzzle.is_empty() || is_example {
+        let shared::Day {
+            parts,
+            puzzle,
+            example,
+        } = TABLE_OF_CONTENTS[year - FIRST_YEAR][day - 1];
         println!(
-            "{yr} day{dy} part{pt} example: {}",
+            "{year} day{day} example{pt}: {}",
             example
                 .iter()
-                .map(|s| part[pt - 1](s))
+                .map(|s| parts[pt - 1](s))
                 .collect::<Vec<_>>()
                 .join(" ")
         );
-    } else {
-        println!("{yr} day{dy} part{pt}: {}", part[pt - 1](puzzle));
+        if !puzzle.is_empty() {
+            println!("{year} day{day} part{pt}...: {}", parts[pt - 1](puzzle));
+        }
     }
 }

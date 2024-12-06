@@ -1,6 +1,6 @@
 pub type Year = [Day; 25];
 pub struct Day {
-    pub part: [Part; 2],
+    pub parts: [Part; 2],
     pub puzzle: &'static str,
     pub example: &'static [&'static str],
 }
@@ -97,7 +97,7 @@ macro_rules! test_example {
 macro_rules! toc_helper {
     ($day:ident) => {
         shared::Day {
-            part: [$day::part1, $day::part2],
+            parts: [$day::part1, $day::part2],
             puzzle: $day::PUZZLE,
             example: $day::EXAMPLE,
         }

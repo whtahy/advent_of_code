@@ -145,16 +145,48 @@ pub mod day3 {
 }
 
 pub mod day4 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(4);
+    shared::part1!(18, 2_662);
+    shared::part2!(9, 2_034);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    fn parse(s: &str) -> Vec<Vec<char>> {
+        s.lines().map(|ln| ln.chars().collect()).collect()
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    pub fn part1(puzzle_input: &str) -> String {
+        let board = parse(puzzle_input);
+        let target = ['X', 'M', 'A', 'S'];
+        let search = |r, c, dr, dc| {
+            (0..target.len() as isize)
+                .map(|i| {
+                    let row = board.get((r + dr * i) as usize)?;
+                    let val = row.get((c + dc * i) as usize)?;
+                    Some(target[i as usize] == *val)
+                })
+                .all(|x| x.unwrap_or(false))
+        };
+        let (n_rows, n_cols) = (board.len() as isize, board[0].len() as isize);
+        let rc = (0..n_rows).flat_map(|r| (0..n_cols).map(move |c| (r, c)));
+        let delta = (-1..=1)
+            .flat_map(|dr| (-1..=1).map(move |dc| (dr, dc)))
+            .filter(|&(dr, dc)| dr != 0 || dc != 0);
+        rc.flat_map(|rc| delta.clone().map(move |drc| (rc, drc)))
+            .filter(|&((r, c), (dr, dc))| search(r, c, dr, dc))
+            .count()
+            .to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let board = parse(puzzle_input);
+        let search = |r: usize, c| {
+            let ms = |a, b| matches!((a, b), ('M', 'S') | ('S', 'M'));
+            board[r][c] == 'A'
+                && ms(board[r + 1][c + 1], board[r - 1][c - 1])
+                && ms(board[r + 1][c - 1], board[r - 1][c + 1])
+        };
+        let (r_max, c_max) = (board.len() - 1, board[0].len() - 1);
+        let rc = (1..r_max).flat_map(|r| (1..c_max).map(move |c| (r, c)));
+        rc.filter(|&(r, c)| search(r, c)).count().to_string()
     }
 }
 

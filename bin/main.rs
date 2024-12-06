@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 const TABLE_OF_CONTENTS: &[shared::Year] = &[
     aoc_2015::TABLE_OF_CONTENTS,
     aoc_2016::TABLE_OF_CONTENTS,
@@ -58,16 +60,29 @@ fn main() {
             puzzle,
             example,
         } = TABLE_OF_CONTENTS[year - FIRST_YEAR][day - 1];
-        println!(
-            "{year} day{day} example{pt}: {}",
-            example
-                .iter()
-                .map(|s| parts[pt - 1](s))
-                .collect::<Vec<_>>()
-                .join(" ")
-        );
+        let ans = example
+            .iter()
+            .map(|s| fmt(parts[pt - 1](s)))
+            .collect::<Vec<_>>()
+            .join(" ");
+        println!("{year} day{day} example{pt}: {}", ans);
         if !puzzle.is_empty() {
-            println!("{year} day{day} part{pt}...: {}", parts[pt - 1](puzzle));
+            let ans = parts[pt - 1](puzzle);
+            println!("{year} day{day} part{pt}...: {}", fmt(ans));
         }
     }
+}
+
+fn fmt(s: String) -> String {
+    if !s.chars().all(|ch| ch.is_ascii_digit()) {
+        return s;
+    }
+    let mut v = VecDeque::new();
+    for (i, ch) in s.chars().rev().enumerate() {
+        if i != 0 && i % 3 == 0 {
+            v.push_front('_');
+        }
+        v.push_front(ch);
+    }
+    v.iter().collect()
 }

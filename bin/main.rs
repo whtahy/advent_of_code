@@ -66,7 +66,7 @@ fn main() {
             .collect::<Vec<_>>()
             .join(" ");
         println!("{year} day{day} example{pt}: {}", ans);
-        if !puzzle.is_empty() {
+        if !puzzle.is_empty() && !std::env::args().any(|arg| arg == "example") {
             let ans = parts[pt - 1](puzzle);
             println!("{year} day{day} part{pt}...: {}", fmt(ans));
         }

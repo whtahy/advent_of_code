@@ -60,12 +60,14 @@ fn main() {
             puzzle,
             example,
         } = TABLE_OF_CONTENTS[year - FIRST_YEAR][day - 1];
-        let ans = example
-            .iter()
-            .map(|s| fmt(parts[pt - 1](s)))
-            .collect::<Vec<_>>()
-            .join(" ");
-        println!("{year} day{day} example{pt}: {}", ans);
+        if !std::env::args().any(|arg| arg == "puzzle") {
+            let ans = example
+                .iter()
+                .map(|s| fmt(parts[pt - 1](s)))
+                .collect::<Vec<_>>()
+                .join(" ");
+            println!("{year} day{day} example{pt}: {}", ans);
+        }
         if !puzzle.is_empty() && !std::env::args().any(|arg| arg == "example") {
             let ans = parts[pt - 1](puzzle);
             println!("{year} day{day} part{pt}...: {}", fmt(ans));

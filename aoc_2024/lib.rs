@@ -255,16 +255,235 @@ pub mod day5 {
 }
 
 pub mod day6 {
-    shared::day!();
-    shared::part1!();
-    shared::part2!();
+    shared::day!(6);
+    shared::part1!(41, 5_318);
+    shared::part2!(6, 1_831);
 
-    pub fn part1(_: &str) -> String {
-        todo!()
+    use std::collections::{HashMap, HashSet};
+
+    type T = usize;
+    type Obstacles = HashMap<T, (Vec<T>, Vec<T>)>;
+
+    use Dir::*;
+    #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
+    enum Dir {
+        Up,
+        Down,
+        Left,
+        Right,
     }
 
-    pub fn part2(_: &str) -> String {
-        todo!()
+    #[derive(Debug, Hash, PartialEq, Eq, Clone)]
+    struct Coord {
+        x: T,
+        y: T,
+    }
+
+    struct Room {
+        width: T,
+        height: T,
+        obstacles: Obstacles,
+    }
+
+    #[derive(Debug, Hash, PartialEq, Eq, Clone)]
+    struct Guard {
+        x: T,
+        y: T,
+        dir: Dir,
+    }
+
+    fn parse(s: &str) -> (Guard, Room) {
+        let height = s.lines().count();
+        let width = s.lines().next().unwrap().len();
+        let mut start = None;
+        let mut obstacles = HashMap::new();
+        for (y, ln) in s.lines().enumerate() {
+            let y = height - 1 - y;
+            for (x, ch) in ln.chars().enumerate() {
+                if ch == '#' {
+                    obstacles.entry(x).or_insert((vec![], vec![])).1.push(y);
+                    obstacles.entry(y).or_insert((vec![], vec![])).0.push(x);
+                } else if ch == '^' {
+                    start = Some((x, y));
+                }
+            }
+        }
+        obstacles.values_mut().for_each(|pair| {
+            pair.0.sort_unstable();
+            pair.1.sort_unstable();
+        });
+        let (x, y) = start.unwrap();
+        (
+            Guard { x, y, dir: Up },
+            Room {
+                width,
+                height,
+                obstacles,
+            },
+        )
+    }
+
+    pub fn part1(puzzle_input: &str) -> String {
+        let (mut guard, room) = parse(puzzle_input);
+        let mut history = HashSet::new();
+        while guard.x < room.width && guard.y < room.height {
+            history.insert((guard.x, guard.y));
+            let next = forward(&guard);
+            if room
+                .obstacles
+                .get(&next.x)
+                .and_then(|(_, v)| v.binary_search(&next.y).ok())
+                .is_some()
+            {
+                guard.dir = clockwise(guard.dir);
+            } else {
+                (guard.x, guard.y) = (next.x, next.y);
+            }
+        }
+        history.len().to_string()
+    }
+
+    pub fn part2(puzzle_input: &str) -> String {
+        let (mut guard, room) = parse(puzzle_input);
+        let start = Coord {
+            x: guard.x,
+            y: guard.y,
+        };
+        let mut new_obstacles = HashSet::new();
+        while guard.x < room.width && guard.y < room.height {
+            let next = forward(&guard);
+            if room
+                .obstacles
+                .get(&next.x)
+                .and_then(|(_, y)| y.binary_search(&next.y).ok())
+                .is_some()
+            {
+                guard.dir = clockwise(guard.dir);
+            } else {
+                if cycle(&start, &next, &room.obstacles) {
+                    new_obstacles.insert(next.clone());
+                }
+                (guard.x, guard.y) = (next.x, next.y);
+            }
+        }
+        new_obstacles.len().to_string()
+    }
+
+    fn forward(&Guard { x, y, dir }: &Guard) -> Coord {
+        let (x, y) = match dir {
+            Up => (x, y + 1),
+            Down => (x, y - 1),
+            Left => (x - 1, y),
+            Right => (x + 1, y),
+        };
+        Coord { x, y }
+    }
+
+    fn clockwise(dir: Dir) -> Dir {
+        match dir {
+            Up => Right,
+            Right => Down,
+            Down => Left,
+            Left => Up,
+        }
+    }
+
+    fn cycle(
+        start: &Coord,
+        new_obstacle: &Coord,
+        obstacle_map: &Obstacles,
+    ) -> bool {
+        let jump = |guard| {
+            let next = match (
+                jump_to_map(&guard, obstacle_map),
+                jump_to_obstacle(&guard, new_obstacle),
+            ) {
+                (Some(a), Some(b)) => match guard.dir {
+                    Up if a.y < b.y => a,
+                    Right if a.x < b.x => a,
+                    Down if b.y < a.y => a,
+                    Left if b.x < a.x => a,
+                    _ => b,
+                },
+                (Some(a), _) => a,
+                (_, Some(b)) => b,
+                (None, None) => return None,
+            };
+            Some(next)
+        };
+        let mut tortoise = Some(Guard {
+            x: start.x,
+            y: start.y,
+            dir: Up,
+        });
+        let mut hare = tortoise.clone();
+        loop {
+            tortoise = tortoise.and_then(jump);
+            hare = hare.and_then(jump).and_then(jump);
+            if tortoise.is_none() || hare.is_none() {
+                return false;
+            } else if hare == tortoise {
+                return true;
+            }
+        }
+    }
+
+    fn jump_to_obstacle(guard: &Guard, obstacle: &Coord) -> Option<Guard> {
+        if guard.x == obstacle.x && guard.y == obstacle.y {
+            return None;
+        }
+        let (x, y) = match (
+            guard.dir,
+            guard.x == obstacle.x,
+            guard.y < obstacle.y,
+            guard.y == obstacle.y,
+            obstacle.x < guard.x,
+        ) {
+            (Up, true, true, _, _) => (guard.x, obstacle.y - 1),
+            (Down, true, false, _, _) => (guard.x, obstacle.y + 1),
+            (Left, _, _, true, true) => (obstacle.x + 1, guard.y),
+            (Right, _, _, true, false) => (obstacle.x - 1, guard.y),
+            _ => return None,
+        };
+        Some(Guard {
+            x,
+            y,
+            dir: clockwise(guard.dir),
+        })
+    }
+
+    fn jump_to_map(guard: &Guard, obstacle_map: &Obstacles) -> Option<Guard> {
+        let (fix, jmp) = match guard.dir {
+            Up | Down => (guard.x, guard.y),
+            Left | Right => (guard.y, guard.x),
+        };
+        obstacle_map
+            .get(&fix)
+            .map(|(xs, ys)| match guard.dir {
+                Up | Down => ys,
+                Left | Right => xs,
+            })
+            .filter(|vec| !vec.is_empty())
+            .filter(|vec| match guard.dir {
+                Up | Right => jmp < *vec.last().unwrap(),
+                Down | Left => vec[0] < jmp,
+            })
+            .map(|vec| {
+                let i = vec.binary_search(&jmp).unwrap_err();
+                let next = match guard.dir {
+                    Up | Right => vec[i] - 1,
+                    Down | Left => vec[i - 1] + 1,
+                };
+                let (x, y) = match guard.dir {
+                    Up | Down => (fix, next),
+                    Left | Right => (next, fix),
+                };
+                Guard {
+                    x,
+                    y,
+                    dir: clockwise(guard.dir),
+                }
+            })
     }
 }
 

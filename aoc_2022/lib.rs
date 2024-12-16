@@ -229,14 +229,18 @@ pub mod day5 {
 
     fn parse(s: &str) -> (Stacks, Vec<Step>) {
         let (upper, lower) = s.split_once("\r\n\r\n").unwrap();
-        let stacks = parse_crates(upper);
-        let steps = lower.lines().map(parse_step).collect();
+        let steps = lower.lines().map(parse_step).collect::<Vec<_>>();
+        let n_stacks = 1 + steps
+            .iter()
+            .flat_map(|step| [step.from, step.to])
+            .max()
+            .unwrap();
+        let stacks = parse_crates(upper, n_stacks);
         (stacks, steps)
     }
 
-    fn parse_crates(s: &str) -> Stacks {
-        let n_stacks = s.lines().next().unwrap().len() / 4 + 1;
-        let mut stacks = vec![Vec::new(); n_stacks];
+    fn parse_crates(s: &str, n_stacks: T) -> Stacks {
+        let mut stacks = vec![vec![]; n_stacks];
         for ln in s.lines().rev() {
             for (i, ch) in ln
                 .chars()
@@ -250,7 +254,7 @@ pub mod day5 {
     }
 
     fn parse_step(ln: &str) -> Step {
-        let v = ln.split(' ').flat_map(str::parse).collect::<Vec<_>>();
+        let v: Vec<T> = ln.split(' ').flat_map(str::parse).collect();
         Step {
             n: v[0],
             from: v[1] - 1,
